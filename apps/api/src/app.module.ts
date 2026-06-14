@@ -17,6 +17,7 @@ import { BibleVersesModule } from './bible-verses/bible-verses.module';
 import { DrawingsModule } from './drawings/drawings.module';
 import { AudioModule } from './audio/audio.module';
 import { StripeModule } from './stripe/stripe.module';
+import { RokuModule } from './roku/roku.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 
@@ -41,6 +42,7 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     DrawingsModule,
     AudioModule,
     StripeModule,
+    RokuModule,
   ],
   controllers: [AppController],
   providers: [

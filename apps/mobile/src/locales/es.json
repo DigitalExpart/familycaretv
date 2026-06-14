@@ -1,0 +1,35 @@
+{
+  "dashboard": {
+    "doctors": "Doctores",
+    "emergencyContacts": "Contactos de Emergencia",
+    "medications": "Medicamentos",
+    "events": "Eventos",
+    "notes": "Notas (Próximamente)"
+  },
+  "settings": {
+    "language": "Idioma",
+    "english": "Inglés",
+    "spanish": "Español"
+  },
+  "notes": {
+    "list": {
+      "title": "Notas del Paciente",
+      "empty": "No se encontraron notas. ¡Crea la primera!",
+      "create": "Añadir Nota"
+    },
+    "form": {
+      "titleLabel": "Título",
+      "titlePlaceholder": "ej., Observación matutina",
+      "contentLabel": "Contenido",
+      "contentPlaceholder": "Escribe tu nota aquí...",
+      "createTitle": "Crear Nota",
+      "editTitle": "Editar Nota"
+    },
+    "actions": {
+      "save": "Guardar Nota",
+      "edit": "Editar",
+      "delete": "Eliminar Nota",
+      "confirmDelete": "¿Estás seguro de que quieres eliminar esta nota?"
+    }
+  }
+}

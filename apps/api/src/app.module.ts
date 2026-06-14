@@ -13,6 +13,12 @@ import { MedicationsModule } from './medications/medications.module';
 import { EventsModule } from './events/events.module';
 import { NotesModule } from './notes/notes.module';
 import { AiModule } from './ai/ai.module';
+import { BibleVersesModule } from './bible-verses/bible-verses.module';
+import { DrawingsModule } from './drawings/drawings.module';
+import { AudioModule } from './audio/audio.module';
+import { StripeModule } from './stripe/stripe.module';
+import { APP_GUARD } from '@nestjs/core';
+import { SubscriptionGuard } from './common/guards/subscription.guard';
 
 @Module({
   imports: [
@@ -31,8 +37,18 @@ import { AiModule } from './ai/ai.module';
     EventsModule,
     NotesModule,
     AiModule,
+    BibleVersesModule,
+    DrawingsModule,
+    AudioModule,
+    StripeModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: SubscriptionGuard,
+    },
+  ],
 })
 export class AppModule {}

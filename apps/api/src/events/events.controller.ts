@@ -12,27 +12,53 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger'
 @Controller('events')
 export class EventsController {
   constructor(private readonly service: EventsService) {}
+
+  @Get('today')
+  @ApiOperation({ summary: 'Get events for today' })
+  @ApiQuery({ name: 'patientId', required: false })
+  getToday(@CurrentUser() user: any, @Query('patientId') patientId?: string) {
+    return this.service.getToday(user.id, patientId);
+  }
+
+  @Get('upcoming')
+  @ApiOperation({ summary: 'Get upcoming events' })
+  @ApiQuery({ name: 'patientId', required: false })
+  getUpcoming(@CurrentUser() user: any, @Query('patientId') patientId?: string) {
+    return this.service.getUpcoming(user.id, patientId);
+  }
+
+  @Get('ticker')
+  @ApiOperation({ summary: 'Get events formatted for Roku ticker feed' })
+  @ApiQuery({ name: 'patientId', required: false })
+  getTicker(@CurrentUser() user: any, @Query('patientId') patientId?: string) {
+    return this.service.getTicker(user.id, patientId);
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create an event for a patient' })
   create(@CurrentUser() user: any, @Body() dto: CreateEventDto) {
     return this.service.create(user.id, dto);
   }
+
   @Get()
   @ApiOperation({ summary: 'Get all events for a specific patient' })
   @ApiQuery({ name: 'patientId', required: true })
   findAll(@CurrentUser() user: any, @Query('patientId') patientId: string) {
     return this.service.findAll(user.id, patientId);
   }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific event' })
   findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.service.findOne(id, user.id);
   }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Update an event' })
   update(@Param('id') id: string, @CurrentUser() user: any, @Body() dto: UpdateEventDto) {
     return this.service.update(id, user.id, dto);
   }
+
   @Delete(':id')
   @ApiOperation({ summary: 'Delete an event' })
   remove(@Param('id') id: string, @CurrentUser() user: any) {

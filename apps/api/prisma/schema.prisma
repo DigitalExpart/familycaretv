@@ -15,7 +15,14 @@ model User {
   lastName           String
   language           String   @default("en")
   role               Role     @default(USER)
-  subscriptionStatus String   @default("inactive")
+  
+  // Subscription / Stripe fields
+  subscriptionStatus String   @default("trialing")
+  stripeCustomerId   String?  @unique
+  stripeSubscriptionId String? @unique
+  trialEndsAt        DateTime?
+  currentPeriodEnd   DateTime?
+
   refreshTokenHash   String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
@@ -48,6 +55,7 @@ model Patient {
   events        Event[]
   patientNotes  PatientNote[]
   contacts      EmergencyContact[]
+  drawings      Drawing[]
 }
 
 model Doctor {
@@ -89,16 +97,38 @@ model Medication {
   patient Patient @relation(fields:[patientId], references:[id], onDelete: Cascade)
 }
 
+enum EventType {
+  APPOINTMENT
+  MEDICATION
+  TASK
+}
+
+enum ReminderStatus {
+  ACTIVE
+  COMPLETED
+  MISSED
+}
+
 model Event {
-  id            String @id @default(uuid())
-  patientId     String
+  id               String   @id @default(uuid())
 
-  title         String
-  description   String?
+  patientId        String
 
-  eventDate     DateTime
+  title            String
+  description      String?
 
-  patient Patient @relation(fields:[patientId], references:[id], onDelete: Cascade)
+  type             EventType
+
+  startDateTime    DateTime
+
+  reminderMinutes  Int?
+
+  status           ReminderStatus @default(ACTIVE)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
 
 model PatientNote {
@@ -126,4 +156,39 @@ model MedicationReference {
   createdAt   DateTime @default(now())
 
   @@unique([name, language])
+}
+
+enum AudioType {
+  MUSIC
+  MESSAGE
+}
+
+model BibleVerse {
+  id            String   @id @default(uuid())
+  verse         String
+  reference     String
+  scheduledDate DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Drawing {
+  id          String   @id @default(uuid())
+  title       String
+  imageUrl    String
+  patientId   String?  // Optional: link to a specific patient
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  patient     Patient? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+}
+
+model AudioTrack {
+  id          String   @id @default(uuid())
+  title       String
+  audioUrl    String
+  type        AudioType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

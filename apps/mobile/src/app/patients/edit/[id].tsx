@@ -1,9 +1,9 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { usePatient, useUpdatePatient } from '../../features/patients/patients-api';
-import { PatientForm } from '../../components/PatientForm';
-import { LoadingSpinner } from '../../components/LoadingSpinner';
-import { EmptyState } from '../../components/EmptyState';
+import { usePatient, useUpdatePatient } from '../../../features/patients/patients-api';
+import { PatientForm } from '../../../components/PatientForm';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { EmptyState } from '../../../components/EmptyState';
 
 export default function EditPatientScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

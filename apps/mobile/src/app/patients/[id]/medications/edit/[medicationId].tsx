@@ -1,9 +1,9 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMedication, useUpdateMedication } from '../../../../features/medications/medications-api';
-import { MedicationForm } from '../../../../components/MedicationForm';
-import { LoadingSpinner } from '../../../../components/LoadingSpinner';
-import { EmptyState } from '../../../../components/EmptyState';
+import { useMedication, useUpdateMedication } from '../../../../../features/medications/medications-api';
+import { MedicationForm } from '../../../../../components/MedicationForm';
+import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
+import { EmptyState } from '../../../../../components/EmptyState';
 
 export default function EditMedicationScreen() {
   const { id: patientId, medicationId } = useLocalSearchParams<{ id: string; medicationId: string }>();

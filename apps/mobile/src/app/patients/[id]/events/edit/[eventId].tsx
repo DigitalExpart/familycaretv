@@ -1,9 +1,9 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEvent, useUpdateEvent } from '../../../../features/events/events-api';
-import { EventForm } from '../../../../components/EventForm';
-import { LoadingSpinner } from '../../../../components/LoadingSpinner';
-import { EmptyState } from '../../../../components/EmptyState';
+import { useEvent, useUpdateEvent } from '../../../../../features/events/events-api';
+import { EventForm } from '../../../../../components/EventForm';
+import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
+import { EmptyState } from '../../../../../components/EmptyState';
 
 export default function EditEventScreen() {
   const { id: patientId, eventId } = useLocalSearchParams<{ id: string; eventId: string }>();

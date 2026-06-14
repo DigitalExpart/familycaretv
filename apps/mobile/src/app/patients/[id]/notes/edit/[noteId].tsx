@@ -1,9 +1,9 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useNote, useUpdateNote } from '../../../../features/notes/notes-api';
-import { NoteForm } from '../../../../components/NoteForm';
-import { LoadingSpinner } from '../../../../components/LoadingSpinner';
-import { EmptyState } from '../../../../components/EmptyState';
+import { useNote, useUpdateNote } from '../../../../../features/notes/notes-api';
+import { NoteForm } from '../../../../../components/NoteForm';
+import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
+import { EmptyState } from '../../../../../components/EmptyState';
 import { useTranslation } from 'react-i18next';
 import { Stack } from 'expo-router';
 

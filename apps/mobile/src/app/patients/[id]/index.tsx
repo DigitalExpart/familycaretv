@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, ScrollView, Button, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { usePatient, useDeletePatient } from '../../../../features/patients/patients-api';
-import { LoadingSpinner } from '../../../../components/LoadingSpinner';
-import { EmptyState } from '../../../../components/EmptyState';
+import { usePatient, useDeletePatient } from '../../../features/patients/patients-api';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { EmptyState } from '../../../components/EmptyState';
 import { useTranslation } from 'react-i18next';
 
 export default function PatientDetailsScreen() {

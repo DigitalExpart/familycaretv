@@ -1,9 +1,9 @@
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useContact, useUpdateContact } from '../../../../features/emergency-contacts/contacts-api';
-import { ContactForm } from '../../../../components/ContactForm';
-import { LoadingSpinner } from '../../../../components/LoadingSpinner';
-import { EmptyState } from '../../../../components/EmptyState';
+import { useContact, useUpdateContact } from '../../../../../features/emergency-contacts/contacts-api';
+import { ContactForm } from '../../../../../components/ContactForm';
+import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
+import { EmptyState } from '../../../../../components/EmptyState';
 
 export default function EditContactScreen() {
   const { id: patientId, contactId } = useLocalSearchParams<{ id: string; contactId: string }>();

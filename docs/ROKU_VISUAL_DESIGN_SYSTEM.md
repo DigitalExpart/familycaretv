@@ -8,13 +8,13 @@
 
 ## 1. Color System
 
-To create a calming, trustworthy, and modern feel, we move away from stark whites and primary blues, embracing deep indigos, teals, and soft gradients.
+To create a calming, trustworthy, and modern feel, we move away from stark whites and primary blues, embracing the core brand palette: Blue, Green, and Red.
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `ColorPrimary` | `#4F46E5` | Focus rings, primary buttons, hero text |
-| `ColorSecondary` | `#14B8A6` | Success states, badges, active tab underlines |
-| `ColorAccent` | `#F59E0B` | Warnings, special highlights, medication alerts |
+| `ColorPrimary` | `#0054A4` | Focus rings, primary buttons, hero text |
+| `ColorSecondary` | `#009639` | Success states, badges, active tab underlines |
+| `ColorAccent` | `#E31837` | Warnings, special highlights, medication alerts |
 | `ColorBackground` | `#0F172A` | Global background (Slate 900) for premium TV feel |
 | `ColorCardBg` | `#1E293B` | Default card background (Slate 800) |
 | `ColorTextMain` | `#F8FAFC` | Primary headings and body text |
@@ -79,11 +79,11 @@ On a 10-foot UI, focus must be unmistakable.
 |                 [ HEART ICON ]                  |
 |                                                 |
 |                 FamilyCare TV                   |
-|           Health. Wellness. Family.             |
+|          Care, Connection & Wellness            |
 |                                                 |
 +-------------------------------------------------+
 ```
-* **Color Usage:** Deep indigo gradient background. White icon and text.
+* **Color Usage:** Deep brand blue gradient background. White icon and text.
 * **Motion Behavior:** Heart icon slowly pulses. Text fades in from 0 to 100% over 1.5s.
 * **Focus Behavior:** None (non-interactive).
 * **Typography:** `TypeDisplay` for title, `TypeH2` for subtitle.

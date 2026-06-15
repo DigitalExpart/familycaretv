@@ -29,4 +29,16 @@ export class NotesService {
     const note = await this.findOne(id, userId);
     return this.prisma.patientNote.delete({ where: { id: note.id } });
   }
+
+  async adminCreate(dto: CreateNoteDto) {
+    return this.prisma.patientNote.create({ data: dto });
+  }
+
+  async adminUpdate(id: string, dto: UpdateNoteDto) {
+    return this.prisma.patientNote.update({ where: { id }, data: dto });
+  }
+
+  async adminRemove(id: string) {
+    return this.prisma.patientNote.delete({ where: { id } });
+  }
 }

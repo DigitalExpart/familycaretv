@@ -1,35 +1,136 @@
 {
-  "dashboard": {
-    "doctors": "Doctores",
-    "emergencyContacts": "Contactos de Emergencia",
-    "medications": "Medicamentos",
-    "events": "Eventos",
-    "notes": "Notas (Próximamente)"
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "add": "Agregar",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "Éxito",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar esto?",
+    "yes": "Sí",
+    "no": "No",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "search": "Buscar..."
   },
-  "settings": {
-    "language": "Idioma",
-    "english": "Inglés",
-    "spanish": "Español"
+  "nav": {
+    "dashboard": "Inicio",
+    "patients": "Pacientes",
+    "calendar": "Calendario",
+    "notifications": "Alertas",
+    "profile": "Perfil"
+  },
+  "dashboard": {
+    "greeting": "Buenos días",
+    "greetingAfternoon": "Buenas tardes",
+    "greetingEvening": "Buenas noches",
+    "quickStats": "Estadísticas",
+    "upcomingAppointments": "Próximas Citas",
+    "medicationReminders": "Recordatorios de Medicamentos",
+    "todaysTasks": "Tareas de Hoy",
+    "verseOfDay": "Versículo del Día",
+    "drawingOfDay": "Dibujo del Día",
+    "quickActions": "Acciones Rápidas",
+    "addPatient": "Añadir Paciente",
+    "addMedication": "Añadir Med",
+    "addEvent": "Añadir Evento",
+    "addNote": "Añadir Nota",
+    "patients": "Pacientes",
+    "medications": "Medicamentos",
+    "appointments": "Citas",
+    "notes": "Notas",
+    "noData": "No hay datos disponibles para hoy."
+  },
+  "patients": {
+    "title": "Pacientes",
+    "listEmpty": "No se encontraron pacientes. Añade uno para comenzar.",
+    "add": "Añadir Paciente",
+    "edit": "Editar Paciente",
+    "details": "Detalles del Paciente",
+    "form": {
+      "fullName": "Nombre Completo",
+      "dateOfBirth": "Fecha de Nacimiento",
+      "gender": "Género",
+      "notes": "Notas"
+    },
+    "tabs": {
+      "overview": "Resumen",
+      "doctors": "Doctores",
+      "contacts": "Contactos",
+      "medications": "Meds",
+      "events": "Eventos",
+      "notes": "Notas"
+    }
+  },
+  "medications": {
+    "title": "Medicamentos",
+    "add": "Añadir Medicamento",
+    "edit": "Editar Medicamento",
+    "listEmpty": "No hay medicamentos prescritos.",
+    "aiLookup": "Búsqueda IA",
+    "form": {
+      "name": "Nombre del Medicamento",
+      "dosage": "Dosis",
+      "frequency": "Frecuencia",
+      "purpose": "Propósito",
+      "sideEffects": "Efectos Secundarios"
+    }
+  },
+  "events": {
+    "title": "Calendario",
+    "add": "Añadir Evento",
+    "edit": "Editar Evento",
+    "listEmpty": "No hay eventos próximos.",
+    "form": {
+      "title": "Título del Evento",
+      "description": "Descripción",
+      "type": "Tipo de Evento",
+      "date": "Fecha y Hora",
+      "reminder": "Recordatorio (Minutos antes)"
+    },
+    "types": {
+      "APPOINTMENT": "Cita",
+      "MEDICATION": "Medicamento",
+      "TASK": "Tarea"
+    }
   },
   "notes": {
-    "list": {
-      "title": "Notas del Paciente",
-      "empty": "No se encontraron notas. ¡Crea la primera!",
-      "create": "Añadir Nota"
-    },
+    "title": "Notas de Pacientes",
+    "add": "Añadir Nota",
+    "edit": "Editar Nota",
+    "listEmpty": "No se encontraron notas. ¡Crea la primera!",
     "form": {
-      "titleLabel": "Título",
-      "titlePlaceholder": "ej., Observación matutina",
-      "contentLabel": "Contenido",
-      "contentPlaceholder": "Escribe tu nota aquí...",
-      "createTitle": "Crear Nota",
-      "editTitle": "Editar Nota"
-    },
-    "actions": {
-      "save": "Guardar Nota",
-      "edit": "Editar",
-      "delete": "Eliminar Nota",
-      "confirmDelete": "¿Estás seguro de que quieres eliminar esta nota?"
+      "title": "Título",
+      "content": "Contenido"
     }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "No tienes nuevas notificaciones.",
+    "markAllRead": "Marcar todas como leídas"
+  },
+  "profile": {
+    "title": "Perfil",
+    "name": "Nombre",
+    "email": "Correo",
+    "language": "Idioma",
+    "subscription": "Estado de Suscripción",
+    "editProfile": "Editar Perfil",
+    "manageSubscription": "Gestionar Suscripción",
+    "logout": "Cerrar Sesión"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "theme": "Tema",
+    "notifications": "Preferencias de Notificación",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "support": "Soporte",
+    "about": "Acerca de"
   }
 }

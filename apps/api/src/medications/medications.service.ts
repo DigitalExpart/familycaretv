@@ -29,4 +29,16 @@ export class MedicationsService {
     const medication = await this.findOne(id, userId);
     return this.prisma.medication.delete({ where: { id: medication.id } });
   }
+
+  async adminCreate(dto: CreateMedicationDto) {
+    return this.prisma.medication.create({ data: dto });
+  }
+
+  async adminUpdate(id: string, dto: UpdateMedicationDto) {
+    return this.prisma.medication.update({ where: { id }, data: dto });
+  }
+
+  async adminRemove(id: string) {
+    return this.prisma.medication.delete({ where: { id } });
+  }
 }

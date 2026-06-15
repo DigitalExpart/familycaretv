@@ -9,7 +9,11 @@ export class AudioService {
 
   create(createAudioDto: CreateAudioDto) {
     return this.prisma.audioTrack.create({
-      data: createAudioDto,
+      data: {
+        title: createAudioDto.title,
+        type: createAudioDto.type,
+        audioUrl: createAudioDto.audioUrl as string,
+      },
     });
   }
 

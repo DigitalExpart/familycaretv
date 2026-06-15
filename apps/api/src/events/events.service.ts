@@ -123,4 +123,16 @@ export class EventsService {
       return { message };
     });
   }
+
+  async adminCreate(dto: CreateEventDto) {
+    return this.prisma.event.create({ data: dto });
+  }
+
+  async adminUpdate(id: string, dto: UpdateEventDto) {
+    return this.prisma.event.update({ where: { id }, data: dto });
+  }
+
+  async adminRemove(id: string) {
+    return this.prisma.event.delete({ where: { id } });
+  }
 }

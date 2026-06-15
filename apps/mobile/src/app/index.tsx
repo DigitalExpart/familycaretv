@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { HeartPulse } from 'lucide-react-native';
+import { Image } from 'react-native';
 import { Animated, Easing } from 'react-native';
 
 import { Typography } from '../components/ui/Typography';
@@ -42,7 +42,11 @@ export default function SplashScreen() {
     >
       <Animated.View style={[styles.content, { opacity, transform: [{ scale }] }]}>
         <View style={styles.logoContainer}>
-          <HeartPulse color={Colors.light.primary} size={64} strokeWidth={2.5} />
+          <Image 
+            source={require('../../assets/images/logo.png')} 
+            style={{ width: 80, height: 80 }} 
+            resizeMode="contain" 
+          />
         </View>
         
         <Typography variant="h1" color="primary" style={styles.title}>

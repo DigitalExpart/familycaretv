@@ -1,35 +1,136 @@
 {
-  "dashboard": {
-    "doctors": "Doctors",
-    "emergencyContacts": "Emergency Contacts",
-    "medications": "Medications",
-    "events": "Events",
-    "notes": "Notes (Coming Soon)"
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "confirmDelete": "Are you sure you want to delete this?",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search..."
   },
-  "settings": {
-    "language": "Language",
-    "english": "English",
-    "spanish": "Español"
+  "nav": {
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "calendar": "Calendar",
+    "notifications": "Alerts",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "greeting": "Good Morning",
+    "greetingAfternoon": "Good Afternoon",
+    "greetingEvening": "Good Evening",
+    "quickStats": "Quick Stats",
+    "upcomingAppointments": "Upcoming Appointments",
+    "medicationReminders": "Medication Reminders",
+    "todaysTasks": "Today's Tasks",
+    "verseOfDay": "Verse of the Day",
+    "drawingOfDay": "Drawing of the Day",
+    "quickActions": "Quick Actions",
+    "addPatient": "Add Patient",
+    "addMedication": "Add Meds",
+    "addEvent": "Add Event",
+    "addNote": "Add Note",
+    "patients": "Patients",
+    "medications": "Medications",
+    "appointments": "Appointments",
+    "notes": "Notes",
+    "noData": "No data available for today."
+  },
+  "patients": {
+    "title": "Patients",
+    "listEmpty": "No patients found. Add one to get started.",
+    "add": "Add Patient",
+    "edit": "Edit Patient",
+    "details": "Patient Details",
+    "form": {
+      "fullName": "Full Name",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "notes": "Notes"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "doctors": "Doctors",
+      "contacts": "Contacts",
+      "medications": "Meds",
+      "events": "Events",
+      "notes": "Notes"
+    }
+  },
+  "medications": {
+    "title": "Medications",
+    "add": "Add Medication",
+    "edit": "Edit Medication",
+    "listEmpty": "No medications currently prescribed.",
+    "aiLookup": "AI Lookup",
+    "form": {
+      "name": "Medication Name",
+      "dosage": "Dosage",
+      "frequency": "Frequency",
+      "purpose": "Purpose",
+      "sideEffects": "Side Effects"
+    }
+  },
+  "events": {
+    "title": "Calendar",
+    "add": "Add Event",
+    "edit": "Edit Event",
+    "listEmpty": "No upcoming events.",
+    "form": {
+      "title": "Event Title",
+      "description": "Description",
+      "type": "Event Type",
+      "date": "Date & Time",
+      "reminder": "Reminder (Minutes before)"
+    },
+    "types": {
+      "APPOINTMENT": "Appointment",
+      "MEDICATION": "Medication",
+      "TASK": "Task"
+    }
   },
   "notes": {
-    "list": {
-      "title": "Patient Notes",
-      "empty": "No notes found. Create the first one!",
-      "create": "Add Note"
-    },
+    "title": "Patient Notes",
+    "add": "Add Note",
+    "edit": "Edit Note",
+    "listEmpty": "No notes found. Create the first one!",
     "form": {
-      "titleLabel": "Title",
-      "titlePlaceholder": "e.g., Morning Observation",
-      "contentLabel": "Content",
-      "contentPlaceholder": "Write your note here...",
-      "createTitle": "Create Note",
-      "editTitle": "Edit Note"
-    },
-    "actions": {
-      "save": "Save Note",
-      "edit": "Edit",
-      "delete": "Delete Note",
-      "confirmDelete": "Are you sure you want to delete this note?"
+      "title": "Title",
+      "content": "Content"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "You have no new notifications.",
+    "markAllRead": "Mark all as read"
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "email": "Email",
+    "language": "Language",
+    "subscription": "Subscription Status",
+    "editProfile": "Edit Profile",
+    "manageSubscription": "Manage Subscription",
+    "logout": "Logout"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notification Preferences",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "support": "Support",
+    "about": "About"
   }
 }

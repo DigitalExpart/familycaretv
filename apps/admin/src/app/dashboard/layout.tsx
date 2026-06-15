@@ -1,10 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -12,31 +14,67 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!localStorage.getItem('adminToken')) {
       router.push('/login');
     }
-  }, []);
+  }, [router]);
 
   if (!mounted) return null;
 
+  const navItems = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Users Activity', href: '/dashboard/users', icon: Users },
+    { name: 'Bible Verses', href: '/dashboard/bible-verses', icon: BookOpen },
+    { name: 'Drawings', href: '/dashboard/drawings', icon: PenTool },
+    { name: 'Audio', href: '/dashboard/audio', icon: Music },
+  ];
+
   return (
-    <div className="flex h-screen bg-gray-100 text-gray-900">
-      <aside className="w-64 bg-gray-900 text-white p-6 flex flex-col">
-        <h2 className="text-xl font-bold mb-8">FamilyCare CMS</h2>
-        <nav className="flex flex-col gap-4">
-          <Link href="/dashboard" className="hover:text-blue-400">Dashboard</Link>
-          <Link href="/dashboard/bible-verses" className="hover:text-blue-400">Bible Verses</Link>
-          <Link href="/dashboard/drawings" className="hover:text-blue-400">Drawings</Link>
-          <Link href="/dashboard/audio" className="hover:text-blue-400">Audio</Link>
+    <div className="flex h-screen bg-slate-50 text-slate-900 font-sans">
+      {/* Sidebar */}
+      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl relative z-10">
+        <div className="flex items-center gap-3 p-6 mb-4 border-b border-slate-800">
+          <div className="bg-white p-1.5 rounded-lg">
+            <img src="/logo.png" alt="FamilyCare TV" className="w-8 h-8 object-contain" />
+          </div>
+          <h2 className="text-xl font-bold text-white tracking-tight">FamilyCare <span className="text-indigo-400">CMS</span></h2>
+        </div>
+        
+        <nav className="flex-1 px-4 flex flex-col gap-2 overflow-y-auto">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-4 px-2">Menu</p>
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <Link 
+                key={item.name} 
+                href={item.href} 
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                  isActive 
+                    ? 'bg-indigo-500/10 text-indigo-400 font-medium' 
+                    : 'hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-400' : 'text-slate-400 group-hover:text-white transition-colors'}`} />
+                {item.name}
+              </Link>
+            );
+          })}
         </nav>
-        <div className="mt-auto">
+        
+        <div className="p-4 border-t border-slate-800">
           <button 
             onClick={() => { localStorage.removeItem('adminToken'); router.push('/login'); }}
-            className="text-red-400 hover:text-red-300"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
           >
-            Logout
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Logout</span>
           </button>
         </div>
       </aside>
-      <main className="flex-1 p-8 overflow-y-auto">
-        {children}
+      
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-50/40 via-slate-50 to-slate-50">
+        <div className="max-w-6xl mx-auto p-8 lg:p-12">
+          {children}
+        </div>
       </main>
     </div>
   );

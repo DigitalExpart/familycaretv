@@ -33,6 +33,9 @@ export class AuthService {
         passwordHash: hash,
         firstName: dto.firstName,
         lastName: dto.lastName,
+        phone: dto.phone,
+        gender: dto.gender,
+        hasConsentedToPrivacy: dto.consent ?? false,
       },
     });
 
@@ -91,8 +94,11 @@ export class AuthService {
     };
   }
 
-  async generateTokens(user: any) {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+  async generateTokens(user: any, device?: string) {
+    const payload: any = { sub: user.id, email: user.email, role: user.role };
+    if (device) {
+      payload.device = device;
+    }
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {

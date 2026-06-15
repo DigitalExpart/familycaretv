@@ -1,10 +1,17 @@
 import '../i18n';
 import { useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from '../hooks/useFonts';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthStore } from '../store/auth.store';
+import { useState } from 'react';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { user, isLoading, restoreSession } = useAuthStore();
+  const [isSplashFinished, setIsSplashFinished] = useState(false);
+  const { user, isLoading: isAuthLoading, restoreSession } = useAuthStore();
+  const { fontsLoaded, fontError } = useFonts();
   const segments = useSegments();
   const router = useRouter();
 
@@ -13,18 +20,28 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+      setTimeout(() => setIsSplashFinished(true), 2500); // 2.5s Splash
+    }
+  }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    if (isAuthLoading || (!fontsLoaded && !fontError) || !isSplashFinished) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inTabsGroup = segments[0] === '(tabs)';
     
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (user && inAuthGroup) {
+    } else if (user && !inTabsGroup) {
       router.replace('/(tabs)/dashboard');
     }
-  }, [user, isLoading, segments]);
+  }, [user, isAuthLoading, fontsLoaded, fontError, isSplashFinished, segments]);
 
-  if (isLoading) return null;
+  if (isAuthLoading || (!fontsLoaded && !fontError) || !isSplashFinished) {
+    return <Stack screenOptions={{ headerShown: false }}><Stack.Screen name="index" /></Stack>;
+  }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>

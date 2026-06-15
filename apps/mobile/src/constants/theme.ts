@@ -8,17 +8,20 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#0F172A', // Slate 900
+    text: '#1E293B', // Slate 800
     background: '#F8FAFC', // Slate 50
     backgroundElement: '#FFFFFF',
-    backgroundSelected: '#EEF2F6',
+    backgroundSelected: '#F1F5F9', // Slate 100
     textSecondary: '#64748B', // Slate 500
-    primary: '#0054A4', // Brand Blue
-    secondary: '#009639', // Brand Green
-    accent: '#E31837', // Brand Red
+    primary: '#0D9488', // Calm Teal
+    secondary: '#3B82F6', // Soft Blue
+    accent: '#F43F5E', // Rose/Red
     border: '#E2E8F0', // Slate 200
-    danger: '#E31837',
-    success: '#009639',
+    danger: '#EF4444',
+    success: '#10B981',
+    warning: '#F59E0B',
+    surface: '#FFFFFF',
+    surfaceSecondary: '#F1F5F9',
   },
   dark: {
     text: '#F8FAFC',
@@ -26,12 +29,15 @@ export const Colors = {
     backgroundElement: '#1E293B',
     backgroundSelected: '#334155',
     textSecondary: '#94A3B8',
-    primary: '#1E75C9', // Lighter Brand Blue
-    secondary: '#10B95B', // Lighter Brand Green
-    accent: '#EF4444', // Lighter Brand Red
+    primary: '#14B8A6', // Lighter Teal
+    secondary: '#60A5FA', // Lighter Blue
+    accent: '#FB7185', // Lighter Rose
     border: '#334155',
-    danger: '#EF4444',
-    success: '#10B95B',
+    danger: '#F87171',
+    success: '#34D399',
+    warning: '#FBBF24',
+    surface: '#1E293B',
+    surfaceSecondary: '#334155',
   },
 } as const;
 

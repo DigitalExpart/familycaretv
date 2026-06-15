@@ -4,12 +4,15 @@ import OpenAI from 'openai';
 
 @Injectable()
 export class AiService {
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
 
   constructor(private prisma: PrismaService) {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (apiKey) {
+      this.openai = new OpenAI({ apiKey });
+    } else {
+      console.warn('[AiService] OPENAI_API_KEY not set — AI features disabled.');
+    }
   }
 
   async lookupMedication(medication: string, language: 'en' | 'es') {
@@ -49,6 +52,9 @@ Language: ${language}
 Medication: ${medication}`;
 
     try {
+      if (!this.openai) {
+        throw new InternalServerErrorException('AI features are not configured. Set OPENAI_API_KEY to enable.');
+      }
       const response = await this.openai.chat.completions.create({
         model: 'gpt-4o',
         messages: [{ role: 'system', content: systemPrompt }],

@@ -6,9 +6,10 @@ export class CreateDrawingDto {
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  imageUrl: string;
+  imageUrl?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -1,4 +1,4 @@
-import { IsString, IsEnum } from 'class-validator';
+import { IsString, IsEnum, IsOptional } from 'class-validator';
 import { AudioType } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -7,9 +7,10 @@ export class CreateAudioDto {
   @IsString()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsString()
-  audioUrl: string;
+  @IsOptional()
+  audioUrl?: string;
 
   @ApiProperty({ enum: AudioType })
   @IsEnum(AudioType)

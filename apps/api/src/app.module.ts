@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -18,11 +19,13 @@ import { DrawingsModule } from './drawings/drawings.module';
 import { AudioModule } from './audio/audio.module';
 import { StripeModule } from './stripe/stripe.module';
 import { RokuModule } from './roku/roku.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: 3600000,
       limit: 20,
@@ -43,6 +46,7 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     AudioModule,
     StripeModule,
     RokuModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

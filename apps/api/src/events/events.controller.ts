@@ -64,4 +64,25 @@ export class EventsController {
   remove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.service.remove(id, user.id);
   }
+
+  // --- ADMIN ENDPOINTS ---
+
+  @Post('admin/patient/:patientId')
+  @ApiOperation({ summary: 'Create an event (Admin)' })
+  adminCreate(@Param('patientId') patientId: string, @Body() dto: CreateEventDto) {
+    dto.patientId = patientId;
+    return this.service.adminCreate(dto);
+  }
+
+  @Patch('admin/:id')
+  @ApiOperation({ summary: 'Update an event (Admin)' })
+  adminUpdate(@Param('id') id: string, @Body() dto: UpdateEventDto) {
+    return this.service.adminUpdate(id, dto);
+  }
+
+  @Delete('admin/:id')
+  @ApiOperation({ summary: 'Delete an event (Admin)' })
+  adminRemove(@Param('id') id: string) {
+    return this.service.adminRemove(id);
+  }
 }

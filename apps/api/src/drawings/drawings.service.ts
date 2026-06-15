@@ -9,7 +9,11 @@ export class DrawingsService {
 
   create(createDrawingDto: CreateDrawingDto) {
     return this.prisma.drawing.create({
-      data: createDrawingDto,
+      data: {
+        title: createDrawingDto.title,
+        imageUrl: createDrawingDto.imageUrl as string,
+        patientId: createDrawingDto.patientId,
+      },
     });
   }
 

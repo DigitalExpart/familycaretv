@@ -42,4 +42,25 @@ export class PatientsController {
   remove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.patientsService.remove(id, user.id);
   }
+
+  // --- ADMIN ENDPOINTS ---
+
+  @Post('admin/user/:userId')
+  @ApiOperation({ summary: 'Create patient for specific user (Admin)' })
+  adminCreate(@Param('userId') userId: string, @Body() createPatientDto: CreatePatientDto) {
+    return this.patientsService.create(userId, createPatientDto);
+  }
+
+  @Patch('admin/:id')
+  @ApiOperation({ summary: 'Update patient (Admin)' })
+  adminUpdate(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
+    // We can bypass user check by running standard prisma update in the controller, or add a method to service
+    return this.patientsService.adminUpdate(id, updatePatientDto);
+  }
+
+  @Delete('admin/:id')
+  @ApiOperation({ summary: 'Delete patient (Admin)' })
+  adminRemove(@Param('id') id: string) {
+    return this.patientsService.adminRemove(id);
+  }
 }

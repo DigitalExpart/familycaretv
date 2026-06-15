@@ -53,4 +53,26 @@ export class MedicationsController {
   remove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.service.remove(id, user.id);
   }
+
+  // --- ADMIN ENDPOINTS ---
+
+  @Post('admin/patient/:patientId')
+  @ApiOperation({ summary: 'Create a medication (Admin)' })
+  adminCreate(@Param('patientId') patientId: string, @Body() dto: CreateMedicationDto) {
+    // Override patientId in dto
+    dto.patientId = patientId;
+    return this.service.adminCreate(dto);
+  }
+
+  @Patch('admin/:id')
+  @ApiOperation({ summary: 'Update a medication (Admin)' })
+  adminUpdate(@Param('id') id: string, @Body() dto: UpdateMedicationDto) {
+    return this.service.adminUpdate(id, dto);
+  }
+
+  @Delete('admin/:id')
+  @ApiOperation({ summary: 'Delete a medication (Admin)' })
+  adminRemove(@Param('id') id: string) {
+    return this.service.adminRemove(id);
+  }
 }

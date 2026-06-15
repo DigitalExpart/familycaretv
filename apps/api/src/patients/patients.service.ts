@@ -63,6 +63,19 @@ export class PatientsService {
     });
   }
 
+  async adminUpdate(id: string, dto: UpdatePatientDto) {
+    return this.prisma.patient.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  async adminRemove(id: string) {
+    return this.prisma.patient.delete({
+      where: { id },
+    });
+  }
+
   async verifyOwnership(id: string, userId: string) {
     const patient = await this.prisma.patient.findFirst({ where: { id, userId } });
     if (!patient) {

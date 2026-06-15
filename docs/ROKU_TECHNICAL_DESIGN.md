@@ -7,10 +7,10 @@ This document outlines the architecture for Phase R1: Roku Backend Foundation. I
 Roku devices lack traditional keyboards, making email/password login cumbersome. We will use a Device Linking (Shortcode) flow.
 
 ### Sequence
-1. **Initiation**: The Roku App calls `POST /roku/device-code` (No Auth). The backend generates a random `deviceId` (UUID) and a 6-character `code`. It saves this to the `DeviceLink` table with an expiration of 15 minutes.
-2. **Display**: The Roku App displays the `code` to the user and begins polling `POST /roku/token` every 5 seconds.
-3. **Linking**: The User opens the mobile app, navigates to "Link TV", and submits the `code`. The mobile app calls `POST /roku/link-device` (Auth: JWT). The backend finds the `DeviceLink` and assigns the `userId`.
-4. **Completion**: On the next Roku poll to `POST /roku/token`, the backend sees the `userId` is populated, generates a standard long-lived Access Token (JWT), deletes the `DeviceLink` record, and returns the token to the Roku App.
+1. **Initiation**: The Roku App calls `POST /roku/device-code` (No Auth). The backend generates a random `deviceId` (UUID) and an 8-character, cryptographically secure `code`. It saves this to the `DeviceLink` table with an expiration of 15 minutes. (Rate limited to 10 requests/hour/IP).
+2. **Display**: The Roku App displays the `code` to the user and begins polling `POST /roku/token` every 5 seconds. (Rate limited to 30 requests/minute/IP).
+3. **Linking**: The User opens the mobile app, navigates to "Link TV", and submits the `code`. The mobile app calls `POST /roku/link-device` (Auth: JWT). The backend finds the `DeviceLink` and assigns the `userId`. (Rate limited to 5 requests/minute/IP).
+4. **Completion**: On the next Roku poll to `POST /roku/token`, the backend sees the `userId` is populated, generates a standard long-lived Access Token (JWT) with the `{ device: "roku" }` payload, deletes the `DeviceLink` record, and returns the token to the Roku App.
 
 ## 2. API Contracts
 All endpoints except `/device-code` and `/token` require a standard Bearer JWT Access Token.

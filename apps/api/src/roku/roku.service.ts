@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { AuthService } from '../auth/auth.service';
-import { v4 as uuidv4 } from 'uuid';
+import * as crypto from 'crypto';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class RokuService {
@@ -11,8 +12,8 @@ export class RokuService {
   ) {}
 
   async generateDeviceCode() {
-    const deviceId = uuidv4();
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const deviceId = crypto.randomUUID();
+    const code = crypto.randomBytes(4).toString('hex').toUpperCase();
     
     // Expires in 15 minutes
     const expiresAt = new Date();
@@ -49,7 +50,11 @@ export class RokuService {
 
     await this.prisma.deviceLink.update({
       where: { id: link.id },
-      data: { userId },
+      data: { 
+        userId,
+        deviceType: 'roku',
+        linkedAt: new Date(),
+      },
     });
 
     return { success: true };
@@ -76,7 +81,7 @@ export class RokuService {
     }
 
     // Linked! Generate JWT
-    const tokens = await this.authService.generateTokens(link.user);
+    const tokens = await this.authService.generateTokens(link.user, 'roku');
 
     // Clean up
     await this.prisma.deviceLink.delete({ where: { id: link.id } });
@@ -172,5 +177,16 @@ export class RokuService {
     if (!user) throw new NotFoundException('User not found');
 
     return user;
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async handleCleanup() {
+    await this.prisma.deviceLink.deleteMany({
+      where: {
+        expiresAt: {
+          lt: new Date(),
+        },
+      },
+    });
   }
 }

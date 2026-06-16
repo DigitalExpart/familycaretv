@@ -32,7 +32,7 @@ export class DrawingsController {
   }))
   create(@Body() createDrawingDto: CreateDrawingDto, @UploadedFile() file: Express.Multer.File) {
     if (file) {
-      createDrawingDto.imageUrl = `http://localhost:3000/public/uploads/drawings/${file.filename}`;
+      createDrawingDto.imageUrl = `${process.env.API_URL || 'http://localhost:3000'}/public/uploads/drawings/${file.filename}`;
     } else if (!createDrawingDto.imageUrl) {
       throw new BadRequestException('Either a file or imageUrl must be provided');
     }

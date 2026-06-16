@@ -13,7 +13,7 @@ export default function EventsManager({ user, token, onRefresh }: { user: any, t
     e.preventDefault();
     if (!selectedPatientId) return;
     try {
-      await fetch(`http://localhost:3000/events/admin/patient/${selectedPatientId}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/events/admin/patient/${selectedPatientId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export default function EventsManager({ user, token, onRefresh }: { user: any, t
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
     try {
-      await fetch(`http://localhost:3000/events/admin/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/events/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

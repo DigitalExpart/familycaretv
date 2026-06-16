@@ -33,7 +33,7 @@ export class AudioController {
   create(@Body() createAudioDto: CreateAudioDto, @UploadedFile() file: Express.Multer.File) {
     if (file) {
       // Create the URL to access the file statically
-      createAudioDto.audioUrl = `http://localhost:3000/public/uploads/audio/${file.filename}`;
+      createAudioDto.audioUrl = `${process.env.API_URL || 'http://localhost:3000'}/public/uploads/audio/${file.filename}`;
     } else if (!createAudioDto.audioUrl) {
       throw new BadRequestException('Either a file or audioUrl must be provided');
     }

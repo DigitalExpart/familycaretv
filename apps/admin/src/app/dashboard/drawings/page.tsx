@@ -12,7 +12,7 @@ export default function DrawingsPage() {
 
   const fetchDrawings = async () => {
     try {
-      const res = await fetch('http://localhost:3000/drawings');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/drawings`);
       if (res.ok) {
         const data = await res.json();
         setDrawings(data);
@@ -42,7 +42,7 @@ export default function DrawingsPage() {
         formData.append('title', title);
         formData.append('file', file as File);
 
-        await fetch('http://localhost:3000/drawings', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/drawings`, {
           method: 'POST',
           headers: { 
             'Authorization': `Bearer ${token}`
@@ -50,7 +50,7 @@ export default function DrawingsPage() {
           body: formData
         });
       } else {
-        await fetch('http://localhost:3000/drawings', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/drawings`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export default function DrawingsPage() {
 
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem('adminToken');
-    await fetch(`http://localhost:3000/drawings/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/drawings/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });

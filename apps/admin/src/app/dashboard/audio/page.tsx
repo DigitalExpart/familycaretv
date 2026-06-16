@@ -13,7 +13,7 @@ export default function AudioPage() {
 
   const fetchTracks = async () => {
     try {
-      const res = await fetch('http://localhost:3000/audio');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/audio`);
       if(res.ok) {
         const data = await res.json();
         setTracks(data);
@@ -44,7 +44,7 @@ export default function AudioPage() {
         formData.append('type', type);
         formData.append('file', file as File);
 
-        await fetch('http://localhost:3000/audio', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/audio`, {
           method: 'POST',
           headers: { 
             'Authorization': `Bearer ${token}`
@@ -52,7 +52,7 @@ export default function AudioPage() {
           body: formData
         });
       } else {
-        await fetch('http://localhost:3000/audio', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/audio`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ export default function AudioPage() {
 
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem('adminToken');
-    await fetch(`http://localhost:3000/audio/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/audio/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });

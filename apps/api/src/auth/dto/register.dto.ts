@@ -25,4 +25,8 @@ export class RegisterDto {
   @IsOptional()
   @IsBoolean()
   consent?: boolean;
+
+  @IsOptional()
+  @IsString()
+  referralCode?: string;
 }

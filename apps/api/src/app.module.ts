@@ -20,6 +20,7 @@ import { AudioModule } from './audio/audio.module';
 import { StripeModule } from './stripe/stripe.module';
 import { RokuModule } from './roku/roku.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ReferralsModule } from './referrals/referrals.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 
@@ -47,6 +48,7 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     StripeModule,
     RokuModule,
     NotificationsModule,
+    ReferralsModule,
   ],
   controllers: [AppController],
   providers: [

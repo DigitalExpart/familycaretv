@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { useAuthStore } from '../../store/auth.store';
 import { api } from '../../api/client';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { UserRound, Check } from 'lucide-react-native';
+import { Check } from 'lucide-react-native';
 import { TouchableOpacity } from 'react-native';
 
 import { Card } from '../../components/ui/Card';
@@ -79,7 +79,11 @@ export default function RegisterScreen() {
           
           <View style={styles.headerContainer}>
             <View style={styles.logoContainer}>
-              <UserRound color={Colors.light.secondary} size={48} strokeWidth={2.5} />
+              <Image 
+                source={require('../../../assets/images/logo.png')} 
+                style={{ width: 56, height: 56 }} 
+                resizeMode="contain" 
+              />
             </View>
             <Typography variant="h1" color="primary" align="center" style={styles.title}>
               Join FamilyCare TV

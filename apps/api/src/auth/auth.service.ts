@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -11,6 +11,15 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
+
+  private generateReferralCode(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `FAMILY-${code}`;
+  }
 
   async register(dto: RegisterDto) {
     const existingUser = await this.prisma.user.findUnique({
@@ -25,19 +34,70 @@ export class AuthService {
       });
     }
 
-    const hash = await bcrypt.hash(dto.password, 12);
+    let referrer: any = null;
+    if (dto.referralCode) {
+      referrer = await this.prisma.user.findUnique({
+        where: { referralCode: dto.referralCode },
+      });
+      if (!referrer) {
+        throw new BadRequestException({
+          success: false,
+          message: 'Invalid referral code',
+          errors: [],
+        });
+      }
+      if (referrer.email === dto.email) {
+        throw new BadRequestException({
+          success: false,
+          message: 'Cannot use your own referral code',
+          errors: [],
+        });
+      }
+    }
 
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        passwordHash: hash,
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        phone: dto.phone,
-        gender: dto.gender,
-        hasConsentedToPrivacy: dto.consent ?? false,
-      },
-    });
+    const hash = await bcrypt.hash(dto.password, 12);
+    
+    // Simple retry mechanism for referral code collision
+    let user;
+    let attempts = 0;
+    while (!user && attempts < 3) {
+      try {
+        const referralCode = this.generateReferralCode();
+        user = await this.prisma.user.create({
+          data: {
+            email: dto.email,
+            passwordHash: hash,
+            firstName: dto.firstName,
+            lastName: dto.lastName,
+            phone: dto.phone,
+            gender: dto.gender,
+            hasConsentedToPrivacy: dto.consent ?? false,
+            referralCode,
+            referredById: referrer ? referrer.id : null,
+          },
+        });
+      } catch (e) {
+        if (e.code === 'P2002' && e.meta?.target?.includes('referralCode')) {
+          attempts++;
+        } else {
+          throw e;
+        }
+      }
+    }
+    
+    if (!user) {
+      throw new ConflictException('Failed to generate unique referral code');
+    }
+
+    if (referrer) {
+      await this.prisma.referral.create({
+        data: {
+          referrerId: referrer.id,
+          referredUserId: user.id,
+          status: 'REGISTERED',
+        },
+      });
+    }
 
     const tokens = await this.generateTokens(user);
 

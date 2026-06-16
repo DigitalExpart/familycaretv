@@ -6,6 +6,7 @@ export default function DashboardPage() {
     { title: 'Bible Verses', value: 'Manage', icon: BookOpen, href: '/dashboard/bible-verses', color: 'bg-amber-100 text-amber-600', hover: 'hover:border-amber-200 hover:shadow-amber-500/10' },
     { title: 'Drawings', value: 'Manage', icon: PenTool, href: '/dashboard/drawings', color: 'bg-pink-100 text-pink-600', hover: 'hover:border-pink-200 hover:shadow-pink-500/10' },
     { title: 'Audio Tracks', value: 'Manage', icon: Music, href: '/dashboard/audio', color: 'bg-indigo-100 text-indigo-600', hover: 'hover:border-indigo-200 hover:shadow-indigo-500/10' },
+    { title: 'Referrals', value: 'View', icon: Activity, href: '/dashboard/referrals', color: 'bg-green-100 text-green-600', hover: 'hover:border-green-200 hover:shadow-green-500/10' },
   ];
 
   return (

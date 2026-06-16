@@ -31,9 +31,17 @@ model User {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
+  referralCode       String?  @unique
+  referredById       String?
+  referredBy         User?    @relation("UserReferrals", fields: [referredById], references: [id])
+  referredUsers      User[]   @relation("UserReferrals")
+
   patients           Patient[]
   deviceLinks        DeviceLink[]
   notifications      Notification[]
+  
+  referralsMade      Referral[] @relation("Referrer")
+  referralReceived   Referral?  @relation("ReferredUser")
 }
 
 enum Role {
@@ -230,4 +238,24 @@ model Notification {
   createdAt   DateTime         @default(now())
 
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ReferralStatus {
+  PENDING
+  REGISTERED
+  SUBSCRIBED
+  PAID
+}
+
+model Referral {
+  id                 String         @id @default(uuid())
+  referrerId         String
+  referredUserId     String         @unique
+  status             ReferralStatus @default(PENDING)
+  commissionEligible Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  referrer           User           @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referredUser       User           @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
 }

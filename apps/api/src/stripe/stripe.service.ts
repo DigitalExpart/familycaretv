@@ -94,6 +94,7 @@ export class StripeService {
     // Find user by stripeCustomerId
     const user = await this.prisma.user.findUnique({
       where: { stripeCustomerId: customerId },
+      include: { referralReceived: true }
     });
 
     if (!user) {
@@ -110,6 +111,17 @@ export class StripeService {
         trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
       },
     });
+
+    // Handle referral tracking if subscription becomes active
+    if (subscription.status === 'active' && user.referralReceived && user.referralReceived.status !== 'PAID') {
+      await this.prisma.referral.update({
+        where: { id: user.referralReceived.id },
+        data: {
+          status: 'SUBSCRIBED',
+          commissionEligible: true,
+        }
+      });
+    }
   }
 
   private async cancelSubscription(subscription: any) {

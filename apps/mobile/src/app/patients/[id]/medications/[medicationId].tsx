@@ -48,17 +48,17 @@ export default function MedicationDetailsScreen() {
 
       <View style={styles.card}>
         <Text style={styles.label}>Days of Week</Text>
-        <Text style={styles.value}>{medication.daysOfWeek?.length > 0 ? medication.daysOfWeek.join(', ') : 'Not provided'}</Text>
+        <Text style={styles.value}>{(medication as any).daysOfWeek?.length > 0 ? (medication as any).daysOfWeek.join(', ') : 'Not provided'}</Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.label}>Times of Day</Text>
-        <Text style={styles.value}>{medication.timesOfDay?.length > 0 ? medication.timesOfDay.join(', ') : 'Not provided'}</Text>
+        <Text style={styles.value}>{(medication as any).timesOfDay?.length > 0 ? (medication as any).timesOfDay.join(', ') : 'Not provided'}</Text>
       </View>
 
       <View style={styles.card}>
         <Text style={styles.label}>Duration</Text>
-        <Text style={styles.value}>{medication.durationWeeks ? `${medication.durationWeeks} weeks` : 'Ongoing / Not provided'}</Text>
+        <Text style={styles.value}>{(medication as any).durationWeeks ? `${(medication as any).durationWeeks} weeks` : 'Ongoing / Not provided'}</Text>
       </View>
 
       <View style={styles.card}>

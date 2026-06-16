@@ -33,7 +33,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
   const theme = isDark ? Colors.dark : Colors.light;
 
   const { control, handleSubmit, setValue, getValues, watch, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
     defaultValues: {
       name: initialData?.name || '',
       dosage: initialData?.dosage || '',
@@ -192,7 +192,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
           <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, backgroundColor: theme.backgroundElement, padding: 12, borderRadius: 8 }}>
             <Text style={{ flex: 1, color: theme.text, fontSize: 16 }}>{time}</Text>
             <TouchableOpacity onPress={() => removeTime(index)}>
-              <Text style={{ color: theme.error }}>Remove</Text>
+              <Text style={{ color: 'red' }}>Remove</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -270,7 +270,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
       />
 
       <TouchableOpacity 
-        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading || lookupMutation.isPending && { opacity: 0.7 }]}
+        style={[styles.submitButton, { backgroundColor: theme.primary }, (isLoading || lookupMutation.isPending) ? { opacity: 0.7 } : {}]}
         onPress={handleSubmit(handleFormSubmit)}
         disabled={isLoading || lookupMutation.isPending}
       >

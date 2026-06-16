@@ -1,9 +1,16 @@
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { GradientHeader } from '../../../../components/ui/GradientHeader';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Colors } from '../../../../constants/theme';
+import { Trash2 } from 'lucide-react-native';
 import { useCreateDoctor } from '../../../../features/doctors/doctors-api';
 import { DoctorForm } from '../../../../components/DoctorForm';
 
 export default function CreateDoctorScreen() {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { id: patientId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const createMutation = useCreateDoctor();
@@ -20,13 +27,19 @@ export default function CreateDoctorScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <GradientHeader title="Add Doctor" />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
       <DoctorForm onSubmit={handleSubmit} isLoading={createMutation.isPending} />
-    </ScrollView>
+          </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    paddingBottom: 40,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',

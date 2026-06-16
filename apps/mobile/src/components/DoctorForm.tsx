@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 import { Doctor } from 'shared-types';
 
 const schema = z.object({
@@ -21,6 +23,9 @@ interface DoctorFormProps {
 }
 
 export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps) {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -32,61 +37,81 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
   });
 
   return (
-    <View style={styles.form}>
-      <Text style={styles.label}>Doctor Name *</Text>
+    <View style={[styles.form, { backgroundColor: theme.background }]}>
+      <Text style={[styles.label, { color: theme.text }]}>Doctor Name *</Text>
       <Controller
         control={control}
         name="name"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.name && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              , errors.name && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="Dr. Jane Smith"
+            placeholderTextColor={theme.textSecondary}
           />
         )}
       />
       {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
-      <Text style={styles.label}>Specialty</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Specialty</Text>
       <Controller
         control={control}
         name="specialty"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="Cardiology"
+            placeholderTextColor={theme.textSecondary}
           />
         )}
       />
 
-      <Text style={styles.label}>Phone</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Phone</Text>
       <Controller
         control={control}
         name="phone"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="+1 555-0123"
+            placeholderTextColor={theme.textSecondary}
             keyboardType="phone-pad"
           />
         )}
       />
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Email</Text>
       <Controller
         control={control}
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.email && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              , errors.email && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="doctor@example.com"
+            placeholderTextColor={theme.textSecondary}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -94,18 +119,37 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
       />
       {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isLoading ? 'Saving...' : 'Save Doctor'}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isLoading}
-        />
-      </View>
+      <TouchableOpacity 
+        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+        onPress={handleSubmit(onSubmit)}
+        disabled={isLoading}
+      >
+        <Text style={styles.submitButtonText}>
+          {isLoading ? 'Saving...' : 'Save Doctor'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  submitButton: {
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  submitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   form: {
     padding: 16,
   },

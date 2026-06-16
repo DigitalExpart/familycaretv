@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Users, CalendarDays, Bell, User } from 'lucide-react';
+import { Home, Users, CalendarDays, Bell, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../constants/theme';
@@ -63,6 +63,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Bell color={color} size={size} />,
           tabBarBadge: 3, // Hardcoded for now, will connect to state later
           tabBarBadgeStyle: { backgroundColor: theme.accent },
+          href: null,
         }}
       />
       <Tabs.Screen
@@ -81,6 +82,12 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="referrals"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="edit-profile"
         options={{
           href: null,
         }}

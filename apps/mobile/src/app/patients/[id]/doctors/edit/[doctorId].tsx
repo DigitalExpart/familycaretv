@@ -1,11 +1,18 @@
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { GradientHeader } from '../../../../../components/ui/GradientHeader';
+import { useTheme } from '../../../../../hooks/useTheme';
+import { Colors } from '../../../../../constants/theme';
+import { Trash2 } from 'lucide-react-native';
 import { useDoctor, useUpdateDoctor } from '../../../../../features/doctors/doctors-api';
 import { DoctorForm } from '../../../../../components/DoctorForm';
 import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../../components/EmptyState';
 
 export default function EditDoctorScreen() {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { id: patientId, doctorId } = useLocalSearchParams<{ id: string; doctorId: string }>();
   const router = useRouter();
   
@@ -27,17 +34,38 @@ export default function EditDoctorScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <GradientHeader title="Edit Doctor" />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
       <DoctorForm 
         initialData={doctor}
         onSubmit={handleSubmit} 
         isLoading={updateMutation.isPending} 
       />
-    </ScrollView>
+          </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+    backgroundColor: 'transparent',
+  },
+  deleteButtonText: {
+    color: '#FF3B30',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',

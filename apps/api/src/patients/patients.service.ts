@@ -27,7 +27,11 @@ export class PatientsService {
       where: { id, userId },
       include: {
         doctors: true,
-        medications: true,
+        medications: {
+          where: {
+            OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
+          }
+        },
         events: true,
         patientNotes: true,
         contacts: true,

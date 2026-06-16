@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 import { z } from 'zod';
 import { PatientNote } from 'shared-types';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +22,9 @@ interface NoteFormProps {
 }
 
 export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { t } = useTranslation();
   
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -32,13 +37,17 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{t('notes.form.titleLabel')}</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('notes.form.titleLabel')}</Text>
       <Controller
         control={control}
         name="title"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              
+            ]}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -48,13 +57,17 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
       />
       {errors.title && <Text style={styles.errorText}>{errors.title.message}</Text>}
 
-      <Text style={styles.label}>{t('notes.form.contentLabel')}</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('notes.form.contentLabel')}</Text>
       <Controller
         control={control}
         name="content"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              , styles.textArea
+            ]}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -67,18 +80,37 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
       />
       {errors.content && <Text style={styles.errorText}>{errors.content.message}</Text>}
 
-      <View style={styles.buttonContainer}>
-        <Button 
-          title={isLoading ? 'Saving...' : t('notes.actions.save')} 
-          onPress={handleSubmit(onSubmit)} 
-          disabled={isLoading}
-        />
-      </View>
+      <TouchableOpacity 
+        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+        onPress={handleSubmit(onSubmit)}
+        disabled={isLoading}
+      >
+        <Text style={styles.submitButtonText}>
+          {isLoading ? 'Saving...' : t('notes.actions.save')}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  submitButton: {
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  submitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   container: {
     padding: 16,
     backgroundColor: '#fff',

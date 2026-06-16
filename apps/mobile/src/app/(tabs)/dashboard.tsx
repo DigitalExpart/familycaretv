@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { useAuthStore } from '../../store/auth.store';
-import { useRouter } from 'expo-router';
-import { Bell, Users, Pill, CalendarDays, BookOpen, UserPlus, PlayCircle } from 'lucide-react';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { Bell, Users, Pill, CalendarDays, BookOpen, UserPlus, PlayCircle } from 'lucide-react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { AnimatedButton } from '../../components/ui/AnimatedButton';
@@ -11,12 +11,22 @@ import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 
+import { useDashboardStats } from '../../features/dashboard/dashboard-api';
+
 export default function DashboardScreen() {
   const user = useAuthStore((state) => state.user);
   const router = useRouter();
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
+
+  const { data: dashboardData, isLoading, refetch } = useDashboardStats();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -29,16 +39,25 @@ export default function DashboardScreen() {
     router.push('/notifications');
   };
 
+  const stats = dashboardData?.stats || {
+    patients: 0,
+    appointments: 0,
+    medications: 0,
+    notes: 0
+  };
+
+  const todaysTasks = dashboardData?.todaysTasks || [];
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={false} onRefresh={() => {}} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => {}} />}
       >
         <GradientHeader 
           title={getGreeting()} 
-          subtitle={user?.firstName ? `${user.firstName} ${user.lastName}` : user?.email}
+          subtitle={user?.firstName || "User"}
           rightComponent={
             <TouchableOpacity onPress={handleNotifications} style={styles.headerIconBtn}>
               <Bell color="#FFF" size={24} />
@@ -53,25 +72,25 @@ export default function DashboardScreen() {
           <View style={styles.statsGrid}>
             <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/patients')}>
               <Users color={theme.primary} size={28} />
-              <Text style={[styles.statValue, { color: theme.text }]}>4</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.patients}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('dashboard.patients')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/calendar')}>
               <CalendarDays color={theme.secondary} size={28} />
-              <Text style={[styles.statValue, { color: theme.text }]}>2</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.appointments}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('dashboard.appointments')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/patients')}>
               <Pill color={theme.accent} size={28} />
-              <Text style={[styles.statValue, { color: theme.text }]}>6</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.medications}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('dashboard.medications')}</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/patients')}>
               <BookOpen color={theme.warning} size={28} />
-              <Text style={[styles.statValue, { color: theme.text }]}>12</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.notes}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('dashboard.notes')}</Text>
             </TouchableOpacity>
           </View>
@@ -79,25 +98,32 @@ export default function DashboardScreen() {
           {/* Today's Priority */}
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('dashboard.todaysTasks')}</Text>
           <PremiumCard>
-            <View style={styles.taskRow}>
-              <View style={[styles.taskIconBg, { backgroundColor: `${theme.accent}20` }]}>
-                <Pill color={theme.accent} size={20} />
+            {todaysTasks.length === 0 ? (
+              <View style={{ padding: 10, alignItems: 'center' }}>
+                <Text style={{ color: theme.textSecondary }}>No tasks scheduled for today.</Text>
               </View>
-              <View style={styles.taskInfo}>
-                <Text style={[styles.taskTitle, { color: theme.text }]}>Aspirin 100mg - John Doe</Text>
-                <Text style={[styles.taskTime, { color: theme.textSecondary }]}>8:00 AM (Overdue)</Text>
-              </View>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.taskRow}>
-              <View style={[styles.taskIconBg, { backgroundColor: `${theme.secondary}20` }]}>
-                <CalendarDays color={theme.secondary} size={20} />
-              </View>
-              <View style={styles.taskInfo}>
-                <Text style={[styles.taskTitle, { color: theme.text }]}>Checkup - Dr. Smith</Text>
-                <Text style={[styles.taskTime, { color: theme.textSecondary }]}>2:30 PM</Text>
-              </View>
-            </View>
+            ) : (
+              todaysTasks.map((task, index) => (
+                <View key={task.id}>
+                  <View style={styles.taskRow}>
+                    <View style={[styles.taskIconBg, { backgroundColor: task.type === 'MEDICATION' ? `${theme.accent}20` : `${theme.secondary}20` }]}>
+                      {task.type === 'MEDICATION' ? (
+                        <Pill color={theme.accent} size={20} />
+                      ) : (
+                        <CalendarDays color={theme.secondary} size={20} />
+                      )}
+                    </View>
+                    <View style={styles.taskInfo}>
+                      <Text style={[styles.taskTitle, { color: theme.text }]}>{task.title} - {task.patientName}</Text>
+                      <Text style={[styles.taskTime, { color: theme.textSecondary }]}>
+                        {new Date(task.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
+                    </View>
+                  </View>
+                  {index < todaysTasks.length - 1 && <View style={styles.divider} />}
+                </View>
+              ))
+            )}
           </PremiumCard>
 
           {/* Feature Highlight: Verse of the Day (connected to Roku/TV) */}

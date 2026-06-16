@@ -108,6 +108,34 @@
       "content": "Content"
     }
   },
+  "doctors": {
+    "title": "Doctors",
+    "add": "Add Doctor",
+    "edit": "Edit Doctor",
+    "listEmpty": "No doctors found.",
+    "form": {
+      "name": "Doctor Name",
+      "specialty": "Specialty",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "address": "Office Address",
+      "notes": "Notes"
+    }
+  },
+  "contacts": {
+    "title": "Emergency Contacts",
+    "add": "Add Contact",
+    "edit": "Edit Contact",
+    "listEmpty": "No emergency contacts found.",
+    "form": {
+      "name": "Contact Name",
+      "relationship": "Relationship",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "address": "Address",
+      "isPrimary": "Primary Emergency Contact"
+    }
+  },
   "notifications": {
     "title": "Notifications",
     "empty": "You have no new notifications.",

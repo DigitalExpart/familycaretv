@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsOptional, IsUUID, IsArray, IsNumber } from 'class-validator';
 export class CreateMedicationDto {
   @IsUUID()
   patientId: string;
@@ -16,4 +16,18 @@ export class CreateMedicationDto {
   @IsOptional()
   @IsString()
   sideEffects?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  daysOfWeek?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  timesOfDay?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  durationWeeks?: number;
 }

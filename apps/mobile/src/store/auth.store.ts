@@ -8,6 +8,9 @@ interface User {
   firstName?: string;
   lastName?: string;
   subscriptionStatus?: string;
+  phone?: string;
+  gender?: string;
+  avatarUrl?: string;
 }
 
 interface AuthState {
@@ -18,6 +21,7 @@ interface AuthState {
   login: (user: User, accessToken: string, refreshToken: string) => Promise<void>;
   logout: () => Promise<void>;
   restoreSession: () => Promise<void>;
+  updateUser: (user: Partial<User>) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -59,5 +63,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (e) {
       set({ isLoading: false });
     }
+  },
+
+  updateUser: async (updates) => {
+    set((state) => {
+      if (!state.user) return state;
+      const updatedUser = { ...state.user, ...updates };
+      SecureStore.setItemAsync('user', JSON.stringify(updatedUser)).catch(console.error);
+      return { user: updatedUser };
+    });
   }
 }));

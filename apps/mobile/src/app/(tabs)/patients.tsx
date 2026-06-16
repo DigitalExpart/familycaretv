@@ -24,7 +24,7 @@ export default function PatientsListScreen() {
       {isLoading ? (
         <LoadingSpinner />
       ) : error ? (
-        <EmptyState message="Error loading patients." />
+        <EmptyState message={`Error: ${(error as Error).message || "Failed to load patients"}`} />
       ) : (
         <FlatList
           data={patients}

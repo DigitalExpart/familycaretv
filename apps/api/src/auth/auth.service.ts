@@ -12,13 +12,16 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  private generateReferralCode(): string {
+  private generateReferralCode(firstName?: string): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
+    let result = '';
     for (let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    return `FAMILY-${code}`;
+    if (firstName) {
+      result += `-${firstName.toUpperCase().replace(/[^A-Z]/g, '')}`;
+    }
+    return result;
   }
 
   async register(dto: RegisterDto) {
@@ -62,7 +65,7 @@ export class AuthService {
     let attempts = 0;
     while (!user && attempts < 3) {
       try {
-        const referralCode = this.generateReferralCode();
+        const referralCode = this.generateReferralCode(dto.firstName);
         user = await this.prisma.user.create({
           data: {
             email: dto.email,

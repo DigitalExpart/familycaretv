@@ -62,6 +62,9 @@ export class UsersController {
         firstName: true,
         lastName: true,
         language: true,
+        phone: true,
+        gender: true,
+        avatarUrl: true,
         role: true,
         subscriptionStatus: true,
         createdAt: true,
@@ -75,6 +78,64 @@ export class UsersController {
     };
   }
 
+  @Get('me/dashboard')
+  @ApiOperation({ summary: 'Get dashboard stats for current user' })
+  async getDashboardStats(@CurrentUser() user: any) {
+    const userId = user.id;
+
+    const patients = await this.prisma.patient.findMany({ where: { userId }, select: { id: true } });
+    const patientIds = patients.map(p => p.id);
+    const patientsCount = patientIds.length;
+
+    const appointmentsCount = await this.prisma.event.count({
+      where: { patientId: { in: patientIds }, type: 'APPOINTMENT' }
+    });
+
+    const medicationsCount = await this.prisma.medication.count({
+      where: { 
+        patientId: { in: patientIds },
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
+      }
+    });
+
+    const notesCount = await this.prisma.patientNote.count({
+      where: { patientId: { in: patientIds } }
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todaysEvents = await this.prisma.event.findMany({
+      where: {
+        patientId: { in: patientIds },
+        startDateTime: { gte: today, lt: tomorrow }
+      },
+      include: { patient: { select: { fullName: true } } },
+      orderBy: { startDateTime: 'asc' }
+    });
+
+    return {
+      success: true,
+      data: {
+        stats: {
+          patients: patientsCount,
+          appointments: appointmentsCount,
+          medications: medicationsCount,
+          notes: notesCount
+        },
+        todaysTasks: todaysEvents.map(event => ({
+          id: event.id,
+          title: event.title,
+          patientName: event.patient.fullName,
+          time: event.startDateTime,
+          type: event.type
+        }))
+      }
+    };
+  }
+
   @Put('me')
   @ApiOperation({ summary: 'Update current user profile' })
   async updateMe(@CurrentUser() user: any, @Body() body: any) {
@@ -84,6 +145,9 @@ export class UsersController {
         firstName: body.firstName,
         lastName: body.lastName,
         language: body.language,
+        phone: body.phone,
+        gender: body.gender,
+        avatarUrl: body.avatarUrl,
       },
       select: {
         id: true,
@@ -91,6 +155,9 @@ export class UsersController {
         firstName: true,
         lastName: true,
         language: true,
+        phone: true,
+        gender: true,
+        avatarUrl: true,
         role: true,
       },
     });

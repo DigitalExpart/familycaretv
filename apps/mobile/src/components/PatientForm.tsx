@@ -1,8 +1,12 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Patient } from 'shared-types';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
+import { AnimatedButton } from './ui/AnimatedButton';
+import { useTranslation } from 'react-i18next';
 
 const patientSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
@@ -20,6 +24,10 @@ interface PatientFormProps {
 }
 
 export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormProps) {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+  const { t } = useTranslation();
+
   const { control, handleSubmit, formState: { errors } } = useForm<PatientFormData>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
@@ -32,13 +40,18 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Full Name</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.fullName')}</Text>
       <Controller
         control={control}
         name="fullName"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            style={[styles.input, errors.fullName && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text },
+              errors.fullName && styles.inputError
+            ]}
+            placeholderTextColor={theme.textSecondary}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -48,13 +61,18 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
       />
       {errors.fullName && <Text style={styles.errorText}>{errors.fullName.message}</Text>}
 
-      <Text style={styles.label}>Date of Birth (YYYY-MM-DD)</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.dateOfBirth')} (YYYY-MM-DD)</Text>
       <Controller
         control={control}
         name="dateOfBirth"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            style={[styles.input, errors.dateOfBirth && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text },
+              errors.dateOfBirth && styles.inputError
+            ]}
+            placeholderTextColor={theme.textSecondary}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -64,13 +82,17 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
       />
       {errors.dateOfBirth && <Text style={styles.errorText}>{errors.dateOfBirth.message}</Text>}
 
-      <Text style={styles.label}>Gender</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.gender')}</Text>
       <Controller
         control={control}
         name="gender"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text }
+            ]}
+            placeholderTextColor={theme.textSecondary}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -79,30 +101,34 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
         )}
       />
 
-      <Text style={styles.label}>Notes</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.notes')}</Text>
       <Controller
         control={control}
         name="notes"
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[
+              styles.input, 
+              styles.textArea,
+              { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text }
+            ]}
+            placeholderTextColor={theme.textSecondary}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
-            placeholder="Any additional notes..."
+            placeholder={t('patients.form.notes')}
             multiline
             numberOfLines={4}
           />
         )}
       />
 
-      <TouchableOpacity 
-        style={[styles.button, isLoading && styles.buttonDisabled]} 
+      <AnimatedButton 
+        title={isLoading ? t('common.loading') : t('common.save')}
         onPress={handleSubmit(onSubmit)}
         disabled={isLoading}
-      >
-        <Text style={styles.buttonText}>{isLoading ? 'Saving...' : 'Save Patient'}</Text>
-      </TouchableOpacity>
+        style={{ marginTop: 16 }}
+      />
     </View>
   );
 }
@@ -115,12 +141,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 8,
-    color: '#333',
   },
   input: {
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
@@ -138,20 +161,5 @@ const styles = StyleSheet.create({
   textArea: {
     height: 100,
     textAlignVertical: 'top',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

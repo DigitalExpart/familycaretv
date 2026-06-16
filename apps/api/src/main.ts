@@ -4,9 +4,14 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
+
+  // Increase payload limit for base64 image uploads
+  app.use(json({ limit: '50mb' }));
+  app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Serve static files from the uploads directory
   app.useStaticAssets(join(__dirname, '..', 'public'), {

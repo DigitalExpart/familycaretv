@@ -2,14 +2,24 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
 import { Event } from 'shared-types';
 
-export function useEvents(patientId: string) {
+export function useEvents(patientId?: string) {
   return useQuery({
     queryKey: ['events', { patientId }],
     queryFn: async () => {
-      const { data } = await api.get<Event[]>(`/events`, { params: { patientId } });
+      const url = patientId ? `/events?patientId=${patientId}` : '/events/upcoming';
+      const { data } = await api.get<Event[]>(url);
       return data;
     },
-    enabled: !!patientId,
+  });
+}
+
+export function useUpcomingEvents() {
+  return useQuery({
+    queryKey: ['events', 'upcoming'],
+    queryFn: async () => {
+      const { data } = await api.get('/events/upcoming');
+      return data;
+    },
   });
 }
 

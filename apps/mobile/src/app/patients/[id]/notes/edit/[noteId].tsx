@@ -1,5 +1,9 @@
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { GradientHeader } from '../../../../../components/ui/GradientHeader';
+import { useTheme } from '../../../../../hooks/useTheme';
+import { Colors } from '../../../../../constants/theme';
+import { Trash2 } from 'lucide-react-native';
 import { useNote, useUpdateNote } from '../../../../../features/notes/notes-api';
 import { NoteForm } from '../../../../../components/NoteForm';
 import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
@@ -8,6 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { Stack } from 'expo-router';
 
 export default function EditNoteScreen() {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { id, noteId } = useLocalSearchParams<{ id: string, noteId: string }>();
   const router = useRouter();
   const { t } = useTranslation();
@@ -36,18 +43,39 @@ export default function EditNoteScreen() {
   return (
     <>
       <Stack.Screen options={{ title: t('notes.form.editTitle') }} />
-      <ScrollView style={styles.container}>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <GradientHeader title="Edit Note" />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <NoteForm 
           initialValues={note}
           onSubmit={handleSubmit} 
           isLoading={updateMutation.isPending} 
         />
-      </ScrollView>
+            </ScrollView>
+    </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FF3B30',
+    backgroundColor: 'transparent',
+  },
+  deleteButtonText: {
+    color: '#FF3B30',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',

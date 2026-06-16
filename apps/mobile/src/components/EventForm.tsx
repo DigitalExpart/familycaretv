@@ -1,9 +1,12 @@
 import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Event, EventType, ReminderStatus } from 'shared-types';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -25,6 +28,10 @@ interface EventFormProps {
 const EVENT_TYPES: EventType[] = ['APPOINTMENT', 'MEDICATION', 'TASK'];
 
 export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) {
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -42,7 +49,6 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
   const selectedType = watch('type');
 
   const handleFormSubmit = (data: FormData) => {
-    // Convert local datetime string back to full ISO
     const finalData = {
       ...data,
       startDateTime: new Date(data.startDateTime).toISOString(),
@@ -51,91 +57,122 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
   };
 
   return (
-    <View style={styles.form}>
-      <Text style={styles.label}>Event Title *</Text>
+    <View style={[styles.form, { backgroundColor: theme.background }]}>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.title')} *</Text>
       <Controller
         control={control}
         name="title"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.title && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              errors.title && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="e.g. Dr. Smith Visit"
+            placeholderTextColor={theme.textSecondary}
           />
         )}
       />
       {errors.title && <Text style={styles.errorText}>{errors.title.message}</Text>}
 
-      <Text style={styles.label}>Type *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.type')} *</Text>
       <View style={styles.typeContainer}>
         {EVENT_TYPES.map(type => (
           <TouchableOpacity
             key={type}
-            style={[styles.typeButton, selectedType === type && styles.typeButtonSelected]}
+            style={[
+              styles.typeButton,
+              { borderColor: theme.primary, backgroundColor: theme.backgroundElement },
+              selectedType === type && { backgroundColor: theme.primary }
+            ]}
             onPress={() => setValue('type', type)}
           >
-            <Text style={[styles.typeButtonText, selectedType === type && styles.typeButtonTextSelected]}>
-              {type}
+            <Text 
+              style={[
+                styles.typeButtonText,
+                { color: theme.primary },
+                selectedType === type && styles.typeButtonTextSelected
+              ]}
+            >
+              {t(`events.types.${type}`)}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
       {errors.type && <Text style={styles.errorText}>{errors.type.message}</Text>}
 
-      <Text style={styles.label}>Start Date & Time (YYYY-MM-DDTHH:mm) *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.date')} (YYYY-MM-DDTHH:mm) *</Text>
       <Controller
         control={control}
         name="startDateTime"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.startDateTime && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              errors.startDateTime && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="e.g. 2026-10-15T14:30"
+            placeholderTextColor={theme.textSecondary}
           />
         )}
       />
       {errors.startDateTime && <Text style={styles.errorText}>{errors.startDateTime.message}</Text>}
 
-      <Text style={styles.label}>Description</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.description')}</Text>
       <Controller
         control={control}
         name="description"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, styles.textArea]}
+            style={[
+              styles.input, 
+              styles.textArea,
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="Details about this event..."
+            placeholderTextColor={theme.textSecondary}
             multiline
             numberOfLines={3}
           />
         )}
       />
 
-      <Text style={styles.label}>Reminder (minutes before)</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.reminder')}</Text>
       <Controller
         control={control}
         name="reminderMinutes"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }
+            ]}
             onChangeText={onChange}
             value={value?.toString()}
             placeholder="e.g. 15"
+            placeholderTextColor={theme.textSecondary}
             keyboardType="number-pad"
           />
         )}
       />
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isLoading ? 'Saving...' : 'Save Event'}
-          onPress={handleSubmit(handleFormSubmit)}
-          disabled={isLoading}
-        />
-      </View>
+      <TouchableOpacity 
+        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+        onPress={handleSubmit(handleFormSubmit)}
+        disabled={isLoading}
+      >
+        <Text style={styles.submitButtonText}>
+          {isLoading ? t('common.loading') : t('common.save')}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -145,29 +182,26 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     marginBottom: 8,
-    color: '#333',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 12,
+    padding: 14,
     marginBottom: 16,
     fontSize: 16,
-    backgroundColor: '#fff',
   },
   textArea: {
-    minHeight: 80,
+    minHeight: 100,
     textAlignVertical: 'top',
   },
   inputError: {
-    borderColor: 'red',
+    borderColor: '#FF3B30',
   },
   errorText: {
-    color: 'red',
+    color: '#FF3B30',
     marginTop: -12,
     marginBottom: 16,
     fontSize: 12,
@@ -178,26 +212,35 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   typeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: '#0066cc',
     borderRadius: 20,
     marginRight: 8,
     marginBottom: 8,
-    backgroundColor: '#fff',
-  },
-  typeButtonSelected: {
-    backgroundColor: '#0066cc',
   },
   typeButtonText: {
-    color: '#0066cc',
-    fontWeight: '500',
+    fontWeight: '600',
+    fontSize: 14,
   },
   typeButtonTextSelected: {
     color: '#fff',
   },
-  buttonContainer: {
-    marginTop: 16,
+  submitButton: {
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  submitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

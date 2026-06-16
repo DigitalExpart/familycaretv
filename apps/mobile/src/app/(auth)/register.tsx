@@ -21,6 +21,7 @@ export default function RegisterScreen() {
   const [gender, setGender] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [consent, setConsent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const login = useAuthStore((state) => state.login);
@@ -44,7 +45,8 @@ export default function RegisterScreen() {
         phone, 
         gender, 
         password,
-        consent
+        consent,
+        referralCode: referralCode.trim() || undefined
       });
       if (res.data.success) {
         await login(res.data.data.user, res.data.data.accessToken, res.data.data.refreshToken);
@@ -144,6 +146,13 @@ export default function RegisterScreen() {
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               isPassword
+            />
+            <Input
+              placeholder="Enter Referral Code (Optional)"
+              label="Referral Code"
+              value={referralCode}
+              onChangeText={setReferralCode}
+              autoCapitalize="characters"
             />
             
             <TouchableOpacity 

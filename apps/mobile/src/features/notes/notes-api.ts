@@ -7,7 +7,7 @@ export function useNotes(patientId: string) {
   return useQuery({
     queryKey: ['notes', patientId],
     queryFn: async () => {
-      const { data } = await api.get<PatientNote[]>(`/patients/${patientId}/notes`);
+      const { data } = await api.get<PatientNote[]>(`/notes`, { params: { patientId } });
       return data;
     },
     enabled: !!patientId,

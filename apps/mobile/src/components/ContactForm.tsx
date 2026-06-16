@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 import { EmergencyContact } from 'shared-types';
 
 const schema = z.object({
@@ -20,6 +22,9 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormProps) {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -30,65 +35,99 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
   });
 
   return (
-    <View style={styles.form}>
-      <Text style={styles.label}>Contact Name *</Text>
+    <View style={[styles.form, { backgroundColor: theme.background }]}>
+      <Text style={[styles.label, { color: theme.text }]}>Contact Name *</Text>
       <Controller
         control={control}
         name="name"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.name && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              , errors.name && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="John Doe"
+            placeholderTextColor={theme.textSecondary}
           />
         )}
       />
       {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
-      <Text style={styles.label}>Relationship *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Relationship *</Text>
       <Controller
         control={control}
         name="relationship"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.relationship && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              , errors.relationship && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="Son, Daughter, Friend..."
+            placeholderTextColor={theme.textSecondary}
           />
         )}
       />
       {errors.relationship && <Text style={styles.errorText}>{errors.relationship.message}</Text>}
 
-      <Text style={styles.label}>Phone *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>Phone *</Text>
       <Controller
         control={control}
         name="phone"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            style={[styles.input, errors.phone && styles.inputError]}
+            style={[
+              styles.input, 
+              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
+              , errors.phone && styles.inputError
+            ]}
             onChangeText={onChange}
             value={value}
             placeholder="+1 555-0123"
+            placeholderTextColor={theme.textSecondary}
             keyboardType="phone-pad"
           />
         )}
       />
       {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
 
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isLoading ? 'Saving...' : 'Save Contact'}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isLoading}
-        />
-      </View>
+      <TouchableOpacity 
+        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+        onPress={handleSubmit(onSubmit)}
+        disabled={isLoading}
+      >
+        <Text style={styles.submitButtonText}>
+          {isLoading ? 'Saving...' : 'Save Contact'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  submitButton: {
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  submitButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   form: {
     padding: 16,
   },

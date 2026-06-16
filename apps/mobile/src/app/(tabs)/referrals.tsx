@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Share, Platform } from 'react-native';
-import { useAuth } from '../../store/AuthContext';
+import { useAuthStore } from '../../store/auth.store';
 import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../constants/theme';
-import { Copy, Share2, Users, CheckCircle, Gift } from 'lucide-react';
+import { Copy, Share2, Users, CheckCircle, Gift } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 
 export default function ReferralsScreen() {
-  const { token } = useAuth();
+  const token = useAuthStore((state) => state.accessToken);
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 

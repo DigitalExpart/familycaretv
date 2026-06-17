@@ -133,7 +133,11 @@ export default function KidsScreen() {
   };
 
   const handleAddTask = () => {
-    if (!newTask.trim() || !activeProfile) return;
+    if (!newTask.trim()) return;
+    if (!activeProfile) {
+      Alert.alert("Save Required", "Please save the child profile first before adding tasks.");
+      return;
+    }
     addTaskMutation.mutate({
       id: activeProfile.id,
       data: { title: newTask, category: taskCategory }
@@ -252,10 +256,8 @@ export default function KidsScreen() {
           </View>
         </PremiumCard>
 
-        {activeTab !== '+ Add' && (
-          <>
-            {/* Kids Tasks */}
-            <PremiumCard style={{ marginBottom: 20 }}>
+        {/* Kids Tasks */}
+        <PremiumCard style={{ marginBottom: 20 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Baby color={theme.warning} size={20} />
@@ -335,9 +337,7 @@ export default function KidsScreen() {
                   })}
                 </View>
               ))}
-            </PremiumCard>
-          </>
-        )}
+        </PremiumCard>
 
         {/* Save/Edit/Delete Actions */}
         {activeTab === '+ Add' ? (

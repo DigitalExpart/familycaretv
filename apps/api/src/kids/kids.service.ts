@@ -6,8 +6,13 @@ export class KidsService {
   constructor(private prisma: PrismaService) {}
 
   async createProfile(userId: string, data: any) {
+    const { notes, ...rest } = data;
     return this.prisma.childProfile.create({
-      data: { ...data, userId },
+      data: {
+        ...rest,
+        userId,
+        ...(notes?.length ? { notes: { create: notes } } : {}),
+      },
     });
   }
 
@@ -33,7 +38,14 @@ export class KidsService {
 
   async updateProfile(id: string, userId: string, data: any) {
     await this.getProfile(id, userId); // Verify ownership
-    return this.prisma.childProfile.update({ where: { id }, data });
+    const { notes, ...rest } = data;
+    return this.prisma.childProfile.update({ 
+      where: { id }, 
+      data: {
+        ...rest,
+        ...(notes !== undefined ? { notes: { deleteMany: {}, create: notes } } : {}),
+      } 
+    });
   }
 
   async removeProfile(id: string, userId: string) {

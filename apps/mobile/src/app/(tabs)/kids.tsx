@@ -55,28 +55,28 @@ export default function KidsScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <School color={theme.secondary} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.secondary, marginLeft: 8, marginBottom: 0 }]}>School Information</Text>
+            <Text style={[styles.sectionTitle, { color: theme.secondary, marginLeft: 8, marginBottom: 0 }]}>{t('kids.schoolInfo')}</Text>
           </View>
           
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>SCHOOL</Text>
-              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder="School name" placeholderTextColor={theme.textSecondary} />
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('kids.form.schoolName').toUpperCase()}</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder={t('kids.form.schoolName')} placeholderTextColor={theme.textSecondary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>GRADE</Text>
-              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder="Grade" placeholderTextColor={theme.textSecondary} />
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('kids.form.grade').toUpperCase()}</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder={t('kids.form.grade')} placeholderTextColor={theme.textSecondary} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>PHONE</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('kids.form.phone').toUpperCase()}</Text>
               <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder="(555) 000-0000" placeholderTextColor={theme.textSecondary} />
             </View>
           </View>
           
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>TEACHER</Text>
-              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder="Teacher name" placeholderTextColor={theme.textSecondary} />
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('kids.form.teacher').toUpperCase()}</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder={t('kids.form.teacher')} placeholderTextColor={theme.textSecondary} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.label, { color: theme.textSecondary }]}>HOURS</Text>
@@ -107,7 +107,7 @@ export default function KidsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Baby color={theme.warning} size={20} />
-              <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Kids Tasks</Text>
+              <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('kids.homework')}</Text>
             </View>
             <Text style={{ color: theme.textSecondary, fontSize: 12 }}>1/5</Text>
           </View>
@@ -145,21 +145,21 @@ export default function KidsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TextInput 
               style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginRight: 12 }]} 
-              placeholder="Add a task..." 
+              placeholder={t('kids.addHomework')} 
               placeholderTextColor={theme.textSecondary}
               value={newTask}
               onChangeText={setNewTask}
             />
             <TouchableOpacity style={[styles.addBtn, { backgroundColor: theme.warning }]}>
               <Plus color="#FFF" size={20} />
-              <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>Add</Text>
+              <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('common.add')}</Text>
             </TouchableOpacity>
           </View>
         </PremiumCard>
 
         {/* Kids Calendar */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.warning }]}>Kids Calendar</Text>
+          <Text style={[styles.sectionTitle, { color: theme.warning }]}>{t('kids.calendar')}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingHorizontal: 10 }}>
             <TouchableOpacity><ChevronLeft color={theme.textSecondary} /></TouchableOpacity>
             <Text style={{ color: theme.text, fontWeight: '700', fontSize: 16 }}>June 2026</Text>
@@ -190,7 +190,7 @@ export default function KidsScreen() {
 
         {/* Notes */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>Notes</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>{t('notes.title')}</Text>
           <TextInput
             style={[styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
             placeholder="School notes, reminders..."

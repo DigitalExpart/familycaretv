@@ -40,7 +40,7 @@ export default function ColoringScreen() {
         {pages.length === 0 ? (
           <View style={{ alignItems: 'center', marginTop: 40 }}>
             <Palette color={theme.textSecondary} size={48} />
-            <Text style={{ color: theme.textSecondary, marginTop: 16 }}>No coloring pages yet.</Text>
+            <Text style={{ color: theme.textSecondary, marginTop: 16 }}>{t('coloring.noPages')}</Text>
           </View>
         ) : (
           <View style={styles.grid}>

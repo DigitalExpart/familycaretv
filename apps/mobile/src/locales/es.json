@@ -149,7 +149,10 @@
     "add": "Añadir Tarea",
     "journal": "Diario",
     "writeJournal": "Escribe tus pensamientos de hoy...",
-    "completed": "Completado"
+    "completed": "Completado",
+    "colorEmotions": "Colorea tus Emociones",
+    "verseByDay": "Versículo por Día",
+    "taskCalendar": "Calendario de Tareas"
   },
   "kids": {
     "title": "Centro Infantil",
@@ -195,10 +198,15 @@
   "music": {
     "title": "Biblioteca Musical",
     "categories": "Categorías",
-    "nowPlaying": "Reproduciendo"
+    "nowPlaying": "Reproduciendo",
+    "author": "Música por Eyben Colon",
+    "description": "Canciones escritas y compuestas por Eyben Colon, inspiradas en la fe, la sanación y el amor.",
+    "songsInSpanish": "Canciones en Español",
+    "listenYoutube": "Escuchar en YouTube"
   },
   "coloring": {
     "title": "Páginas para Colorear",
-    "gallery": "Galería"
+    "gallery": "Galería",
+    "noPages": "No hay páginas para colorear todavía."
   }
 }

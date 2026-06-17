@@ -48,13 +48,13 @@ export default function MusicScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
             <Music color={theme.primary} size={24} />
-            <Text style={[styles.headerTitle, { color: theme.text }]}>Music by Eyben Colon</Text>
+            <Text style={[styles.headerTitle, { color: theme.text }]}>{t('music.author')}</Text>
           </View>
           <Text style={{ color: theme.textSecondary, fontSize: 12, marginBottom: 24, fontStyle: 'italic' }}>
-            Songs written and composed by Eyben Colon, inspired by faith, healing and love.
+            {t('music.description')}
           </Text>
 
-          <Text style={[styles.sectionTitle, { color: theme.primary }]}>Songs in Spanish</Text>
+          <Text style={[styles.sectionTitle, { color: theme.primary }]}>{t('music.songsInSpanish')}</Text>
           
           <View style={{ marginTop: 12 }}>
             {mockSongs.map((song) => (
@@ -67,12 +67,12 @@ export default function MusicScreen() {
                 <View style={{ flexDirection: 'row', marginTop: 12, gap: 12 }}>
                   <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface }]}>
                     <Play color={theme.error} size={16} />
-                    <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>Listen on YouTube</Text>
+                    <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>{t('music.listenYoutube')}</Text>
                   </TouchableOpacity>
                   
                   <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface }]}>
                     <Trash2 color={theme.error} size={16} />
-                    <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>Delete</Text>
+                    <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>{t('common.delete')}</Text>
                   </TouchableOpacity>
                 </View>
               </PremiumCard>

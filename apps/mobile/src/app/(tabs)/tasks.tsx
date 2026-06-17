@@ -30,7 +30,7 @@ export default function TasksScreen() {
         
         {/* Verse of the Day */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.primary, fontSize: 14, textTransform: 'uppercase' }]}>Verse of the Day</Text>
+          <Text style={[styles.sectionTitle, { color: theme.primary, fontSize: 14, textTransform: 'uppercase' }]}>{t('dashboard.verseOfDay')}</Text>
           {dashboardData?.verseOfTheDay ? (
             <>
               <Text style={{ color: theme.text, fontSize: 16, fontStyle: 'italic', marginVertical: 8 }}>
@@ -48,13 +48,13 @@ export default function TasksScreen() {
         {/* Color your Emotions */}
         <PremiumCard style={{ marginBottom: 20, alignItems: 'center', paddingVertical: 30, backgroundColor: theme.surfaceSecondary }}>
           <Palette color={theme.warning} size={48} style={{ marginBottom: 12 }} />
-          <Text style={{ color: theme.text, fontSize: 18, fontWeight: '600' }}>Color your Emotions</Text>
+          <Text style={{ color: theme.text, fontSize: 18, fontWeight: '600' }}>{t('tasks.colorEmotions')}</Text>
           <Text style={{ color: theme.textSecondary, fontSize: 14, marginTop: 4 }}>Images coming soon</Text>
         </PremiumCard>
 
         {/* Daily Tasks */}
         <View style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Daily Tasks</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.title')}</Text>
           
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.morning')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
@@ -97,14 +97,14 @@ export default function TasksScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, marginRight: 12 }]} 
-                placeholder="Add a task..." 
+                placeholder={t('tasks.add')} 
                 placeholderTextColor={theme.textSecondary}
                 value={newTask}
                 onChangeText={setNewTask}
               />
               <TouchableOpacity style={[styles.addBtn, { backgroundColor: theme.primary }]}>
                 <Plus color="#FFF" size={20} />
-                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>Add</Text>
+                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('common.add')}</Text>
               </TouchableOpacity>
             </View>
           </PremiumCard>
@@ -112,7 +112,7 @@ export default function TasksScreen() {
 
         {/* Verse by Day */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Verse by Day</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.verseByDay')}</Text>
           <Text style={{ color: theme.textSecondary, marginBottom: 12 }}>Tap a day to read that verse</Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {days.map(d => (
@@ -125,10 +125,10 @@ export default function TasksScreen() {
 
         {/* Notes */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>Notes</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>{t('notes.title')}</Text>
           <TextInput
             style={[styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
-            placeholder="Write your thoughts, prayers, ideas..."
+            placeholder={t('tasks.writeJournal')}
             placeholderTextColor={theme.textSecondary}
             multiline
             numberOfLines={4}
@@ -136,12 +136,12 @@ export default function TasksScreen() {
             onChangeText={setNotes}
             textAlignVertical="top"
           />
-          <AnimatedButton title="Save Notes" onPress={() => {}} style={{ marginTop: 12 }} />
+          <AnimatedButton title={t('common.save')} onPress={() => {}} style={{ marginTop: 12 }} />
         </PremiumCard>
 
         {/* Task Calendar */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Task Calendar</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.taskCalendar')}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingHorizontal: 10 }}>
             <TouchableOpacity><ChevronLeft color={theme.textSecondary} /></TouchableOpacity>
             <Text style={{ color: theme.text, fontWeight: '700', fontSize: 16 }}>June 2026</Text>

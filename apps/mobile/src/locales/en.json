@@ -177,7 +177,10 @@
     "add": "Add Task",
     "journal": "Daily Journal",
     "writeJournal": "Write your thoughts for today...",
-    "completed": "Completed"
+    "completed": "Completed",
+    "colorEmotions": "Color your Emotions",
+    "verseByDay": "Verse by Day",
+    "taskCalendar": "Task Calendar"
   },
   "kids": {
     "title": "Kids Hub",
@@ -223,10 +226,15 @@
   "music": {
     "title": "Music Library",
     "categories": "Categories",
-    "nowPlaying": "Now Playing"
+    "nowPlaying": "Now Playing",
+    "author": "Music by Eyben Colon",
+    "description": "Songs written and composed by Eyben Colon, inspired by faith, healing and love.",
+    "songsInSpanish": "Songs in Spanish",
+    "listenYoutube": "Listen on YouTube"
   },
   "coloring": {
     "title": "Coloring Pages",
-    "gallery": "Gallery"
+    "gallery": "Gallery",
+    "noPages": "No coloring pages yet."
   }
 }

@@ -41,12 +41,25 @@ export default function NotificationsScreen() {
               onPress={() => {
                 if (!item.isRead) markRead.mutate(item.id);
               }}
+              activeOpacity={item.isRead ? 1 : 0.7}
             >
-              <Text style={[styles.notificationTitle, { color: theme.text }]}>{item.title}</Text>
-              <Text style={{ color: theme.textSecondary }}>{item.message}</Text>
-              <Text style={{ color: theme.textSecondary, marginTop: 8, fontSize: 12 }}>
-                {new Date(item.createdAt).toLocaleString()}
-              </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
+                  <Text style={[styles.notificationTitle, { color: theme.text }]}>{item.title}</Text>
+                  <Text style={{ color: theme.textSecondary }}>{item.message}</Text>
+                  <Text style={{ color: theme.textSecondary, marginTop: 8, fontSize: 12 }}>
+                    {new Date(item.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                  </Text>
+                </View>
+                {!item.isRead && (
+                  <TouchableOpacity 
+                    style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, marginTop: 2 }}
+                    onPress={() => markRead.mutate(item.id)}
+                  >
+                    <Text style={{ color: '#FFF', fontSize: 12, fontWeight: '600' }}>Mark Read</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </TouchableOpacity>
           )}
         />

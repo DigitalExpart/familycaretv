@@ -75,6 +75,59 @@ export default function DashboardScreen() {
         />
 
         <View style={styles.body}>
+          {/* Feature Highlight: Verse of the Day (connected to Roku/TV) */}
+          <PremiumCard onPress={() => {}} style={{ backgroundColor: theme.primary, marginBottom: 16 }}>
+            {dashboardData?.verseOfTheDay ? (
+              <View style={{ padding: 8 }}>
+                <Text 
+                  numberOfLines={isVerseExpanded ? undefined : 2}
+                  style={{ color: '#FFF', fontSize: 18, fontStyle: 'italic', marginBottom: 8, lineHeight: 26 }}
+                >
+                  "{dashboardData.verseOfTheDay.verse}"
+                </Text>
+                {dashboardData.verseOfTheDay.verse.length > 80 && (
+                  <TouchableOpacity onPress={() => setIsVerseExpanded(!isVerseExpanded)} style={{ marginBottom: 12 }}>
+                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 'bold' }}>
+                      {isVerseExpanded ? 'Show less' : 'Read more'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: 'bold' }}>
+                    - {dashboardData.verseOfTheDay.reference}
+                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <PlayCircle color="#FFF" size={20} style={{ marginRight: 6 }} />
+                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>Play on TV</Text>
+                  </View>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.highlightContent}>
+                <PlayCircle color="#FFF" size={32} />
+                <View style={styles.highlightText}>
+                  <Text style={styles.highlightTitle}>{t('dashboard.verseOfDay')}</Text>
+                  <Text style={styles.highlightSubtitle}>Play on Roku TV</Text>
+                </View>
+              </View>
+            )}
+          </PremiumCard>
+
+          {/* Daily Task Progress */}
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.progress')}</Text>
+          <PremiumCard onPress={() => router.push('/tasks')} style={{ marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={{ color: theme.text, fontSize: 18, fontWeight: '700' }}>{taskProgress.percentage}%</Text>
+                <Text style={{ color: theme.textSecondary, fontSize: 14 }}>{taskProgress.completed} of {taskProgress.total} completed</Text>
+              </View>
+              <CheckCircle color={theme.success} size={32} />
+            </View>
+            <View style={{ height: 6, backgroundColor: theme.surfaceSecondary, borderRadius: 3, marginTop: 12 }}>
+              <View style={{ height: 6, backgroundColor: theme.success, borderRadius: 3, width: `${taskProgress.percentage}%` }} />
+            </View>
+          </PremiumCard>
+
           {/* Quick Stats Grid */}
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('dashboard.quickStats')}</Text>
           <View style={styles.statsGrid}>
@@ -127,24 +180,9 @@ export default function DashboardScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Daily Task Progress */}
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.progress')}</Text>
-          <PremiumCard onPress={() => router.push('/tasks')} style={{ marginBottom: 16 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View>
-                <Text style={{ color: theme.text, fontSize: 18, fontWeight: '700' }}>{taskProgress.percentage}%</Text>
-                <Text style={{ color: theme.textSecondary, fontSize: 14 }}>{taskProgress.completed} of {taskProgress.total} completed</Text>
-              </View>
-              <CheckCircle color={theme.success} size={32} />
-            </View>
-            <View style={{ height: 6, backgroundColor: theme.surfaceSecondary, borderRadius: 3, marginTop: 12 }}>
-              <View style={{ height: 6, backgroundColor: theme.success, borderRadius: 3, width: `${taskProgress.percentage}%` }} />
-            </View>
-          </PremiumCard>
-
           {/* Today's Priority */}
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('dashboard.todaysTasks')}</Text>
-          <PremiumCard>
+          <PremiumCard style={{ marginBottom: 16 }}>
             {todaysTasks.length === 0 ? (
               <View style={{ padding: 10, alignItems: 'center' }}>
                 <Text style={{ color: theme.textSecondary }}>No tasks scheduled for today.</Text>
@@ -170,44 +208,6 @@ export default function DashboardScreen() {
                   {index < todaysTasks.length - 1 && <View style={styles.divider} />}
                 </View>
               ))
-            )}
-          </PremiumCard>
-
-          {/* Feature Highlight: Verse of the Day (connected to Roku/TV) */}
-          <PremiumCard onPress={() => {}} style={{ backgroundColor: theme.primary }}>
-            {dashboardData?.verseOfTheDay ? (
-              <View style={{ padding: 8 }}>
-                <Text 
-                  numberOfLines={isVerseExpanded ? undefined : 2}
-                  style={{ color: '#FFF', fontSize: 18, fontStyle: 'italic', marginBottom: 8, lineHeight: 26 }}
-                >
-                  "{dashboardData.verseOfTheDay.verse}"
-                </Text>
-                {dashboardData.verseOfTheDay.verse.length > 80 && (
-                  <TouchableOpacity onPress={() => setIsVerseExpanded(!isVerseExpanded)} style={{ marginBottom: 12 }}>
-                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 'bold' }}>
-                      {isVerseExpanded ? 'Show less' : 'Read more'}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: 'bold' }}>
-                    - {dashboardData.verseOfTheDay.reference}
-                  </Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <PlayCircle color="#FFF" size={20} style={{ marginRight: 6 }} />
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>Play on TV</Text>
-                  </View>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.highlightContent}>
-                <PlayCircle color="#FFF" size={32} />
-                <View style={styles.highlightText}>
-                  <Text style={styles.highlightTitle}>{t('dashboard.verseOfDay')}</Text>
-                  <Text style={styles.highlightSubtitle}>Play on Roku TV</Text>
-                </View>
-              </View>
             )}
           </PremiumCard>
 

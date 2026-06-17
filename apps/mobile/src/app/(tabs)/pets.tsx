@@ -192,26 +192,26 @@ export default function PetsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <Dog color={theme.warning} size={20} />
             <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>
-              {activeTab === '+ Add' ? 'New Pet' : name}
+              {activeTab === '+ Add' ? t('pets.newPet') : name}
             </Text>
           </View>
           
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>NAME</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder="Pet name" 
+                placeholder={t('pets.form.name')} 
                 placeholderTextColor={theme.textSecondary}
                 value={name}
                 onChangeText={setName}
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>BREED</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.breed')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder="Goldendoodle" 
+                placeholder={t('pets.form.breed')} 
                 placeholderTextColor={theme.textSecondary}
                 value={breed}
                 onChangeText={setBreed}
@@ -221,20 +221,20 @@ export default function PetsScreen() {
           
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>AGE</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.age')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder="e.g. 3 years" 
+                placeholder={t('pets.form.age')} 
                 placeholderTextColor={theme.textSecondary}
                 value={age}
                 onChangeText={setAge}
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>WEIGHT</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.weight')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder="e.g. 65 lbs" 
+                placeholder={t('pets.form.weight')} 
                 placeholderTextColor={theme.textSecondary}
                 value={weight}
                 onChangeText={setWeight}
@@ -247,12 +247,12 @@ export default function PetsScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <Stethoscope color={theme.warning} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Veterinarian</Text>
+            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('pets.vet')}</Text>
           </View>
           
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>NAME</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
                 placeholder="Dr. Name" 
@@ -262,7 +262,7 @@ export default function PetsScreen() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>PHONE</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.phone')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
                 placeholder="(555) 000-0000" 
@@ -278,12 +278,12 @@ export default function PetsScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <AlertTriangle color={theme.error} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.error, marginLeft: 8, marginBottom: 0 }]}>Emergency Clinic</Text>
+            <Text style={[styles.sectionTitle, { color: theme.error, marginLeft: 8, marginBottom: 0 }]}>{t('pets.emergencyClinic')}</Text>
           </View>
           
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>NAME</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
                 placeholder="Emergency Vet" 
@@ -309,11 +309,11 @@ export default function PetsScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <FileText color={theme.warning} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Notes</Text>
+            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('pets.notes')}</Text>
           </View>
           <TextInput
             style={[styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
-            placeholder="Allergies, special conditions..."
+            placeholder={t('pets.notes')}
             placeholderTextColor={theme.textSecondary}
             multiline
             numberOfLines={4}
@@ -327,7 +327,7 @@ export default function PetsScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <Syringe color={theme.warning} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Vaccines</Text>
+            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('pets.vaccines')}</Text>
           </View>
 
           {vaccines.map((v, idx) => (
@@ -336,7 +336,7 @@ export default function PetsScreen() {
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, height: 40 }]} 
                   value={v.name}
-                  placeholder="Vaccine Name"
+                  placeholder={t('pets.form.name')}
                   placeholderTextColor={theme.textSecondary}
                   onChangeText={(text) => {
                     const newVacs = [...vaccines];
@@ -353,7 +353,7 @@ export default function PetsScreen() {
               </View>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1, marginRight: 8 }}>
-                  <Text style={[styles.label, { color: theme.textSecondary }]}>DATE GIVEN</Text>
+                  <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dateGiven')}</Text>
                   <View style={[styles.inputWrapper, { backgroundColor: theme.surface }]}>
                     <TextInput 
                       value={v.dateGiven}
@@ -370,7 +370,7 @@ export default function PetsScreen() {
                   </View>
                 </View>
                 <View style={{ flex: 1, marginLeft: 8 }}>
-                  <Text style={[styles.label, { color: theme.textSecondary }]}>NEXT DUE</Text>
+                  <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.nextDue')}</Text>
                   <View style={[styles.inputWrapper, { backgroundColor: theme.surface }]}>
                     <TextInput 
                       value={v.nextDue}
@@ -403,7 +403,7 @@ export default function PetsScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <Pill color={theme.warning} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Medications</Text>
+            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('pets.meds')}</Text>
           </View>
 
           {medications.map((med, idx) => (
@@ -412,7 +412,7 @@ export default function PetsScreen() {
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, height: 40 }]} 
                   value={med.name} 
-                  placeholder="Medication Name"
+                  placeholder={t('pets.form.name')}
                   placeholderTextColor={theme.textSecondary}
                   onChangeText={(text) => {
                     const newMeds = [...medications];
@@ -428,7 +428,7 @@ export default function PetsScreen() {
                 </TouchableOpacity>
               </View>
               <View>
-                <Text style={[styles.label, { color: theme.textSecondary }]}>DOSAGE</Text>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dosage')}</Text>
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surface, color: theme.text, height: 40 }]} 
                   placeholder="e.g. 1 pill daily" 
@@ -455,7 +455,7 @@ export default function PetsScreen() {
 
         {activeTab === '+ Add' && (
           <AnimatedButton 
-            title={createPetMutation.isPending ? "Saving..." : "Save Pet"} 
+            title={createPetMutation.isPending ? t('common.loading') : t('common.save')} 
             onPress={handleSave} 
             style={{ marginBottom: 20, backgroundColor: theme.warning }} 
           />

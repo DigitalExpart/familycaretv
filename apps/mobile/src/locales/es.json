@@ -148,7 +148,8 @@
     "progress": "Progreso Diario",
     "add": "Añadir Tarea",
     "journal": "Diario",
-    "writeJournal": "Escribe tus pensamientos de hoy..."
+    "writeJournal": "Escribe tus pensamientos de hoy...",
+    "completed": "Completado"
   },
   "kids": {
     "title": "Centro Infantil",
@@ -157,7 +158,18 @@
     "calendar": "Calendario Infantil",
     "addProfile": "Añadir Niño",
     "addHomework": "Añadir Tarea",
-    "noKids": "No se encontraron perfiles de niños."
+    "noKids": "No se encontraron perfiles de niños.",
+    "newChild": "Nuevo Niño",
+    "form": {
+      "name": "Nombre",
+      "age": "Edad",
+      "schoolName": "Nombre de Escuela",
+      "grade": "Grado",
+      "teacher": "Profesor/a",
+      "phone": "Teléfono",
+      "subject": "Asignatura",
+      "dueDate": "Fecha de Entrega"
+    }
   },
   "pets": {
     "title": "Centro de Mascotas",
@@ -165,7 +177,20 @@
     "vaccines": "Vacunas",
     "meds": "Medicamentos",
     "addProfile": "Añadir Mascota",
-    "noPets": "No se encontraron mascotas."
+    "noPets": "No se encontraron mascotas.",
+    "newPet": "Nueva Mascota",
+    "emergencyClinic": "Clínica de Emergencia",
+    "notes": "Notas",
+    "form": {
+      "name": "NOMBRE",
+      "breed": "RAZA",
+      "age": "EDAD",
+      "weight": "PESO",
+      "phone": "TELÉFONO",
+      "dateGiven": "FECHA APLICADA",
+      "nextDue": "PRÓXIMA",
+      "dosage": "DOSIS"
+    }
   },
   "music": {
     "title": "Biblioteca Musical",

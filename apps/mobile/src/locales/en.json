@@ -176,7 +176,8 @@
     "progress": "Daily Progress",
     "add": "Add Task",
     "journal": "Daily Journal",
-    "writeJournal": "Write your thoughts for today..."
+    "writeJournal": "Write your thoughts for today...",
+    "completed": "Completed"
   },
   "kids": {
     "title": "Kids Hub",
@@ -185,15 +186,39 @@
     "calendar": "Kids Calendar",
     "addProfile": "Add Child",
     "addHomework": "Add Homework",
-    "noKids": "No child profiles found."
+    "noKids": "No child profiles found.",
+    "newChild": "New Child",
+    "form": {
+      "name": "Name",
+      "age": "Age",
+      "schoolName": "School Name",
+      "grade": "Grade",
+      "teacher": "Teacher",
+      "phone": "Phone",
+      "subject": "Subject",
+      "dueDate": "Due Date"
+    }
   },
   "pets": {
     "title": "Pets Hub",
     "vet": "Veterinarian",
-    "vaccines": "Vaccinations",
+    "vaccines": "Vaccines",
     "meds": "Medications",
     "addProfile": "Add Pet",
-    "noPets": "No pets found."
+    "noPets": "No pets found.",
+    "newPet": "New Pet",
+    "emergencyClinic": "Emergency Clinic",
+    "notes": "Notes",
+    "form": {
+      "name": "NAME",
+      "breed": "BREED",
+      "age": "AGE",
+      "weight": "WEIGHT",
+      "phone": "PHONE",
+      "dateGiven": "DATE GIVEN",
+      "nextDue": "NEXT DUE",
+      "dosage": "DOSAGE"
+    }
   },
   "music": {
     "title": "Music Library",

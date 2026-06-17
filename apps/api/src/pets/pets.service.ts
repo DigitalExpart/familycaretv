@@ -6,8 +6,18 @@ export class PetsService {
   constructor(private prisma: PrismaService) {}
 
   async createPet(userId: string, data: any) {
+    const { veterinarians, clinics, vaccinations, medications, notes, ...rest } = data;
+    
     return this.prisma.pet.create({
-      data: { ...data, userId },
+      data: {
+        ...rest,
+        userId,
+        ...(veterinarians?.length ? { veterinarians: { create: veterinarians } } : {}),
+        ...(clinics?.length ? { clinics: { create: clinics } } : {}),
+        ...(vaccinations?.length ? { vaccinations: { create: vaccinations } } : {}),
+        ...(medications?.length ? { medications: { create: medications } } : {}),
+        ...(notes?.length ? { notes: { create: notes } } : {}),
+      },
     });
   }
 

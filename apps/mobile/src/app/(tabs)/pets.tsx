@@ -39,6 +39,7 @@ export default function PetsScreen() {
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [vaccines, setVaccines] = useState([{ name: '', dateGiven: '', nextDue: '' }]);
+  const [medications, setMedications] = useState([{ name: '', dosage: '' }]);
   
   useEffect(() => {
     if (activeTab === '+ Add') {
@@ -48,9 +49,10 @@ export default function PetsScreen() {
       if (pet) {
         setName(pet.name || '');
         setBreed(pet.breed || '');
-        setAge(pet.age || '');
-        setWeight(pet.weight || '');
-        setNotes(pet.notes || '');
+        setAge(pet.age?.toString() || '');
+        setWeight(pet.weight?.toString() || '');
+        const noteObj = pet.notes?.[0];
+        setNotes(noteObj?.content || '');
         const vet = pet.veterinarians?.[0];
         if (vet) {
           setVetName(vet.name || '');
@@ -59,14 +61,30 @@ export default function PetsScreen() {
           setVetName(''); setVetPhone('');
         }
         
-        setEmergencyName(''); setEmergencyPhone('');
+        const clinic = pet.clinics?.[0];
+        if (clinic) {
+          setEmergencyName(clinic.name || '');
+          setEmergencyPhone(clinic.phone || '');
+        } else {
+          setEmergencyName(''); setEmergencyPhone('');
+        }
         
         if (pet.vaccinations && pet.vaccinations.length > 0) {
           setVaccines(pet.vaccinations.map((v: any) => ({
-            name: v.vaccineName, dateGiven: '', nextDue: ''
+            name: v.vaccineName, 
+            dateGiven: v.dateGiven ? v.dateGiven.substring(0, 10) : '', 
+            nextDue: v.nextDue ? v.nextDue.substring(0, 10) : ''
           })));
         } else {
           setVaccines([]);
+        }
+
+        if (pet.medications && pet.medications.length > 0) {
+          setMedications(pet.medications.map((m: any) => ({
+            name: m.name, dosage: m.dosage || ''
+          })));
+        } else {
+          setMedications([]);
         }
       }
     }
@@ -83,6 +101,7 @@ export default function PetsScreen() {
     setEmergencyPhone('');
     setNotes('');
     setVaccines([{ name: '', dateGiven: '', nextDue: '' }]);
+    setMedications([{ name: '', dosage: '' }]);
   };
 
   const createPetMutation = useMutation({
@@ -95,11 +114,36 @@ export default function PetsScreen() {
     }
   });
 
+  const parseDate = (dateStr: string) => {
+    if (!dateStr) return null;
+    const parts = dateStr.split(/[-/]/);
+    if (parts.length === 3) {
+      // rough assumption: yyyy-mm-dd or dd/mm/yyyy. Try new Date
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    }
+    return null;
+  };
+
   const handleSave = () => {
     if (!name) return;
     createPetMutation.mutate({
       name,
       breed,
+      age: parseInt(age) || null,
+      weight: parseFloat(weight) || null,
+      veterinarians: vetName || vetPhone ? [{ name: vetName, phone: vetPhone }] : undefined,
+      clinics: emergencyName || emergencyPhone ? [{ name: emergencyName, phone: emergencyPhone }] : undefined,
+      vaccinations: vaccines.filter(v => v.name).map(v => ({
+        vaccineName: v.name,
+        dateGiven: parseDate(v.dateGiven),
+        nextDue: parseDate(v.nextDue)
+      })),
+      medications: medications.filter(m => m.name).map(m => ({
+        name: m.name,
+        dosage: m.dosage
+      })),
+      notes: notes ? [{ content: notes }] : undefined
     });
   };
 
@@ -286,18 +330,18 @@ export default function PetsScreen() {
             <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Vaccines</Text>
           </View>
 
-          {vaccines.map((vac, idx) => (
+          {vaccines.map((v, idx) => (
             <View key={idx} style={[styles.itemCard, { backgroundColor: theme.surfaceSecondary }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, height: 40 }]} 
-                  value={vac.name} 
+                  value={v.name}
                   placeholder="Vaccine Name"
                   placeholderTextColor={theme.textSecondary}
                   onChangeText={(text) => {
-                    const newVac = [...vaccines];
-                    newVac[idx].name = text;
-                    setVaccines(newVac);
+                    const newVacs = [...vaccines];
+                    newVacs[idx].name = text;
+                    setVaccines(newVacs);
                   }}
                 />
                 <TouchableOpacity 
@@ -307,18 +351,38 @@ export default function PetsScreen() {
                   <X color={theme.error} size={16} />
                 </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: 'row', gap: 12 }}>
-                <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1, marginRight: 8 }}>
                   <Text style={[styles.label, { color: theme.textSecondary }]}>DATE GIVEN</Text>
                   <View style={[styles.inputWrapper, { backgroundColor: theme.surface }]}>
-                    <TextInput style={[styles.inlineInput, { color: theme.text }]} placeholder="dd/mm/yyyy" placeholderTextColor={theme.textSecondary} value={vac.dateGiven} />
+                    <TextInput 
+                      value={v.dateGiven}
+                      onChangeText={(text) => {
+                        const newVacs = [...vaccines];
+                        newVacs[idx].dateGiven = text;
+                        setVaccines(newVacs);
+                      }}
+                      placeholder="dd/mm/yyyy" 
+                      placeholderTextColor={theme.textSecondary} 
+                      style={{ color: theme.text, flex: 1 }}
+                    />
                     <CalendarIcon color={theme.textSecondary} size={16} />
                   </View>
                 </View>
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, marginLeft: 8 }}>
                   <Text style={[styles.label, { color: theme.textSecondary }]}>NEXT DUE</Text>
                   <View style={[styles.inputWrapper, { backgroundColor: theme.surface }]}>
-                    <TextInput style={[styles.inlineInput, { color: theme.text }]} placeholder="dd/mm/yyyy" placeholderTextColor={theme.textSecondary} value={vac.nextDue} />
+                    <TextInput 
+                      value={v.nextDue}
+                      onChangeText={(text) => {
+                        const newVacs = [...vaccines];
+                        newVacs[idx].nextDue = text;
+                        setVaccines(newVacs);
+                      }}
+                      placeholder="dd/mm/yyyy" 
+                      placeholderTextColor={theme.textSecondary} 
+                      style={{ color: theme.text, flex: 1 }}
+                    />
                     <CalendarIcon color={theme.textSecondary} size={16} />
                   </View>
                 </View>
@@ -341,7 +405,49 @@ export default function PetsScreen() {
             <Pill color={theme.warning} size={20} />
             <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>Medications</Text>
           </View>
-          <TouchableOpacity style={[styles.outlineBtn, { borderColor: theme.warning }]}>
+
+          {medications.map((med, idx) => (
+            <View key={idx} style={[styles.itemCard, { backgroundColor: theme.surfaceSecondary }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                <TextInput 
+                  style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, height: 40 }]} 
+                  value={med.name} 
+                  placeholder="Medication Name"
+                  placeholderTextColor={theme.textSecondary}
+                  onChangeText={(text) => {
+                    const newMeds = [...medications];
+                    newMeds[idx].name = text;
+                    setMedications(newMeds);
+                  }}
+                />
+                <TouchableOpacity 
+                  style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
+                  onPress={() => setMedications(medications.filter((_, i) => i !== idx))}
+                >
+                  <X color={theme.error} size={16} />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <Text style={[styles.label, { color: theme.textSecondary }]}>DOSAGE</Text>
+                <TextInput 
+                  style={[styles.input, { backgroundColor: theme.surface, color: theme.text, height: 40 }]} 
+                  placeholder="e.g. 1 pill daily" 
+                  placeholderTextColor={theme.textSecondary} 
+                  value={med.dosage}
+                  onChangeText={(text) => {
+                    const newMeds = [...medications];
+                    newMeds[idx].dosage = text;
+                    setMedications(newMeds);
+                  }}
+                />
+              </View>
+            </View>
+          ))}
+
+          <TouchableOpacity 
+            style={[styles.outlineBtn, { borderColor: theme.warning }]}
+            onPress={() => setMedications([...medications, { name: '', dosage: '' }])}
+          >
             <Plus color={theme.warning} size={16} />
             <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>
           </TouchableOpacity>

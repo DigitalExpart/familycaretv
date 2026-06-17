@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { Music, PlayCircle } from 'lucide-react-native';
+import { Music, Play, Trash2 } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../api/client';
 
@@ -30,33 +30,56 @@ export default function MusicScreen() {
     );
   }
 
-  const categories = categoriesData?.data || [];
+  // Fallback to mock data if API doesn't return anything yet
+  const mockSongs = [
+    { id: '1', title: 'Acercame a tu Altar' },
+    { id: '2', title: 'A la Meta Final' },
+    { id: '3', title: 'Fui a la Iglesia Invitada' },
+    { id: '4', title: 'Dios Sigue Haciendo Milagros' },
+    { id: '5', title: 'El Leon de Juda me Cubrio' },
+    { id: '6', title: 'Serpiente Vencida' },
+  ];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title={t('music.title')} />
+      <GradientHeader title={t('music.title') || 'Music'} />
       <ScrollView contentContainerStyle={styles.content}>
-        {categories.length === 0 ? (
-          <View style={{ alignItems: 'center', marginTop: 40 }}>
-            <Music color={theme.textSecondary} size={48} />
-            <Text style={{ color: theme.textSecondary, marginTop: 16 }}>No music available yet.</Text>
+        
+        <PremiumCard style={{ marginBottom: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+            <Music color={theme.primary} size={24} />
+            <Text style={[styles.headerTitle, { color: theme.text }]}>Music by Eyben Colon</Text>
           </View>
-        ) : (
-          categories.map((category: any) => (
-            <View key={category.id} style={{ marginBottom: 24 }}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{category.name}</Text>
-              {(category.tracks || []).map((track: any) => (
-                <TouchableOpacity key={track.id} style={[styles.trackCard, { backgroundColor: theme.surfaceSecondary }]}>
-                  <PlayCircle color={theme.primary} size={32} />
-                  <View style={{ marginLeft: 12, flex: 1 }}>
-                    <Text style={[styles.trackTitle, { color: theme.text }]}>{track.title}</Text>
-                    {track.description && <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{track.description}</Text>}
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))
-        )}
+          <Text style={{ color: theme.textSecondary, fontSize: 12, marginBottom: 24, fontStyle: 'italic' }}>
+            Songs written and composed by Eyben Colon, inspired by faith, healing and love.
+          </Text>
+
+          <Text style={[styles.sectionTitle, { color: theme.primary }]}>Songs in Spanish</Text>
+          
+          <View style={{ marginTop: 12 }}>
+            {mockSongs.map((song) => (
+              <PremiumCard key={song.id} style={{ marginBottom: 12, backgroundColor: theme.surfaceSecondary }}>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.surface, color: theme.text }]}
+                  value={song.title}
+                  editable={false}
+                />
+                <View style={{ flexDirection: 'row', marginTop: 12, gap: 12 }}>
+                  <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface }]}>
+                    <Play color={theme.error} size={16} />
+                    <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>Listen on YouTube</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface }]}>
+                    <Trash2 color={theme.error} size={16} />
+                    <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              </PremiumCard>
+            ))}
+          </View>
+        </PremiumCard>
+
       </ScrollView>
     </View>
   );
@@ -65,7 +88,8 @@ export default function MusicScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 20, paddingBottom: 100 },
-  sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 12 },
-  trackCard: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: Radii.card, marginBottom: 8 },
-  trackTitle: { fontSize: 16, fontWeight: '600', marginBottom: 4 }
+  headerTitle: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
+  input: { padding: 12, borderRadius: Radii.input, height: 48, fontWeight: '500' },
+  actionBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radii.card }
 });

@@ -177,9 +177,22 @@ export class UsersController {
     const medicationTasks: any[] = [];
     todaysMedications.forEach(med => {
       med.timesOfDay.forEach(timeStr => {
-        const [hours, minutes] = timeStr.split(':').map(Number);
+        const timeParts = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
         const taskTime = new Date(today);
-        taskTime.setHours(hours, minutes, 0, 0);
+        
+        if (timeParts) {
+          let hours = parseInt(timeParts[1], 10);
+          const minutes = parseInt(timeParts[2], 10);
+          const period = timeParts[3]?.toUpperCase();
+
+          if (period === 'PM' && hours < 12) hours += 12;
+          if (period === 'AM' && hours === 12) hours = 0;
+
+          taskTime.setHours(hours, minutes, 0, 0);
+        } else {
+          // Fallback if the format is completely unexpected
+          taskTime.setHours(12, 0, 0, 0);
+        }
 
         medicationTasks.push({
           id: `${med.id}-${timeStr}`,

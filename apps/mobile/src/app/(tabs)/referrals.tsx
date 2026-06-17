@@ -5,6 +5,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../constants/theme';
 import { Copy, Share2, Users, CheckCircle, Gift } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
+import { GradientHeader } from '../../components/ui/GradientHeader';
 
 export default function ReferralsScreen() {
   const token = useAuthStore((state) => state.accessToken);
@@ -61,7 +62,6 @@ export default function ReferralsScreen() {
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.background },
     scrollContent: { padding: 20 },
-    header: { fontSize: 28, fontWeight: '800', color: theme.text, marginBottom: 8 },
     subtitle: { fontSize: 16, color: theme.textSecondary, marginBottom: 24, lineHeight: 24 },
     codeCard: { 
       backgroundColor: theme.primary, 
@@ -142,13 +142,14 @@ export default function ReferralsScreen() {
     }
   };
 
-  const registeredCount = stats?.REGISTERED || 0;
-  const subscribedCount = stats?.SUBSCRIBED || 0;
+  const registeredCount = stats?.registered || 0;
+  const subscribedCount = stats?.subscribed || 0;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      <Text style={styles.header}>Referral Program</Text>
-      <Text style={styles.subtitle}>Invite your friends to FamilyCare TV and earn rewards when they subscribe.</Text>
+    <View style={styles.container}>
+      <GradientHeader title="Referrals & Commission" showBack={false} />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.subtitle}>Invite your friends to FamilyCare TV and earn rewards when they subscribe.</Text>
 
       <View style={styles.codeCard}>
         <Text style={styles.codeTitle}>YOUR REFERRAL CODE</Text>
@@ -198,6 +199,7 @@ export default function ReferralsScreen() {
           );
         })
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }

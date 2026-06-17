@@ -9,7 +9,7 @@ export class MedicationsService {
   constructor(private prisma: PrismaService, private patientsService: PatientsService) {}
   async create(userId: string, dto: CreateMedicationDto) {
     await this.patientsService.verifyOwnership(dto.patientId, userId);
-    let expiresAt = undefined;
+    let expiresAt: Date | undefined = undefined;
     if (dto.durationWeeks) {
       expiresAt = new Date(Date.now() + dto.durationWeeks * 7 * 24 * 60 * 60 * 1000);
     }

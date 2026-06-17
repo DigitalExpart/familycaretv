@@ -360,7 +360,7 @@ export default function KidsScreen() {
             </Text>
           </View>
           <TextInput
-            style={[styles.input, styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
+            style={[styles.input, styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text, height: 120 }]}
             placeholder="Add a note..."
             placeholderTextColor={theme.textSecondary}
             value={notes}

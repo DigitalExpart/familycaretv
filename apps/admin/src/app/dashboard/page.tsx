@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { BookOpen, PenTool, Music, Activity } from 'lucide-react';
 

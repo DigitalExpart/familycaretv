@@ -78,6 +78,45 @@ export class UsersController {
     };
   }
 
+  @Get('me/referrals')
+  @ApiOperation({ summary: 'Get referral stats for current user' })
+  async getMyReferrals(@CurrentUser() user: any) {
+    const dbUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: { referralCode: true }
+    });
+
+    const referrals = await this.prisma.referral.findMany({
+      where: { referrerId: user.id },
+      include: {
+        referredUser: {
+          select: { firstName: true, lastName: true, createdAt: true, subscriptionStatus: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const registered = referrals.length;
+    const subscribed = referrals.filter(r => r.referredUser.subscriptionStatus === 'active').length;
+
+    return {
+      success: true,
+      data: {
+        referralCode: dbUser?.referralCode,
+        stats: {
+          registered,
+          subscribed
+        },
+        history: referrals.map(r => ({
+          id: r.id,
+          name: `${r.referredUser.firstName} ${r.referredUser.lastName}`,
+          date: r.createdAt,
+          status: r.referredUser.subscriptionStatus === 'active' ? 'Subscribed' : 'Registered'
+        }))
+      }
+    };
+  }
+
   @Get('me/dashboard')
   @ApiOperation({ summary: 'Get dashboard stats for current user' })
   async getDashboardStats(@CurrentUser() user: any) {

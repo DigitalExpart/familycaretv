@@ -105,7 +105,14 @@
     "listEmpty": "No notes found. Create the first one!",
     "form": {
       "title": "Title",
-      "content": "Content"
+      "content": "Content",
+      "titleLabel": "Note Title",
+      "titlePlaceholder": "Enter note title...",
+      "contentLabel": "Note Details",
+      "contentPlaceholder": "Write your note here..."
+    },
+    "actions": {
+      "save": "Save Note"
     }
   },
   "doctors": {

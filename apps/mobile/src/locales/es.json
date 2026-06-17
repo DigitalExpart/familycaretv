@@ -105,7 +105,14 @@
     "listEmpty": "No se encontraron notas. ¡Crea la primera!",
     "form": {
       "title": "Título",
-      "content": "Contenido"
+      "content": "Contenido",
+      "titleLabel": "Título de la Nota",
+      "titlePlaceholder": "Introduce el título de la nota...",
+      "contentLabel": "Detalles de la Nota",
+      "contentPlaceholder": "Escribe tu nota aquí..."
+    },
+    "actions": {
+      "save": "Guardar Nota"
     }
   },
   "notifications": {

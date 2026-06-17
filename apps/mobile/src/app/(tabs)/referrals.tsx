@@ -23,25 +23,13 @@ export default function ReferralsScreen() {
       
       const baseUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
       
-      const [codeRes, statsRes, listRes] = await Promise.all([
-        fetch(`${baseUrl}/referrals/my-code`, { headers }),
-        fetch(`${baseUrl}/referrals/stats`, { headers }),
-        fetch(`${baseUrl}/referrals/my-referrals`, { headers })
-      ]);
-
-      if (codeRes.ok) {
-        const data = await codeRes.json();
-        setReferralCode(data.data?.referralCode || '');
-      }
+      const response = await fetch(`${baseUrl}/users/me/referrals`, { headers });
       
-      if (statsRes.ok) {
-        const data = await statsRes.json();
-        setStats(data.data);
-      }
-      
-      if (listRes.ok) {
-        const data = await listRes.json();
-        setReferrals(data.data || []);
+      if (response.ok) {
+        const { data } = await response.json();
+        setReferralCode(data?.referralCode || '');
+        setStats(data?.stats || null);
+        setReferrals(data?.history || []);
       }
     } catch (e) {
       console.error('Failed to load referrals', e);
@@ -200,8 +188,8 @@ export default function ReferralsScreen() {
           return (
             <View key={r.id} style={styles.referralCard}>
               <View>
-                <Text style={styles.refName}>{r.referredUser?.firstName} {r.referredUser?.lastName}</Text>
-                <Text style={styles.refDate}>{new Date(r.createdAt).toLocaleDateString()}</Text>
+                <Text style={styles.refName}>{r.name}</Text>
+                <Text style={styles.refDate}>{new Date(r.date).toLocaleDateString()}</Text>
               </View>
               <Text style={[styles.refStatus, { backgroundColor: st.bg, color: st.text }]}>
                 {r.status}

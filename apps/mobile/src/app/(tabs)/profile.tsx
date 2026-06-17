@@ -16,7 +16,7 @@ export default function ProfileScreen() {
   const logout = useAuthStore((state) => state.logout);
   const updateUser = useAuthStore((state) => state.updateUser);
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isDark, toggleTheme } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -26,6 +26,10 @@ export default function ProfileScreen() {
         const { data } = await api.get('/users/me');
         if (data?.success) {
           updateUser(data.data);
+          // Sync language with backend if different
+          if (data.data.language && data.data.language !== i18n.language) {
+            i18n.changeLanguage(data.data.language);
+          }
         }
       } catch (e: any) {
         if (e.response?.status !== 401) {
@@ -39,6 +43,15 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     await logout();
     router.replace('/(auth)/login');
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language.startsWith('es') ? 'en' : 'es';
+    i18n.changeLanguage(newLang);
+    if (user) {
+      api.put('/users/me', { language: newLang }).catch(console.error);
+      updateUser({ language: newLang });
+    }
   };
 
   return (
@@ -74,15 +87,17 @@ export default function ProfileScreen() {
         <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('settings.title')}</Text>
         
         <PremiumCard noPadding>
-          <View style={styles.settingRow}>
+          <TouchableOpacity style={styles.settingRow} onPress={toggleLanguage}>
             <View style={styles.settingIconContainer}>
               <Globe color={theme.primary} size={24} />
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={[styles.settingLabel, { color: theme.text }]}>{t('settings.language')}</Text>
-              <Text style={[styles.settingValue, { color: theme.textSecondary }]}>English</Text>
+              <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
+                {i18n.language.startsWith('es') ? 'Español' : 'English'}
+              </Text>
             </View>
-          </View>
+          </TouchableOpacity>
           
           <View style={styles.divider} />
           

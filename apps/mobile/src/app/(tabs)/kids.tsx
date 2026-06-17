@@ -6,7 +6,7 @@ import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { Baby, School, CheckCircle, Circle, Plus, ChevronLeft, ChevronRight, PawPrint } from 'lucide-react-native';
+import { Baby, School, CheckCircle, Circle, Plus, ChevronLeft, ChevronRight, PawPrint, FileText } from 'lucide-react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
 
@@ -349,6 +349,27 @@ export default function KidsScreen() {
                   })}
                 </View>
               ))}
+        </PremiumCard>
+
+        {/* Kids Notes */}
+        <PremiumCard style={{ marginBottom: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <FileText color={theme.secondary} size={20} />
+            <Text style={[styles.sectionTitle, { color: theme.secondary, marginLeft: 8, marginBottom: 0 }]}>
+              Notes
+            </Text>
+          </View>
+          <TextInput
+            style={[styles.input, styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
+            placeholder="Add a note..."
+            placeholderTextColor={theme.textSecondary}
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+            numberOfLines={4}
+            editable={isFormEditable}
+            textAlignVertical="top"
+          />
         </PremiumCard>
 
         {/* Save/Edit/Delete Actions */}

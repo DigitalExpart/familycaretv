@@ -51,7 +51,19 @@ export class PetsService {
 
   async updatePet(id: string, userId: string, data: any) {
     await this.getPet(id, userId); // verify ownership
-    return this.prisma.pet.update({ where: { id }, data });
+    const { veterinarians, clinics, vaccinations, medications, notes, ...rest } = data;
+    
+    return this.prisma.pet.update({ 
+      where: { id }, 
+      data: {
+        ...rest,
+        ...(veterinarians !== undefined ? { veterinarians: { deleteMany: {}, create: veterinarians } } : {}),
+        ...(clinics !== undefined ? { clinics: { deleteMany: {}, create: clinics } } : {}),
+        ...(vaccinations !== undefined ? { vaccinations: { deleteMany: {}, create: vaccinations } } : {}),
+        ...(medications !== undefined ? { medications: { deleteMany: {}, create: medications } } : {}),
+        ...(notes !== undefined ? { notes: { deleteMany: {}, create: notes } } : {}),
+      } 
+    });
   }
 
   async removePet(id: string, userId: string) {

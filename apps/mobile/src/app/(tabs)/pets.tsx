@@ -27,6 +27,9 @@ export default function PetsScreen() {
   const profiles = Array.isArray(petsData) ? petsData : (petsData?.data || []);
   
   const [activeTab, setActiveTab] = useState('+ Add');
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const isFormEditable = activeTab === '+ Add' || isEditing;
   
   // Form State
   const [name, setName] = useState('');
@@ -42,6 +45,7 @@ export default function PetsScreen() {
   const [medications, setMedications] = useState([{ name: '', dosage: '' }]);
   
   useEffect(() => {
+    setIsEditing(false);
     if (activeTab === '+ Add') {
       resetForm();
     } else {
@@ -145,6 +149,60 @@ export default function PetsScreen() {
       })),
       notes: notes ? [{ content: notes }] : undefined
     });
+  };
+
+  const updatePetMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      return await api.patch(`/pets/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      setIsEditing(false);
+    }
+  });
+
+  const deletePetMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await api.delete(`/pets/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      setActiveTab('+ Add');
+    }
+  });
+
+  const handleUpdate = () => {
+    if (!name) return;
+    const pet = profiles.find((p: any) => p.name === activeTab);
+    if (!pet) return;
+
+    updatePetMutation.mutate({
+      id: pet.id,
+      data: {
+        name,
+        breed,
+        age: parseInt(age) || null,
+        weight: parseFloat(weight) || null,
+        veterinarians: vetName || vetPhone ? [{ name: vetName, phone: vetPhone }] : [],
+        clinics: emergencyName || emergencyPhone ? [{ name: emergencyName, phone: emergencyPhone }] : [],
+        vaccinations: vaccines.filter(v => v.name).map(v => ({
+          vaccineName: v.name,
+          dateGiven: parseDate(v.dateGiven),
+          nextDue: parseDate(v.nextDue)
+        })),
+        medications: medications.filter(m => m.name).map(m => ({
+          name: m.name,
+          dosage: m.dosage
+        })),
+        notes: notes ? [{ content: notes }] : []
+      }
+    });
+  };
+
+  const handleDelete = () => {
+    const pet = profiles.find((p: any) => p.name === activeTab);
+    if (!pet) return;
+    deletePetMutation.mutate(pet.id);
   };
 
   if (isLoading) {
@@ -344,12 +402,14 @@ export default function PetsScreen() {
                     setVaccines(newVacs);
                   }}
                 />
-                <TouchableOpacity 
-                  style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
-                  onPress={() => setVaccines(vaccines.filter((_, i) => i !== idx))}
-                >
-                  <X color={theme.error} size={16} />
-                </TouchableOpacity>
+                {isFormEditable && (
+                  <TouchableOpacity 
+                    style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
+                    onPress={() => setVaccines(vaccines.filter((_, i) => i !== idx))}
+                  >
+                    <X color={theme.error} size={16} />
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ flex: 1, marginRight: 8 }}>
@@ -390,13 +450,15 @@ export default function PetsScreen() {
             </View>
           ))}
 
-          <TouchableOpacity 
-            style={[styles.outlineBtn, { borderColor: theme.warning }]}
-            onPress={() => setVaccines([...vaccines, { name: '', dateGiven: '', nextDue: '' }])}
-          >
-            <Plus color={theme.warning} size={16} />
-            <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Vaccine</Text>
-          </TouchableOpacity>
+          {isFormEditable && (
+            <TouchableOpacity 
+              style={[styles.outlineBtn, { borderColor: theme.warning }]}
+              onPress={() => setVaccines([...vaccines, { name: '', dateGiven: '', nextDue: '' }])}
+            >
+              <Plus color={theme.warning} size={16} />
+              <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Vaccine</Text>
+            </TouchableOpacity>
+          )}
         </PremiumCard>
 
         {/* Medications */}
@@ -420,12 +482,14 @@ export default function PetsScreen() {
                     setMedications(newMeds);
                   }}
                 />
-                <TouchableOpacity 
-                  style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
-                  onPress={() => setMedications(medications.filter((_, i) => i !== idx))}
-                >
-                  <X color={theme.error} size={16} />
-                </TouchableOpacity>
+                {isFormEditable && (
+                  <TouchableOpacity 
+                    style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
+                    onPress={() => setMedications(medications.filter((_, i) => i !== idx))}
+                  >
+                    <X color={theme.error} size={16} />
+                  </TouchableOpacity>
+                )}
               </View>
               <View>
                 <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dosage')}</Text>
@@ -444,21 +508,54 @@ export default function PetsScreen() {
             </View>
           ))}
 
-          <TouchableOpacity 
-            style={[styles.outlineBtn, { borderColor: theme.warning }]}
-            onPress={() => setMedications([...medications, { name: '', dosage: '' }])}
-          >
-            <Plus color={theme.warning} size={16} />
-            <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>
-          </TouchableOpacity>
+          {isFormEditable && (
+            <TouchableOpacity 
+              style={[styles.outlineBtn, { borderColor: theme.warning }]}
+              onPress={() => setMedications([...medications, { name: '', dosage: '' }])}
+            >
+              <Plus color={theme.warning} size={16} />
+              <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>
+            </TouchableOpacity>
+          )}
         </PremiumCard>
 
-        {activeTab === '+ Add' && (
+        {activeTab === '+ Add' ? (
           <AnimatedButton 
             title={createPetMutation.isPending ? t('common.loading') : t('common.save')} 
             onPress={handleSave} 
             style={{ marginBottom: 20, backgroundColor: theme.warning }} 
           />
+        ) : (
+          <View style={{ marginBottom: 20 }}>
+            {isEditing ? (
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                <AnimatedButton 
+                  title={updatePetMutation.isPending ? t('common.loading') : t('common.save')} 
+                  onPress={handleUpdate} 
+                  style={{ flex: 1, backgroundColor: theme.warning }} 
+                />
+                <AnimatedButton 
+                  title={t('common.cancel')} 
+                  onPress={() => { setIsEditing(false); }} 
+                  style={{ flex: 1, backgroundColor: theme.surfaceSecondary }} 
+                  textStyle={{ color: theme.text }}
+                />
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                <AnimatedButton 
+                  title={t('common.edit')} 
+                  onPress={() => setIsEditing(true)} 
+                  style={{ flex: 1, backgroundColor: theme.primary }} 
+                />
+                <AnimatedButton 
+                  title={deletePetMutation.isPending ? t('common.loading') : t('common.delete')} 
+                  onPress={handleDelete} 
+                  style={{ flex: 1, backgroundColor: theme.error }} 
+                />
+              </View>
+            )}
+          </View>
         )}
 
       </ScrollView>

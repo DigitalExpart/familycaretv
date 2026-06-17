@@ -122,7 +122,7 @@ export class UsersController {
     const todaysMedications = await this.prisma.medication.findMany({
       where: {
         patientId: { in: patientIds },
-        daysOfWeek: { has: todayName },
+        daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] },
         OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
       },
       include: { patient: { select: { fullName: true } } }

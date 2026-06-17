@@ -22,7 +22,7 @@ export class NotificationsService {
     const todaysMedications = await this.prisma.medication.findMany({
       where: {
         patientId: { in: patientIds },
-        daysOfWeek: { has: todayName },
+        daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] },
         OR: [{ expiresAt: null }, { expiresAt: { gt: today } }]
       },
       include: { patient: { select: { fullName: true } } }

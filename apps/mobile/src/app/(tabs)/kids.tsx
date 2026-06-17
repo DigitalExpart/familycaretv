@@ -43,6 +43,7 @@ export default function KidsScreen() {
   const [notes, setNotes] = useState('');
   const [newTask, setNewTask] = useState('');
   const [taskCategory, setTaskCategory] = useState<'CHORE' | 'HOMEWORK'>('CHORE');
+  const [localTasks, setLocalTasks] = useState<{ id: string, title: string, category: string, completed: boolean }[]>([]);
 
   useEffect(() => {
     setIsEditing(false);
@@ -55,6 +56,7 @@ export default function KidsScreen() {
       setHours('');
       setBus('');
       setNotes('');
+      setLocalTasks([]);
     } else {
       const kid = profiles.find((p: any) => p.name === activeTab);
       if (kid) {
@@ -72,7 +74,7 @@ export default function KidsScreen() {
   }, [activeTab, kidsData]);
 
   const activeProfile = profiles.find((p: any) => p.name === activeTab);
-  const tasks = activeProfile?.tasks || [];
+  const tasks = activeTab === '+ Add' ? localTasks : (activeProfile?.tasks || []);
   const chores = tasks.filter((t: any) => t.category === 'CHORE');
   const homework = tasks.filter((t: any) => t.category === 'HOMEWORK');
 
@@ -117,11 +119,12 @@ export default function KidsScreen() {
 
   const handleSave = () => {
     if (!name) return;
-    const payload = {
+    const payload: any = {
       name, schoolName, grade, teacherPhone: phone, teacher, schoolHours: hours, busNumber: bus,
       notes: notes ? [{ content: notes }] : []
     };
     if (activeTab === '+ Add') {
+      payload.tasks = localTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed }));
       createProfileMutation.mutate(payload);
     } else if (activeProfile) {
       updateProfileMutation.mutate({ id: activeProfile.id, data: payload });
@@ -134,14 +137,23 @@ export default function KidsScreen() {
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
-    if (!activeProfile) {
-      Alert.alert("Save Required", "Please save the child profile first before adding tasks.");
-      return;
+    if (activeTab === '+ Add') {
+      setLocalTasks([...localTasks, { id: Date.now().toString(), title: newTask, category: taskCategory, completed: false }]);
+      setNewTask('');
+    } else if (activeProfile) {
+      addTaskMutation.mutate({
+        id: activeProfile.id,
+        data: { title: newTask, category: taskCategory }
+      });
     }
-    addTaskMutation.mutate({
-      id: activeProfile.id,
-      data: { title: newTask, category: taskCategory }
-    });
+  };
+
+  const handleToggleTask = (task: any) => {
+    if (activeTab === '+ Add') {
+      setLocalTasks(localTasks.map(t => t.id === task.id ? { ...t, completed: !t.completed } : t));
+    } else if (activeProfile) {
+      toggleTaskMutation.mutate({ kidId: activeProfile.id, taskId: task.id, completed: !task.completed });
+    }
   };
 
   // Calendar Logic (Responsive to current month)
@@ -272,7 +284,7 @@ export default function KidsScreen() {
               <View style={{ marginBottom: 16 }}>
                 {chores.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>No chores added.</Text>}
                 {chores.map((task: any) => (
-                  <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ kidId: activeProfile.id, taskId: task.id, completed: !task.completed })}>
+                  <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => handleToggleTask(task)}>
                     {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                     <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
                   </TouchableOpacity>
@@ -283,7 +295,7 @@ export default function KidsScreen() {
               <View style={{ marginBottom: 16 }}>
                 {homework.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>No homework added.</Text>}
                 {homework.map((task: any) => (
-                  <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ kidId: activeProfile.id, taskId: task.id, completed: !task.completed })}>
+                  <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => handleToggleTask(task)}>
                     {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                     <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
                   </TouchableOpacity>

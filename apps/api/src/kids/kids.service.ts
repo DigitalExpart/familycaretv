@@ -6,12 +6,13 @@ export class KidsService {
   constructor(private prisma: PrismaService) {}
 
   async createProfile(userId: string, data: any) {
-    const { notes, ...rest } = data;
+    const { notes, tasks, ...rest } = data;
     return this.prisma.childProfile.create({
       data: {
         ...rest,
         userId,
         ...(notes?.length ? { notes: { create: notes } } : {}),
+        ...(tasks?.length ? { tasks: { create: tasks } } : {}),
       },
     });
   }

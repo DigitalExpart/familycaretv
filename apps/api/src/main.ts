@@ -19,7 +19,12 @@ async function bootstrap() {
   });
 
   // Enable CORS
-  app.enableCors();
+  app.enableCors({
+    origin: true, // Allow any origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+    allowedHeaders: 'Content-Type, Accept, Authorization',
+  });
 
   // Global Validation Pipe
   app.useGlobalPipes(

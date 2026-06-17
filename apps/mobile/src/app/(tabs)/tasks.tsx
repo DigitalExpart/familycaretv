@@ -8,15 +8,36 @@ import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { CheckCircle, Circle, Plus, Palette, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useDashboardStats } from '../../features/dashboard/dashboard-api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '../../api/client';
 
 export default function TasksScreen() {
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
   const { data: dashboardData } = useDashboardStats();
+  const queryClient = useQueryClient();
 
-  const [newTask, setNewTask] = useState('');
+  const [morningTask, setMorningTask] = useState('');
+  const [daytimeTask, setDaytimeTask] = useState('');
+  const [eveningTask, setEveningTask] = useState('');
   const [notes, setNotes] = useState('');
+
+  const addTaskMutation = useMutation({
+    mutationFn: async (data: { title: string, category: string, date: Date }) => api.post('/tasks', data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] })
+  });
+
+  const toggleTaskMutation = useMutation({
+    mutationFn: async ({ id, completed }: { id: string, completed: boolean }) => api.patch(`/tasks/${id}`, { completed }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] })
+  });
+
+  const handleAddTask = (title: string, category: string, setter: (val: string) => void) => {
+    if (!title.trim()) return;
+    addTaskMutation.mutate({ title, category, date: new Date() });
+    setter('');
+  };
 
   const todaysTasks = dashboardData?.todaysTasks || [];
 
@@ -62,11 +83,25 @@ export default function TasksScreen() {
               <Text style={{ color: theme.textSecondary }}>No morning tasks.</Text>
             )}
             {todaysTasks.filter((t: any) => t.category === 'MORNING').map((task: any) => (
-              <View key={task.id} style={styles.taskRow}>
+              <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-              </View>
+              </TouchableOpacity>
             ))}
+            
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+              <TextInput 
+                style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, marginRight: 12 }]} 
+                placeholder={t('tasks.add', 'Add task...')} 
+                placeholderTextColor={theme.textSecondary}
+                value={morningTask}
+                onChangeText={setMorningTask}
+              />
+              <TouchableOpacity style={[styles.addBtn, { backgroundColor: theme.primary }]} onPress={() => handleAddTask(morningTask, 'MORNING', setMorningTask)}>
+                <Plus color="#FFF" size={20} />
+                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('common.add')}</Text>
+              </TouchableOpacity>
+            </View>
           </PremiumCard>
 
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.daytime')}</Text>
@@ -75,11 +110,25 @@ export default function TasksScreen() {
               <Text style={{ color: theme.textSecondary }}>No daytime tasks.</Text>
             )}
             {todaysTasks.filter((t: any) => t.category === 'DAYTIME').map((task: any) => (
-              <View key={task.id} style={styles.taskRow}>
+              <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-              </View>
+              </TouchableOpacity>
             ))}
+            
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
+              <TextInput 
+                style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, marginRight: 12 }]} 
+                placeholder={t('tasks.add', 'Add task...')} 
+                placeholderTextColor={theme.textSecondary}
+                value={daytimeTask}
+                onChangeText={setDaytimeTask}
+              />
+              <TouchableOpacity style={[styles.addBtn, { backgroundColor: theme.primary }]} onPress={() => handleAddTask(daytimeTask, 'DAYTIME', setDaytimeTask)}>
+                <Plus color="#FFF" size={20} />
+                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('common.add')}</Text>
+              </TouchableOpacity>
+            </View>
           </PremiumCard>
 
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.evening')}</Text>
@@ -88,21 +137,21 @@ export default function TasksScreen() {
               <Text style={{ color: theme.textSecondary }}>No evening tasks.</Text>
             )}
             {todaysTasks.filter((t: any) => t.category === 'EVENING').map((task: any) => (
-              <View key={task.id} style={styles.taskRow}>
+              <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-              </View>
+              </TouchableOpacity>
             ))}
             
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, marginRight: 12 }]} 
-                placeholder={t('tasks.add')} 
+                placeholder={t('tasks.add', 'Add task...')} 
                 placeholderTextColor={theme.textSecondary}
-                value={newTask}
-                onChangeText={setNewTask}
+                value={eveningTask}
+                onChangeText={setEveningTask}
               />
-              <TouchableOpacity style={[styles.addBtn, { backgroundColor: theme.primary }]}>
+              <TouchableOpacity style={[styles.addBtn, { backgroundColor: theme.primary }]} onPress={() => handleAddTask(eveningTask, 'EVENING', setEveningTask)}>
                 <Plus color="#FFF" size={20} />
                 <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('common.add')}</Text>
               </TouchableOpacity>

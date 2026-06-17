@@ -33,3 +33,17 @@ export function useMarkNotificationRead() {
     },
   });
 }
+
+export function useMarkNotificationUnread() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await api.patch(`/notifications/${id}/unread`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}

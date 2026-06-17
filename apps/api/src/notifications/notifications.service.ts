@@ -95,6 +95,11 @@ export class NotificationsService {
 
   async markAsRead(userId: string, notificationId: string) {
     if (notificationId.startsWith('med-') || notificationId.startsWith('event-')) {
+      const existing = await this.prisma.notification.findFirst({
+        where: { userId, actionUrl: `read:${notificationId}` }
+      });
+      if (existing) return existing;
+      
       return this.prisma.notification.create({
         data: {
           userId,
@@ -110,6 +115,19 @@ export class NotificationsService {
     return this.prisma.notification.updateMany({
       where: { id: notificationId, userId },
       data: { isRead: true },
+    });
+  }
+
+  async markAsUnread(userId: string, notificationId: string) {
+    if (notificationId.startsWith('med-') || notificationId.startsWith('event-')) {
+      return this.prisma.notification.deleteMany({
+        where: { userId, actionUrl: `read:${notificationId}` }
+      });
+    }
+
+    return this.prisma.notification.updateMany({
+      where: { id: notificationId, userId },
+      data: { isRead: false },
     });
   }
 

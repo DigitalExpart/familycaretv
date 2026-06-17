@@ -30,6 +30,16 @@ export class NotificationsController {
     };
   }
 
+  @Patch(':id/unread')
+  @ApiOperation({ summary: 'Mark a notification as unread' })
+  async markAsUnread(@Request() req, @Param('id') id: string) {
+    await this.notificationsService.markAsUnread(req.user.userId, id);
+    return {
+      success: true,
+      message: 'Notification marked as unread',
+    };
+  }
+
   @Patch('read-all')
   @ApiOperation({ summary: 'Mark all notifications as read' })
   async markAllAsRead(@Request() req) {

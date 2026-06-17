@@ -4,7 +4,7 @@ import { GradientHeader } from '../../components/ui/GradientHeader';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { useNotifications, useMarkNotificationRead } from '../../features/notifications/notifications-api';
+import { useNotifications, useMarkNotificationRead, useMarkNotificationUnread } from '../../features/notifications/notifications-api';
 import { EmptyState } from '../../components/EmptyState';
 
 export default function NotificationsScreen() {
@@ -14,6 +14,7 @@ export default function NotificationsScreen() {
 
   const { data: response, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
+  const markUnread = useMarkNotificationUnread();
   const notifications = response?.data || [];
 
   return (
@@ -51,14 +52,22 @@ export default function NotificationsScreen() {
                     {new Date(item.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
                   </Text>
                 </View>
-                {!item.isRead && (
-                  <TouchableOpacity 
-                    style={{ backgroundColor: theme.primary, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, marginTop: 2 }}
-                    onPress={() => markRead.mutate(item.id)}
-                  >
-                    <Text style={{ color: '#FFF', fontSize: 12, fontWeight: '600' }}>Mark Read</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity 
+                  style={{ 
+                    backgroundColor: item.isRead ? theme.surfaceSecondary : theme.primary, 
+                    paddingHorizontal: 10, 
+                    paddingVertical: 6, 
+                    borderRadius: 12, 
+                    marginTop: 2,
+                    borderWidth: item.isRead ? 1 : 0,
+                    borderColor: theme.border
+                  }}
+                  onPress={() => item.isRead ? markUnread.mutate(item.id) : markRead.mutate(item.id)}
+                >
+                  <Text style={{ color: item.isRead ? theme.textSecondary : '#FFF', fontSize: 12, fontWeight: '600' }}>
+                    {item.isRead ? 'Mark Unread' : 'Mark Read'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </TouchableOpacity>
           )}

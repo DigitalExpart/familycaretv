@@ -139,5 +139,41 @@
     "terms": "Términos de Servicio",
     "support": "Soporte",
     "about": "Acerca de"
+  },
+  "tasks": {
+    "title": "Tareas Diarias",
+    "morning": "Rutina de Mañana",
+    "daytime": "Tareas de Día",
+    "evening": "Rutina de Noche",
+    "progress": "Progreso Diario",
+    "add": "Añadir Tarea",
+    "journal": "Diario",
+    "writeJournal": "Escribe tus pensamientos de hoy..."
+  },
+  "kids": {
+    "title": "Centro Infantil",
+    "schoolInfo": "Info. Escolar",
+    "homework": "Tareas y Deberes",
+    "calendar": "Calendario Infantil",
+    "addProfile": "Añadir Niño",
+    "addHomework": "Añadir Tarea",
+    "noKids": "No se encontraron perfiles de niños."
+  },
+  "pets": {
+    "title": "Centro de Mascotas",
+    "vet": "Veterinario",
+    "vaccines": "Vacunas",
+    "meds": "Medicamentos",
+    "addProfile": "Añadir Mascota",
+    "noPets": "No se encontraron mascotas."
+  },
+  "music": {
+    "title": "Biblioteca Musical",
+    "categories": "Categorías",
+    "nowPlaying": "Reproduciendo"
+  },
+  "coloring": {
+    "title": "Páginas para Colorear",
+    "gallery": "Galería"
   }
 }

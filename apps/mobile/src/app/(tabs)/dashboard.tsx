@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { useAuthStore } from '../../store/auth.store';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Bell, Users, Pill, CalendarDays, BookOpen, UserPlus, PlayCircle } from 'lucide-react-native';
+import { Bell, Users, Pill, CalendarDays, BookOpen, UserPlus, PlayCircle, Baby, Dog, CheckCircle } from 'lucide-react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { AnimatedButton } from '../../components/ui/AnimatedButton';
@@ -47,10 +47,13 @@ export default function DashboardScreen() {
     patients: 0,
     appointments: 0,
     medications: 0,
-    notes: 0
+    notes: 0,
+    kids: 0,
+    pets: 0
   };
 
   const todaysTasks = dashboardData?.todaysTasks || [];
+  const taskProgress = dashboardData?.taskProgress || { percentage: 0, completed: 0, total: 0 };
   const unreadNotificationsCount = notificationsData?.data?.filter((n: any) => !n.isRead)?.length || 0;
 
   return (
@@ -98,7 +101,34 @@ export default function DashboardScreen() {
               <Text style={[styles.statValue, { color: theme.text }]}>{stats.notes}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('dashboard.notes')}</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/(tabs)')}>
+              <Baby color="#14B8A6" size={28} />
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.kids}</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('kids.title')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/(tabs)')}>
+              <Dog color="#F59E0B" size={28} />
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.pets}</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('pets.title')}</Text>
+            </TouchableOpacity>
           </View>
+
+          {/* Daily Task Progress */}
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.progress')}</Text>
+          <PremiumCard style={{ marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View>
+                <Text style={{ color: theme.text, fontSize: 18, fontWeight: '700' }}>{taskProgress.percentage}%</Text>
+                <Text style={{ color: theme.textSecondary, fontSize: 14 }}>{taskProgress.completed} of {taskProgress.total} completed</Text>
+              </View>
+              <CheckCircle color={theme.success} size={32} />
+            </View>
+            <View style={{ height: 6, backgroundColor: theme.surfaceSecondary, borderRadius: 3, marginTop: 12 }}>
+              <View style={{ height: 6, backgroundColor: theme.success, borderRadius: 3, width: `${taskProgress.percentage}%` }} />
+            </View>
+          </PremiumCard>
 
           {/* Today's Priority */}
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('dashboard.todaysTasks')}</Text>

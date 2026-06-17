@@ -167,5 +167,41 @@
     "terms": "Terms of Service",
     "support": "Support",
     "about": "About"
+  },
+  "tasks": {
+    "title": "Daily Tasks",
+    "morning": "Morning Routine",
+    "daytime": "Daytime Tasks",
+    "evening": "Evening Routine",
+    "progress": "Daily Progress",
+    "add": "Add Task",
+    "journal": "Daily Journal",
+    "writeJournal": "Write your thoughts for today..."
+  },
+  "kids": {
+    "title": "Kids Hub",
+    "schoolInfo": "School Info",
+    "homework": "Homework & Chores",
+    "calendar": "Kids Calendar",
+    "addProfile": "Add Child",
+    "addHomework": "Add Homework",
+    "noKids": "No child profiles found."
+  },
+  "pets": {
+    "title": "Pets Hub",
+    "vet": "Veterinarian",
+    "vaccines": "Vaccinations",
+    "meds": "Medications",
+    "addProfile": "Add Pet",
+    "noPets": "No pets found."
+  },
+  "music": {
+    "title": "Music Library",
+    "categories": "Categories",
+    "nowPlaying": "Now Playing"
+  },
+  "coloring": {
+    "title": "Coloring Pages",
+    "gallery": "Gallery"
   }
 }

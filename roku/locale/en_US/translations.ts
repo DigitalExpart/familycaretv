@@ -50,4 +50,47 @@
         <translation>Drawing of the Day</translation>
     </message>
 </context>
+<context>
+    <name>Common</name>
+    <message>
+        <source>Loading</source>
+        <translation>Loading...</translation>
+    </message>
+    <message>
+        <source>Error_Network</source>
+        <translation>Network error occurred. Please try again.</translation>
+    </message>
+    <message>
+        <source>Patients_Empty</source>
+        <translation>No patients found.</translation>
+    </message>
+    <message>
+        <source>Calendar_Empty</source>
+        <translation>No events found.</translation>
+    </message>
+    <message>
+        <source>Music_Empty</source>
+        <translation>No music found.</translation>
+    </message>
+    <message>
+        <source>Kids_Empty</source>
+        <translation>No drawings found.</translation>
+    </message>
+    <message>
+        <source>Nav_Patients</source>
+        <translation>Patients</translation>
+    </message>
+    <message>
+        <source>Nav_Calendar</source>
+        <translation>Calendar</translation>
+    </message>
+    <message>
+        <source>Nav_Music</source>
+        <translation>Music</translation>
+    </message>
+    <message>
+        <source>Nav_Kids</source>
+        <translation>Kids</translation>
+    </message>
+</context>
 </TS>

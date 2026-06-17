@@ -37,8 +37,9 @@ sub OnDrawingsResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = "No drawings found."
+            m.loadingLabel.text = tr("Kids_Empty")
             m.loadingLabel.visible = true
+            m.top.setFocus(true)
         else
             m.drawingsGrid.content = content
             m.drawingsGrid.visible = true
@@ -47,6 +48,7 @@ sub OnDrawingsResponse(event as Object)
     else
         m.errorDialog.message = tr("Error_Network")
         m.errorDialog.show = true
+        m.top.setFocus(true)
     end if
 end sub
 

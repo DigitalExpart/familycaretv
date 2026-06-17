@@ -3,6 +3,7 @@ sub init()
     m.navBar.title = tr("Nav_Patients")
     
     m.loadingLabel = m.top.findNode("loadingLabel")
+    m.loadingLabel.text = tr("Loading")
     m.patientsGrid = m.top.findNode("patientsGrid")
     m.errorDialog = m.top.findNode("errorDialog")
     
@@ -34,8 +35,9 @@ sub OnPatientsResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = "No patients found."
+            m.loadingLabel.text = tr("Patients_Empty")
             m.loadingLabel.visible = true
+            m.top.setFocus(true)
         else
             m.patientsGrid.content = content
             m.patientsGrid.visible = true
@@ -44,6 +46,7 @@ sub OnPatientsResponse(event as Object)
     else
         m.errorDialog.message = tr("Error_Network")
         m.errorDialog.show = true
+        m.top.setFocus(true)
     end if
 end sub
 
@@ -68,3 +71,14 @@ sub OnDetailClose()
     m.detailView = invalid
     m.patientsGrid.setFocus(true)
 end sub
+
+function onKeyEvent(key as String, press as Boolean) as Boolean
+    handled = false
+    if press
+        if key = "back" and m.detailView <> invalid
+            ' Handled by PatientDetailScene returning focus, or we handle it here
+            handled = false
+        end if
+    end if
+    return handled
+end function

@@ -6,11 +6,7 @@
     <script type="text/brightscript" uri="pkg:/components/scenes/HomeScene.brs" />
     
     <children>
-        <Label id="headerLabel" 
-            text="" 
-            font="font:LargeBoldSystemFont" 
-            color="0xFFFFFFFF" 
-            translation="[100, 100]" />
+        <TopNavBar id="topNavBar" title="Home" />
             
         <Label id="careSummaryLabel" 
             text="Today's Care Summary" 

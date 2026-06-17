@@ -1,5 +1,5 @@
 sub init()
-    m.headerLabel = m.top.findNode("headerLabel")
+    m.topNavBar = m.top.findNode("topNavBar")
     m.patientsLabel = m.top.findNode("patientsLabel")
     m.eventsLabel = m.top.findNode("eventsLabel")
     m.medsLabel = m.top.findNode("medsLabel")
@@ -8,7 +8,7 @@ sub init()
     m.navGrid = m.top.findNode("navGrid")
     m.errorDialog = m.top.findNode("errorDialog")
     
-    m.headerLabel.text = tr("Home_Welcome")
+    m.topNavBar.title = tr("Home_Welcome")
     
     ' Populate Quick Nav Grid
     content = CreateObject("roSGNode", "ContentNode")

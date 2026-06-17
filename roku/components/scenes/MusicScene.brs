@@ -42,8 +42,9 @@ sub OnMusicResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = "No music found."
+            m.loadingLabel.text = tr("Music_Empty")
             m.loadingLabel.visible = true
+            m.top.setFocus(true)
         else
             m.trackGrid.content = content
             m.trackGrid.visible = true
@@ -52,6 +53,7 @@ sub OnMusicResponse(event as Object)
     else
         m.errorDialog.message = tr("Error_Network")
         m.errorDialog.show = true
+        m.top.setFocus(true)
     end if
 end sub
 

@@ -3,6 +3,7 @@ sub init()
     m.navBar.title = tr("Nav_Calendar")
     
     m.loadingLabel = m.top.findNode("loadingLabel")
+    m.loadingLabel.text = tr("Loading")
     m.eventsGrid = m.top.findNode("eventsGrid")
     m.errorDialog = m.top.findNode("errorDialog")
     
@@ -25,14 +26,16 @@ sub OnEventsResponse(event as Object)
         
         for each evt in response.data
             item = CreateObject("roSGNode", "ContentNode")
+            ' Assume the date is ISO string, simple format here or just display
             item.title = evt.title + Chr(10) + evt.startDateTime
             item.HDPosterUrl = "pkg:/images/icon_event.png"
             content.appendChild(item)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = "No events found."
+            m.loadingLabel.text = tr("Calendar_Empty")
             m.loadingLabel.visible = true
+            m.top.setFocus(true)
         else
             m.eventsGrid.content = content
             m.eventsGrid.visible = true
@@ -41,5 +44,6 @@ sub OnEventsResponse(event as Object)
     else
         m.errorDialog.message = tr("Error_Network")
         m.errorDialog.show = true
+        m.top.setFocus(true)
     end if
 end sub

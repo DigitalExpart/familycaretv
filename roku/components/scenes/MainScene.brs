@@ -9,7 +9,15 @@ end sub
 sub NavigateTo(screenName as String)
     if m.currentScreen <> invalid
         m.currentScreen.visible = false
-        m.screenStack.push(m.currentScreen)
+        ' Don't push SplashScene or DeviceLinkScene to the back stack
+        if m.currentScreen.subtype() <> "SplashScene" and m.currentScreen.subtype() <> "DeviceLinkScene"
+            m.screenStack.push(m.currentScreen)
+        end if
+    end if
+    
+    ' Clear stack if navigating to HomeScene (it's the root)
+    if screenName = "HomeScene" or screenName = "DeviceLinkScene"
+        m.screenStack.clear()
     end if
     
     newScreen = CreateObject("roSGNode", screenName)
@@ -40,6 +48,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 m.currentScreen.setFocus(true)
                 handled = true
             end if
+            ' If screenStack is empty, handled remains false, allowing Roku OS to exit app
         end if
     end if
     return handled

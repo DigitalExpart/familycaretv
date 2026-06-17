@@ -40,7 +40,14 @@ sub executeRequest()
     
     result.code = responseCode
     if responseStr <> ""
-        result.data = ParseJson(responseStr)
+        parsed = ParseJson(responseStr)
+        if parsed <> invalid and type(parsed) = "roAssociativeArray" and parsed.DoesExist("data")
+            ' Handle wrapped { success: true, data: [...] } responses
+            result.data = parsed.data
+        else
+            ' Handle raw array/object responses
+            result.data = parsed
+        end if
     else
         result.data = invalid
     end if

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="PremiumCard" extends="Group">
     <interface>
-        <field id="title" type="string" />
-        <field id="iconUri" type="string" />
-        <field id="targetScene" type="string" />
-        <field id="itemSelected" type="boolean" value="false" alwaysNotify="true" />
+        <field id="itemContent" type="node" onChange="OnItemContentChange" />
+        <field id="itemHasFocus" type="boolean" value="false" onChange="OnItemFocusChange" />
+        <field id="width" type="float" value="300" />
+        <field id="height" type="float" value="200" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/common/PremiumCard.brs" />
     

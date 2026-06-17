@@ -24,7 +24,7 @@ export default function PetsScreen() {
     }
   });
 
-  const profiles = petsData?.data || [];
+  const profiles = Array.isArray(petsData) ? petsData : (petsData?.data || []);
   
   const [activeTab, setActiveTab] = useState('+ Add');
   

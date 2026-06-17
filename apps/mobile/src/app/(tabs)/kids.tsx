@@ -34,7 +34,7 @@ export default function KidsScreen() {
     );
   }
 
-  const profiles = kidsData?.data || [];
+  const profiles = Array.isArray(kidsData) ? kidsData : (kidsData?.data || []);
   const calendarDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   // Use the first profile for the mockup if available, else a default structure

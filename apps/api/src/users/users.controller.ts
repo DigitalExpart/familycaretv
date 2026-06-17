@@ -255,6 +255,7 @@ export class UsersController {
           percentage: taskProgress
         },
         todaysTasks: allTasks,
+        dailyTasks: dailyTasks,
         verseOfTheDay
       }
     };

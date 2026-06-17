@@ -15,6 +15,12 @@ export interface DashboardStats {
     time: string;
     type: string;
   }[];
+  dailyTasks: {
+    id: string;
+    title: string;
+    category: string;
+    completed: boolean;
+  }[];
   verseOfTheDay?: {
     id: string;
     verse: string;

@@ -39,7 +39,7 @@ export default function TasksScreen() {
     setter('');
   };
 
-  const todaysTasks = dashboardData?.todaysTasks || [];
+  const dailyTasks = dashboardData?.dailyTasks || [];
 
   const days = Array.from({ length: 30 }, (_, i) => i + 1);
   const calendarDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -79,10 +79,10 @@ export default function TasksScreen() {
           
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.morning')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
-            {todaysTasks.filter((t: any) => t.category === 'MORNING').length === 0 && (
+            {dailyTasks.filter((t: any) => t.category === 'MORNING').length === 0 && (
               <Text style={{ color: theme.textSecondary }}>No morning tasks.</Text>
             )}
-            {todaysTasks.filter((t: any) => t.category === 'MORNING').map((task: any) => (
+            {dailyTasks.filter((t: any) => t.category === 'MORNING').map((task: any) => (
               <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
@@ -106,10 +106,10 @@ export default function TasksScreen() {
 
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.daytime')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
-            {todaysTasks.filter((t: any) => t.category === 'DAYTIME').length === 0 && (
+            {dailyTasks.filter((t: any) => t.category === 'DAYTIME').length === 0 && (
               <Text style={{ color: theme.textSecondary }}>No daytime tasks.</Text>
             )}
-            {todaysTasks.filter((t: any) => t.category === 'DAYTIME').map((task: any) => (
+            {dailyTasks.filter((t: any) => t.category === 'DAYTIME').map((task: any) => (
               <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
@@ -133,10 +133,10 @@ export default function TasksScreen() {
 
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.evening')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
-            {todaysTasks.filter((t: any) => t.category === 'EVENING').length === 0 && (
+            {dailyTasks.filter((t: any) => t.category === 'EVENING').length === 0 && (
               <Text style={{ color: theme.textSecondary }}>No evening tasks.</Text>
             )}
-            {todaysTasks.filter((t: any) => t.category === 'EVENING').map((task: any) => (
+            {dailyTasks.filter((t: any) => t.category === 'EVENING').map((task: any) => (
               <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>

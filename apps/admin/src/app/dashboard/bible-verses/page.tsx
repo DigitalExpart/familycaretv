@@ -11,7 +11,7 @@ export default function BibleVersesPage() {
 
   const fetchVerses = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/bible-verses`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}/bible-verses`);
       if (res.ok) {
         const data = await res.json();
         setVerses(data);
@@ -25,7 +25,7 @@ export default function BibleVersesPage() {
     e.preventDefault();
     setIsSubmitting(true);
     const token = localStorage.getItem('adminToken');
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/bible-verses`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}/bible-verses`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export default function BibleVersesPage() {
 
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem('adminToken');
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/bible-verses/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/bible-verses/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });

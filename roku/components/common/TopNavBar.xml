@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="TopNavBar" extends="Group">
+    <interface>
+        <field id="title" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/TopNavBar.brs" />
+    <children>
+        <Rectangle width="1920" height="120" color="0x1A1A24FF" />
+        <Label id="titleLabel" 
+            font="font:LargeBoldSystemFont" 
+            color="0xFFFFFFFF" 
+            translation="[100, 40]" />
+    </children>
+</component>

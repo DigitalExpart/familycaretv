@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PatientDetailScene" extends="Group">
+    <interface>
+        <field id="patientData" type="assocarray" alwaysNotify="true" />
+        <field id="closeRequest" type="boolean" value="false" alwaysNotify="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/PatientDetailScene.brs" />
+    
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
+        <TopNavBar id="navBar" title="Patient Detail" />
+        
+        <Label id="nameLabel" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" translation="[100, 200]" />
+        <Label id="dobLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 280]" />
+        <Label id="doctorsLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 360]" />
+        <Label id="medsLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 440]" />
+        <Label id="notesLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 520]" wrap="true" width="1000" />
+    </children>
+</component>

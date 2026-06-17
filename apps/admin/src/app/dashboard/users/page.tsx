@@ -18,7 +18,7 @@ export default function UsersActivity() {
     setIsLoading(true);
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/users/admin/all`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}/users/admin/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -50,7 +50,7 @@ export default function UsersActivity() {
     if (!confirm('WARNING: Deleting this user will permanently delete all of their patients, medications, events, notes, and devices. This cannot be undone. Are you sure?')) return;
     try {
       const token = localStorage.getItem('adminToken');
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/users/admin/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/users/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

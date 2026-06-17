@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="KidsScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/KidsScene.brs" />
+    
+    <children>
+        <TopNavBar id="navBar" title="Kids" />
+        
+        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
+        
+        <!-- Drawings Grid -->
+        <MarkupGrid id="drawingsGrid"
+            translation="[100, 200]"
+            itemComponentName="PremiumCard"
+            itemSize="[320, 220]"
+            itemSpacing="[20, 20]"
+            numColumns="5"
+            numRows="3"
+            drawFocusFeedback="false"
+            visible="false" />
+            
+        <!-- Fullscreen Image Viewer -->
+        <Rectangle id="imageViewer" width="1920" height="1080" color="0x000000FF" visible="false">
+            <Poster id="fullScreenPoster" width="1920" height="1080" loadDisplayMode="scaleToFit" />
+        </Rectangle>
+            
+        <ApiTask id="drawingsTask" />
+        <ErrorDialog id="errorDialog" />
+    </children>
+</component>

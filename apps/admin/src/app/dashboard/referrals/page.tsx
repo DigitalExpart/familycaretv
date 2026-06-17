@@ -10,7 +10,7 @@ export default function ReferralsPage() {
   const fetchReferrals = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/referrals/admin/all`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}/referrals/admin/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {

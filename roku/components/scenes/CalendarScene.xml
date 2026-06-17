@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="CalendarScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/CalendarScene.brs" />
+    
+    <children>
+        <TopNavBar id="navBar" title="Calendar" />
+        
+        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
+        
+        <MarkupGrid id="eventsGrid"
+            translation="[100, 200]"
+            itemComponentName="PremiumCard"
+            itemSize="[320, 220]"
+            itemSpacing="[20, 20]"
+            numColumns="5"
+            numRows="3"
+            drawFocusFeedback="false"
+            visible="false" />
+            
+        <ApiTask id="eventsTask" />
+        <ErrorDialog id="errorDialog" />
+    </children>
+</component>

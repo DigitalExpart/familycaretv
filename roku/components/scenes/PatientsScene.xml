@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PatientsScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+        <field id="patientData" type="assocarray" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/PatientsScene.brs" />
+    
+    <children>
+        <TopNavBar id="navBar" title="Patients" />
+        
+        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
+        
+        <!-- Patients Grid -->
+        <MarkupGrid id="patientsGrid"
+            translation="[100, 200]"
+            itemComponentName="PremiumCard"
+            itemSize="[320, 220]"
+            itemSpacing="[20, 20]"
+            numColumns="5"
+            numRows="3"
+            drawFocusFeedback="false"
+            visible="false" />
+            
+        <ApiTask id="patientsTask" />
+        <ErrorDialog id="errorDialog" />
+    </children>
+</component>

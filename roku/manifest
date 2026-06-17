@@ -1,0 +1,7 @@
+title=FamilyCare TV
+subtitle=The TV platform for senior care
+major_version=0
+minor_version=1
+build_version=1
+ui_resolutions=fhd
+bs_const=build_env="development"

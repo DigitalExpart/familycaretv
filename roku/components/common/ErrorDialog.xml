@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="ErrorDialog" extends="Group">
+    <interface>
+        <field id="message" type="string" />
+        <field id="show" type="boolean" value="false" alwaysNotify="true" />
+        <field id="dismissed" type="boolean" value="false" alwaysNotify="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/ErrorDialog.brs" />
+    <children>
+        <Rectangle id="overlay" width="1920" height="1080" color="0x000000AA" visible="false" />
+        <Rectangle id="dialogBox" width="800" height="400" color="0x2C2C35FF" translation="[560, 340]" visible="false">
+            <Label id="titleLabel" text="Error" font="font:LargeSystemFont" color="0xFF5555FF" translation="[40, 40]" />
+            <Label id="messageLabel" font="font:MediumSystemFont" color="0xFFFFFFFF" translation="[40, 120]" width="720" wrap="true" />
+            <Label text="Press OK to dismiss" font="font:SmallSystemFont" color="0x888888FF" translation="[40, 320]" />
+        </Rectangle>
+    </children>
+</component>

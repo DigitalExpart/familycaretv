@@ -9,7 +9,7 @@ export default function PatientsManager({ user, token, onRefresh }: { user: any,
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/patients/admin/user/${user.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/patients/admin/user/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export default function PatientsManager({ user, token, onRefresh }: { user: any,
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this patient? All associated medications, events, and notes will be deleted.')) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/patients/admin/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/patients/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

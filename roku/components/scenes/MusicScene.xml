@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MusicScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/MusicScene.brs" />
+    
+    <children>
+        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
+        <TopNavBar id="navBar" title="Music" />
+        
+        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
+        
+        <!-- Track List -->
+        <MarkupGrid id="trackGrid"
+            translation="[100, 200]"
+            itemComponentName="PremiumCard"
+            itemSize="[320, 220]"
+            itemSpacing="[20, 20]"
+            numColumns="5"
+            numRows="3"
+            drawFocusFeedback="false"
+            visible="false" />
+            
+        <!-- Player Overlay -->
+        <Rectangle id="playerOverlay" width="1920" height="200" color="0x111111EE" translation="[0, 880]" visible="false">
+            <Label id="nowPlayingLabel" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[100, 40]" />
+            <Label id="progressLabel" font="font:SmallSystemFont" color="0x888888FF" translation="[100, 100]" />
+            <Label text="[OK] to Play/Pause" font="font:SmallSystemFont" color="0xCCCCCCFF" translation="[100, 150]" />
+        </Rectangle>
+            
+        <Audio id="audioPlayer" />
+            
+        <ApiTask id="musicTask" />
+        <ErrorDialog id="errorDialog" />
+    </children>
+</component>

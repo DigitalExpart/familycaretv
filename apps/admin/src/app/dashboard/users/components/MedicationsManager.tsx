@@ -13,7 +13,7 @@ export default function MedicationsManager({ user, token, onRefresh }: { user: a
     e.preventDefault();
     if (!selectedPatientId) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/medications/admin/patient/${selectedPatientId}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/medications/admin/patient/${selectedPatientId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export default function MedicationsManager({ user, token, onRefresh }: { user: a
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this medication?')) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/medications/admin/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/medications/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

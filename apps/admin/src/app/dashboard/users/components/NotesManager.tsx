@@ -13,7 +13,7 @@ export default function NotesManager({ user, token, onRefresh }: { user: any, to
     e.preventDefault();
     if (!selectedPatientId) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/notes/admin/patient/${selectedPatientId}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/notes/admin/patient/${selectedPatientId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ export default function NotesManager({ user, token, onRefresh }: { user: any, to
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this note?')) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`}/notes/admin/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || `${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}`}/notes/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

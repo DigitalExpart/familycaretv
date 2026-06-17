@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="HomeScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/HomeScene.brs" />
+    
+    <children>
+        <Label id="headerLabel" 
+            text="" 
+            font="font:LargeBoldSystemFont" 
+            color="0xFFFFFFFF" 
+            translation="[100, 100]" />
+            
+        <Label id="careSummaryLabel" 
+            text="Today's Care Summary" 
+            font="font:MediumBoldSystemFont" 
+            color="0xFFFFFFFF" 
+            translation="[100, 200]" />
+            
+        <Label id="patientsLabel" text="Patient Count: Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 250]" />
+        <Label id="eventsLabel" text="Upcoming Appointments: Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 300]" />
+        <Label id="medsLabel" text="Medication Reminders: Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 350]" />
+            
+        <Label id="verseLabel" 
+            text="Verse of the Day: Loading..." 
+            font="font:MediumSystemFont" 
+            color="0xCCCCCCFF" 
+            translation="[100, 450]" 
+            wrap="true" width="800" />
+            
+        <Poster id="drawingPoster" 
+            translation="[1100, 150]" 
+            width="600" 
+            height="400" 
+            loadDisplayMode="scaleToFit" />
+            
+        <!-- Quick Nav Row -->
+        <MarkupGrid id="navGrid"
+            translation="[100, 650]"
+            itemComponentName="PremiumCard"
+            itemSize="[320, 220]"
+            itemSpacing="[20, 0]"
+            numColumns="5"
+            numRows="1"
+            drawFocusFeedback="false" />
+            
+        <ApiTask id="dashboardTask" />
+        <ErrorDialog id="errorDialog" />
+    </children>
+</component>

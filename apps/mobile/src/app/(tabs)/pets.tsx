@@ -8,7 +8,7 @@ import { Colors } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { Dog, Stethoscope, Syringe, Pill } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
-import api from '../../utils/api';
+import { api } from '../../api/client';
 
 export default function PetsScreen() {
   const { t } = useTranslation();

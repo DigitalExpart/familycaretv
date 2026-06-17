@@ -6,7 +6,7 @@ import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { Palette } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
-import api from '../../utils/api';
+import { api } from '../../api/client';
 
 const { width } = Dimensions.get('window');
 

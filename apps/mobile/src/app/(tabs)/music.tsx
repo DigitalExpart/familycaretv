@@ -7,7 +7,7 @@ import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 import { Music, PlayCircle } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
-import api from '../../utils/api';
+import { api } from '../../api/client';
 
 export default function MusicScreen() {
   const { t } = useTranslation();

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { useAuthStore } from '../../store/auth.store';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -12,6 +12,7 @@ import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
 
 import { useDashboardStats } from '../../features/dashboard/dashboard-api';
+import { useNotifications } from '../../features/notifications/notifications-api';
 
 export default function DashboardScreen() {
   const user = useAuthStore((state) => state.user);
@@ -20,7 +21,10 @@ export default function DashboardScreen() {
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
+  const [isVerseExpanded, setIsVerseExpanded] = useState(false);
+
   const { data: dashboardData, isLoading, refetch } = useDashboardStats();
+  const { data: notificationsData } = useNotifications();
 
   useFocusEffect(
     React.useCallback(() => {
@@ -47,6 +51,7 @@ export default function DashboardScreen() {
   };
 
   const todaysTasks = dashboardData?.todaysTasks || [];
+  const unreadNotificationsCount = notificationsData?.data?.filter((n: any) => !n.isRead)?.length || 0;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -57,11 +62,11 @@ export default function DashboardScreen() {
       >
         <GradientHeader 
           title={getGreeting()} 
-          subtitle={user?.firstName || "User"}
+          subtitle={user?.firstName || user?.email?.split('@')[0] || "User"}
           rightComponent={
             <TouchableOpacity onPress={handleNotifications} style={styles.headerIconBtn}>
               <Bell color="#FFF" size={24} />
-              <Badge count={3} />
+              {unreadNotificationsCount > 0 && <Badge count={unreadNotificationsCount} />}
             </TouchableOpacity>
           }
         />
@@ -130,9 +135,19 @@ export default function DashboardScreen() {
           <PremiumCard onPress={() => {}} style={{ backgroundColor: theme.primary }}>
             {dashboardData?.verseOfTheDay ? (
               <View style={{ padding: 8 }}>
-                <Text style={{ color: '#FFF', fontSize: 18, fontStyle: 'italic', marginBottom: 12, lineHeight: 26 }}>
+                <Text 
+                  numberOfLines={isVerseExpanded ? undefined : 2}
+                  style={{ color: '#FFF', fontSize: 18, fontStyle: 'italic', marginBottom: 8, lineHeight: 26 }}
+                >
                   "{dashboardData.verseOfTheDay.verse}"
                 </Text>
+                {dashboardData.verseOfTheDay.verse.length > 80 && (
+                  <TouchableOpacity onPress={() => setIsVerseExpanded(!isVerseExpanded)} style={{ marginBottom: 12 }}>
+                    <Text style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 'bold' }}>
+                      {isVerseExpanded ? 'Show less' : 'Read more'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: 'bold' }}>
                     - {dashboardData.verseOfTheDay.reference}

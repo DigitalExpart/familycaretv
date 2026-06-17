@@ -43,6 +43,12 @@ model User {
   
   referralsMade      Referral[] @relation("Referrer")
   referralReceived   Referral?  @relation("ReferredUser")
+
+  // Platform Expansion Relations
+  tasks              Task[]         @relation("UserTasks")
+  journals           DailyJournal[] @relation("UserJournals")
+  kids               ChildProfile[] @relation("UserKids")
+  pets               Pet[]          @relation("UserPets")
 }
 
 enum Role {
@@ -71,6 +77,7 @@ model Patient {
   patientNotes  PatientNote[]
   contacts      EmergencyContact[]
   drawings      Drawing[]
+  tasks         Task[]             @relation("PatientTasks")
 }
 
 model Doctor {
@@ -191,6 +198,7 @@ model BibleVerse {
   scheduledDate DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  verseDays     VerseDay[]
 }
 
 model Drawing {
@@ -232,6 +240,11 @@ enum NotificationType {
   MEDICATION_REMINDER
   APPOINTMENT_REMINDER
   TASK_REMINDER
+  TASK
+  MEDICATION
+  EVENT
+  VACCINE
+  HOMEWORK
 }
 
 model Notification {
@@ -265,4 +278,222 @@ model Referral {
 
   referrer           User           @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
   referredUser       User           @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
+}
+
+// ====================================================
+// MODULE 1: DAILY TASKS & WELLNESS
+// ====================================================
+
+enum TaskCategory {
+  MORNING
+  DAYTIME
+  EVENING
+}
+
+model Task {
+  id        String       @id @default(uuid())
+  userId    String
+  patientId String?
+  title     String
+  category  TaskCategory
+  completed Boolean      @default(false)
+  date      DateTime
+
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user      User         @relation("UserTasks", fields: [userId], references: [id], onDelete: Cascade)
+  patient   Patient?     @relation("PatientTasks", fields: [patientId], references: [id], onDelete: SetNull)
+}
+
+model DailyJournal {
+  id        String   @id @default(uuid())
+  userId    String
+  content   String
+  date      DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation("UserJournals", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ====================================================
+// MODULE 2: VERSE OF THE DAY
+// ====================================================
+
+model VerseDay {
+  id         String   @id @default(uuid())
+  verseId    String
+  dayOfMonth Int      @unique
+
+  verse      BibleVerse @relation(fields: [verseId], references: [id], onDelete: Cascade)
+}
+
+// ====================================================
+// MODULE 3: KIDS MANAGEMENT
+// ====================================================
+
+model ChildProfile {
+  id          String   @id @default(uuid())
+  userId      String
+
+  name        String
+  schoolName  String?
+  grade       String?
+  teacher     String?
+  teacherPhone String?
+  schoolHours String?
+  busNumber   String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation("UserKids", fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks       ChildTask[]
+  events      ChildCalendarEvent[]
+  notes       ChildNote[]
+}
+
+model ChildTask {
+  id        String   @id @default(uuid())
+  childId   String
+  title     String
+  category  String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  child     ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+}
+
+model ChildCalendarEvent {
+  id        String   @id @default(uuid())
+  childId   String
+  title     String
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  child     ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+}
+
+model ChildNote {
+  id        String   @id @default(uuid())
+  childId   String
+  content   String
+  createdAt DateTime @default(now())
+
+  child     ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+}
+
+// ====================================================
+// MODULE 4: COLORING BOOKS
+// ====================================================
+
+model ColoringPage {
+  id        String   @id @default(uuid())
+  title     String
+  imageUrl  String
+  language  String   @default("en")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ====================================================
+// MODULE 5: MUSIC LIBRARY
+// ====================================================
+
+model MusicCategory {
+  id        String   @id @default(uuid())
+  name      String
+
+  tracks    MusicTrack[]
+}
+
+model MusicTrack {
+  id          String   @id @default(uuid())
+  title       String
+  language    String   @default("en")
+  youtubeUrl  String?
+  audioUrl    String?
+  description String?
+  categoryId  String
+
+  category    MusicCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+}
+
+// ====================================================
+// MODULE 6: PETS MANAGEMENT
+// ====================================================
+
+model Pet {
+  id        String   @id @default(uuid())
+  userId    String
+
+  name      String
+  breed     String?
+  age       Int?
+  weight    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation("UserPets", fields: [userId], references: [id], onDelete: Cascade)
+
+  veterinarians Veterinarian[]
+  clinics       EmergencyClinic[]
+  vaccinations  PetVaccination[]
+  medications   PetMedication[]
+  notes         PetNote[]
+}
+
+model Veterinarian {
+  id        String   @id @default(uuid())
+  petId     String
+  name      String
+  phone     String?
+
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model EmergencyClinic {
+  id        String   @id @default(uuid())
+  petId     String
+  name      String
+  phone     String?
+
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model PetVaccination {
+  id          String   @id @default(uuid())
+  petId       String
+  vaccineName String
+  dateGiven   DateTime?
+  nextDue     DateTime?
+
+  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model PetMedication {
+  id        String   @id @default(uuid())
+  petId     String
+  name      String
+  dosage    String?
+  frequency String?
+
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model PetNote {
+  id        String   @id @default(uuid())
+  petId     String
+  content   String
+
+  createdAt DateTime @default(now())
+
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }

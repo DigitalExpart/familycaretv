@@ -21,6 +21,11 @@ import { StripeModule } from './stripe/stripe.module';
 import { RokuModule } from './roku/roku.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ReferralsModule } from './referrals/referrals.module';
+import { TasksModule } from './tasks/tasks.module';
+import { KidsModule } from './kids/kids.module';
+import { PetsModule } from './pets/pets.module';
+import { MusicLibraryModule } from './music-library/music-library.module';
+import { ColoringModule } from './coloring/coloring.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 
@@ -49,6 +54,11 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     RokuModule,
     NotificationsModule,
     ReferralsModule,
+    TasksModule,
+    KidsModule,
+    PetsModule,
+    MusicLibraryModule,
+    ColoringModule,
   ],
   controllers: [AppController],
   providers: [

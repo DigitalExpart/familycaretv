@@ -220,6 +220,24 @@ export class UsersController {
       orderBy: { createdAt: 'desc' }
     });
 
+    const kidsCount = await this.prisma.childProfile.count({
+      where: { userId }
+    });
+
+    const petsCount = await this.prisma.pet.count({
+      where: { userId }
+    });
+
+    const dailyTasks = await this.prisma.task.findMany({
+      where: {
+        userId,
+        date: { gte: today, lt: tomorrow }
+      }
+    });
+    const completedTasks = dailyTasks.filter(t => t.completed).length;
+    const totalTasks = dailyTasks.length;
+    const taskProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
     return {
       success: true,
       data: {
@@ -227,7 +245,14 @@ export class UsersController {
           patients: patientsCount,
           appointments: appointmentsCount,
           medications: medicationsCount,
-          notes: notesCount
+          notes: notesCount,
+          kids: kidsCount,
+          pets: petsCount,
+        },
+        taskProgress: {
+          completed: completedTasks,
+          total: totalTasks,
+          percentage: taskProgress
         },
         todaysTasks: allTasks,
         verseOfTheDay

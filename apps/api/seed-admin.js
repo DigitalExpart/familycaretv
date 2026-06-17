@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const email = 'familycare@admin.com';
-  const password = 'Familycare';
+  const password = 'Familycare!26';
   
   const hash = await bcrypt.hash(password, 12);
   

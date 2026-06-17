@@ -1,59 +1,59 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { useUpcomingEvents } from '../../features/events/events-api';
 import { EmptyState } from '../../components/EmptyState';
 import { Calendar } from 'react-native-calendars';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '../../api/client';
 
 export default function CalendarScreen() {
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
-  const [selectedDate, setSelectedDate] = useState('');
+  const getTodayString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-  const { data: eventsData, isLoading } = useUpcomingEvents();
-  const events = eventsData || [];
+  const [selectedDate, setSelectedDate] = useState(getTodayString());
+
+  const { data: dashboardData, isLoading } = useQuery({
+    queryKey: ['calendar-tasks', selectedDate],
+    queryFn: async () => {
+      const { data } = await api.get(`/users/me/dashboard?date=${selectedDate}`);
+      return data;
+    },
+    enabled: !!selectedDate,
+  });
+
+  const tasks = dashboardData?.data?.todaysTasks || [];
 
   // Generate marked dates for the calendar
   const markedDates = useMemo(() => {
     const marks: any = {};
     
-    // Mark dates that have events
-    events.forEach((event: any) => {
-      const dateStr = event.startDateTime.split('T')[0];
-      marks[dateStr] = {
-        marked: true,
-        dotColor: theme.primary,
-        ...(selectedDate === dateStr ? { selected: true, selectedColor: theme.primary } : {})
-      };
-    });
-
-    // If the selected date doesn't have an event, we still need to mark it as selected
-    if (selectedDate && !marks[selectedDate]) {
-      marks[selectedDate] = { selected: true, selectedColor: theme.primary };
+    // We don't have all events for the month easily accessible without a new endpoint, 
+    // so we just mark the selected date for now.
+    if (selectedDate) {
+      marks[selectedDate] = { selected: true, selectedColor: theme.primary, marked: tasks.length > 0, dotColor: '#ffffff' };
     }
 
     return marks;
-  }, [events, selectedDate, theme.primary]);
-
-  // Filter events by selected date
-  const filteredEvents = useMemo(() => {
-    if (!selectedDate) return events; // Show all upcoming if none selected
-    
-    return events.filter((event: any) => {
-      return event.startDateTime.startsWith(selectedDate);
-    });
-  }, [events, selectedDate]);
+  }, [selectedDate, theme.primary, tasks.length]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title={t('nav.calendar')} />
+      <GradientHeader title={t('nav.calendar')} showBack={false} />
       
       <Calendar
+        current={selectedDate}
         onDayPress={(day: any) => {
           setSelectedDate(day.dateString);
         }}
@@ -81,7 +81,7 @@ export default function CalendarScreen() {
         </View>
       ) : (
         <FlatList
-          data={filteredEvents}
+          data={tasks}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
           ListEmptyComponent={
@@ -91,10 +91,10 @@ export default function CalendarScreen() {
             <View style={[styles.eventCard, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
               <Text style={[styles.eventTitle, { color: theme.text }]}>{item.title}</Text>
               <Text style={{ color: theme.textSecondary }}>
-                {new Date(item.startDateTime).toLocaleTimeString()}
+                {item.type === 'MEDICATION' ? 'Medication' : 'Event'} • {new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
-              {item.description && (
-                <Text style={{ color: theme.textSecondary, marginTop: 4 }}>{item.description}</Text>
+              {item.patientName && (
+                <Text style={{ color: theme.textSecondary, marginTop: 4 }}>Patient: {item.patientName}</Text>
               )}
             </View>
           )}

@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Delete, Param, Body, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Put, Delete, Param, Body, UseGuards, UnauthorizedException, Query } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { PrismaService } from '../database/prisma.service';
@@ -119,7 +119,7 @@ export class UsersController {
 
   @Get('me/dashboard')
   @ApiOperation({ summary: 'Get dashboard stats for current user' })
-  async getDashboardStats(@CurrentUser() user: any) {
+  async getDashboardStats(@CurrentUser() user: any, @Query('date') dateParam?: string) {
     const userId = user.id;
 
     const patients = await this.prisma.patient.findMany({ where: { userId }, select: { id: true } });
@@ -141,7 +141,14 @@ export class UsersController {
       where: { patientId: { in: patientIds } }
     });
 
-    const today = new Date();
+    const today = dateParam ? new Date(dateParam) : new Date();
+    if (dateParam) {
+      // Ensure we treat the dateParam as a local date by adding the time offset or just parsing properly
+      // Because dateParam might be "2026-06-17", new Date("2026-06-17") is UTC midnight.
+      // We want to simulate local time, so we just use the year/month/date string.
+      const [year, month, day] = dateParam.split('-').map(Number);
+      today.setFullYear(year, month - 1, day);
+    }
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);

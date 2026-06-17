@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users } from 'lucide-react';
+import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users, CheckSquare, Baby, Dog, Palette } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -21,9 +21,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Users Activity', href: '/dashboard/users', icon: Users },
+    { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
+    { name: 'Kids', href: '/dashboard/kids', icon: Baby },
+    { name: 'Pets', href: '/dashboard/pets', icon: Dog },
     { name: 'Bible Verses', href: '/dashboard/bible-verses', icon: BookOpen },
     { name: 'Drawings', href: '/dashboard/drawings', icon: PenTool },
-    { name: 'Audio', href: '/dashboard/audio', icon: Music },
+    { name: 'Audio & Music', href: '/dashboard/audio', icon: Music },
+    { name: 'Coloring', href: '/dashboard/coloring', icon: Palette },
   ];
 
   return (

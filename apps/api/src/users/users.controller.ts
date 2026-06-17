@@ -116,6 +116,51 @@ export class UsersController {
       orderBy: { startDateTime: 'asc' }
     });
 
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const todayName = dayNames[today.getDay()];
+
+    const todaysMedications = await this.prisma.medication.findMany({
+      where: {
+        patientId: { in: patientIds },
+        daysOfWeek: { has: todayName },
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
+      },
+      include: { patient: { select: { fullName: true } } }
+    });
+
+    const medicationTasks: any[] = [];
+    todaysMedications.forEach(med => {
+      med.timesOfDay.forEach(timeStr => {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        const taskTime = new Date(today);
+        taskTime.setHours(hours, minutes, 0, 0);
+
+        medicationTasks.push({
+          id: `${med.id}-${timeStr}`,
+          title: `Take ${med.name}`,
+          patientName: med.patient.fullName,
+          time: taskTime,
+          type: 'MEDICATION'
+        });
+      });
+    });
+
+    const eventTasks = todaysEvents.map(event => ({
+      id: event.id,
+      title: event.title,
+      patientName: event.patient.fullName,
+      time: event.startDateTime,
+      type: event.type
+    }));
+
+    const allTasks = [...eventTasks, ...medicationTasks].sort((a, b) => a.time.getTime() - b.time.getTime());
+
+    const verseOfTheDay = await this.prisma.bibleVerse.findFirst({
+      where: { scheduledDate: { gte: today, lt: tomorrow } },
+    }) || await this.prisma.bibleVerse.findFirst({
+      orderBy: { createdAt: 'desc' }
+    });
+
     return {
       success: true,
       data: {
@@ -125,13 +170,8 @@ export class UsersController {
           medications: medicationsCount,
           notes: notesCount
         },
-        todaysTasks: todaysEvents.map(event => ({
-          id: event.id,
-          title: event.title,
-          patientName: event.patient.fullName,
-          time: event.startDateTime,
-          type: event.type
-        }))
+        todaysTasks: allTasks,
+        verseOfTheDay
       }
     };
   }

@@ -128,13 +128,30 @@ export default function DashboardScreen() {
 
           {/* Feature Highlight: Verse of the Day (connected to Roku/TV) */}
           <PremiumCard onPress={() => {}} style={{ backgroundColor: theme.primary }}>
-            <View style={styles.highlightContent}>
-              <PlayCircle color="#FFF" size={32} />
-              <View style={styles.highlightText}>
-                <Text style={styles.highlightTitle}>{t('dashboard.verseOfDay')}</Text>
-                <Text style={styles.highlightSubtitle}>Play on Roku TV</Text>
+            {dashboardData?.verseOfTheDay ? (
+              <View style={{ padding: 8 }}>
+                <Text style={{ color: '#FFF', fontSize: 18, fontStyle: 'italic', marginBottom: 12, lineHeight: 26 }}>
+                  "{dashboardData.verseOfTheDay.verse}"
+                </Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 16, fontWeight: 'bold' }}>
+                    - {dashboardData.verseOfTheDay.reference}
+                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <PlayCircle color="#FFF" size={20} style={{ marginRight: 6 }} />
+                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: 14 }}>Play on TV</Text>
+                  </View>
+                </View>
               </View>
-            </View>
+            ) : (
+              <View style={styles.highlightContent}>
+                <PlayCircle color="#FFF" size={32} />
+                <View style={styles.highlightText}>
+                  <Text style={styles.highlightTitle}>{t('dashboard.verseOfDay')}</Text>
+                  <Text style={styles.highlightSubtitle}>Play on Roku TV</Text>
+                </View>
+              </View>
+            )}
           </PremiumCard>
 
           {/* Quick Actions */}

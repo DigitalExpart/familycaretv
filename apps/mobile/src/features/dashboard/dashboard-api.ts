@@ -15,6 +15,11 @@ export interface DashboardStats {
     time: string;
     type: string;
   }[];
+  verseOfTheDay?: {
+    id: string;
+    verse: string;
+    reference: string;
+  };
 }
 
 export function useDashboardStats() {

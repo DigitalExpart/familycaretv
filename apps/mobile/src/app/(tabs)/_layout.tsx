@@ -92,6 +92,36 @@ export default function TabsLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="kids"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="pets"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="music"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="coloring"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="tasks"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

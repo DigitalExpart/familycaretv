@@ -6,10 +6,13 @@ import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { CheckCircle, Circle, Plus, Palette, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { CheckCircle, Circle, Plus, Palette, Calendar as CalendarIcon, Clock, Repeat } from 'lucide-react-native';
 import { useDashboardStats } from '../../features/dashboard/dashboard-api';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar } from 'react-native-calendars';
+import { DaysOfWeekSelector } from '../../components/ui/DaysOfWeekSelector';
 
 export default function TasksScreen() {
   const { t } = useTranslation();
@@ -18,59 +21,183 @@ export default function TasksScreen() {
   const { data: dashboardData } = useDashboardStats();
   const queryClient = useQueryClient();
 
+  const { data: allTasksData } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      const response = await api.get('/tasks');
+      return response.data;
+    }
+  });
+  const allTasks = allTasksData || [];
+
   const [morningTask, setMorningTask] = useState('');
   const [daytimeTask, setDaytimeTask] = useState('');
   const [eveningTask, setEveningTask] = useState('');
   const [notes, setNotes] = useState('');
 
+  // Global Task Settings
+  const [taskDate, setTaskDate] = useState<Date>(new Date());
+  const [taskTime, setTaskTime] = useState<Date>(new Date());
+  const [isDailyTask, setIsDailyTask] = useState(false);
+  const [taskDaysOfWeek, setTaskDaysOfWeek] = useState<string[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+
   const addTaskMutation = useMutation({
-    mutationFn: async (data: { title: string, category: string, date: Date }) => api.post('/tasks', data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] })
+    mutationFn: async (data: any) => api.post('/tasks', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+    }
   });
 
   const toggleTaskMutation = useMutation({
     mutationFn: async ({ id, completed }: { id: string, completed: boolean }) => api.patch(`/tasks/${id}`, { completed }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+    }
   });
 
   const handleAddTask = (title: string, category: string, setter: (val: string) => void) => {
     if (!title.trim()) return;
-    addTaskMutation.mutate({ title, category, date: new Date() });
+    const timeStr = taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    addTaskMutation.mutate({ 
+      title, 
+      category, 
+      date: taskDate.toISOString(),
+      time: timeStr,
+      isDaily: isDailyTask,
+      daysOfWeek: taskDaysOfWeek
+    });
+    
     setter('');
+    setTaskDaysOfWeek([]);
   };
 
-  const dailyTasks = dashboardData?.dailyTasks || [];
+  // Filter tasks based on selectedCalendarDate
+  const visibleTasks = allTasks.filter((t: any) => {
+    if (t.isDaily) return true;
+    
+    const [year, month, day] = selectedCalendarDate.split('-');
+    const selectedDateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const selectedDayName = dayNames[selectedDateObj.getDay()];
+
+    if (t.daysOfWeek && t.daysOfWeek.includes(selectedDayName)) return true;
+
+    if (!t.date) return true; // Show tasks without dates
+    const td = new Date(t.date);
+    const dateStr = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`;
+    return dateStr === selectedCalendarDate;
+  });
+
+  const morningTasks = visibleTasks.filter((t: any) => t.category === 'MORNING');
+  const daytimeTasks = visibleTasks.filter((t: any) => t.category === 'DAYTIME');
+  const eveningTasks = visibleTasks.filter((t: any) => t.category === 'EVENING');
+
+  // Calendar marked dates
+  const markedDates: any = {};
+  allTasks.forEach((t: any) => {
+    if (t.date && !t.isDaily && (!t.daysOfWeek || t.daysOfWeek.length === 0)) {
+      const d = new Date(t.date);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      if (!markedDates[dateStr]) {
+        markedDates[dateStr] = { marked: true, dotColor: theme.primary };
+      }
+    }
+  });
+  if (!markedDates[selectedCalendarDate]) {
+    markedDates[selectedCalendarDate] = { selected: true, selectedColor: theme.warning };
+  } else {
+    markedDates[selectedCalendarDate].selected = true;
+    markedDates[selectedCalendarDate].selectedColor = theme.warning;
+  }
 
   const days = Array.from({ length: 30 }, (_, i) => i + 1);
-  const calendarDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <GradientHeader title={t('tasks.title') || 'Daily Tasks'} />
       <ScrollView contentContainerStyle={styles.content}>
         
-        {/* Verse of the Day */}
+        {/* Task Calendar */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.primary, fontSize: 14, textTransform: 'uppercase' }]}>{t('dashboard.verseOfDay')}</Text>
-          {dashboardData?.verseOfTheDay ? (
-            <>
-              <Text style={{ color: theme.text, fontSize: 16, fontStyle: 'italic', marginVertical: 8 }}>
-                "{dashboardData.verseOfTheDay.verse}"
-              </Text>
-              <Text style={{ color: theme.textSecondary, textAlign: 'right' }}>
-                — {dashboardData.verseOfTheDay.reference}
-              </Text>
-            </>
-          ) : (
-            <Text style={{ color: theme.textSecondary }}>No verse available today.</Text>
-          )}
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.taskCalendar')}</Text>
+          <Calendar
+            current={selectedCalendarDate}
+            onDayPress={(day: any) => setSelectedCalendarDate(day.dateString)}
+            markedDates={markedDates}
+            theme={{
+              backgroundColor: theme.surfaceSecondary,
+              calendarBackground: theme.surfaceSecondary,
+              textSectionTitleColor: theme.textSecondary,
+              selectedDayBackgroundColor: theme.warning,
+              selectedDayTextColor: '#ffffff',
+              todayTextColor: theme.warning,
+              dayTextColor: theme.text,
+              textDisabledColor: theme.textSecondary + '50',
+              dotColor: theme.warning,
+              selectedDotColor: '#ffffff',
+              arrowColor: theme.warning,
+              monthTextColor: theme.text,
+              indicatorColor: theme.warning,
+            }}
+          />
         </PremiumCard>
 
-        {/* Color your Emotions */}
-        <PremiumCard style={{ marginBottom: 20, alignItems: 'center', paddingVertical: 30, backgroundColor: theme.surfaceSecondary }}>
-          <Palette color={theme.warning} size={48} style={{ marginBottom: 12 }} />
-          <Text style={{ color: theme.text, fontSize: 18, fontWeight: '600' }}>{t('tasks.colorEmotions')}</Text>
-          <Text style={{ color: theme.textSecondary, fontSize: 14, marginTop: 4 }}>Images coming soon</Text>
+        {/* Global Task Settings */}
+        <PremiumCard style={{ marginBottom: 20 }}>
+          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>Task Schedule Settings</Text>
+          <Text style={{ color: theme.textSecondary, marginBottom: 12, fontSize: 12 }}>
+            Set the date, time, and recurrence below, then add your task to the specific category.
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>
+              <CalendarIcon color={theme.textSecondary} size={16} style={{ marginRight: 8 }} />
+              <Text style={{ color: theme.text }}>{taskDate.toLocaleDateString()}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowTimePicker(true)} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>
+              <Clock color={theme.textSecondary} size={16} style={{ marginRight: 8 }} />
+              <Text style={{ color: theme.text }}>{taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsDailyTask(!isDailyTask)} style={[styles.input, { paddingHorizontal: 12, backgroundColor: isDailyTask ? theme.warning : theme.surfaceSecondary, justifyContent: 'center', alignItems: 'center' }]}>
+              <Repeat color={isDailyTask ? '#FFF' : theme.textSecondary} size={20} />
+            </TouchableOpacity>
+          </View>
+          
+          {!isDailyTask && (
+            <DaysOfWeekSelector selectedDays={taskDaysOfWeek} onChange={setTaskDaysOfWeek} />
+          )}
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={taskDate}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) setTaskDate(selectedDate);
+              }}
+            />
+          )}
+          {showTimePicker && (
+            <DateTimePicker
+              value={taskTime}
+              mode="time"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowTimePicker(false);
+                if (selectedDate) setTaskTime(selectedDate);
+              }}
+            />
+          )}
         </PremiumCard>
 
         {/* Daily Tasks */}
@@ -79,10 +206,10 @@ export default function TasksScreen() {
           
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.morning')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
-            {dailyTasks.filter((t: any) => t.category === 'MORNING').length === 0 && (
-              <Text style={{ color: theme.textSecondary }}>No morning tasks.</Text>
+            {morningTasks.length === 0 && (
+              <Text style={{ color: theme.textSecondary }}>No morning tasks for this date.</Text>
             )}
-            {dailyTasks.filter((t: any) => t.category === 'MORNING').map((task: any) => (
+            {morningTasks.map((task: any) => (
               <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
@@ -106,10 +233,10 @@ export default function TasksScreen() {
 
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.daytime')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
-            {dailyTasks.filter((t: any) => t.category === 'DAYTIME').length === 0 && (
-              <Text style={{ color: theme.textSecondary }}>No daytime tasks.</Text>
+            {daytimeTasks.length === 0 && (
+              <Text style={{ color: theme.textSecondary }}>No daytime tasks for this date.</Text>
             )}
-            {dailyTasks.filter((t: any) => t.category === 'DAYTIME').map((task: any) => (
+            {daytimeTasks.map((task: any) => (
               <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
@@ -133,10 +260,10 @@ export default function TasksScreen() {
 
           <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('tasks.evening')}</Text>
           <PremiumCard style={{ marginBottom: 16 }}>
-            {dailyTasks.filter((t: any) => t.category === 'EVENING').length === 0 && (
-              <Text style={{ color: theme.textSecondary }}>No evening tasks.</Text>
+            {eveningTasks.length === 0 && (
+              <Text style={{ color: theme.textSecondary }}>No evening tasks for this date.</Text>
             )}
-            {dailyTasks.filter((t: any) => t.category === 'EVENING').map((task: any) => (
+            {eveningTasks.map((task: any) => (
               <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
@@ -159,19 +286,6 @@ export default function TasksScreen() {
           </PremiumCard>
         </View>
 
-        {/* Verse by Day */}
-        <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.verseByDay')}</Text>
-          <Text style={{ color: theme.textSecondary, marginBottom: 12 }}>Tap a day to read that verse</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {days.map(d => (
-              <TouchableOpacity key={d} style={[styles.dayBadge, { backgroundColor: d === 17 ? theme.primary : theme.surfaceSecondary }]}>
-                <Text style={{ color: d === 17 ? '#FFF' : theme.text }}>{d}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </PremiumCard>
-
         {/* Notes */}
         <PremiumCard style={{ marginBottom: 20 }}>
           <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>{t('notes.title')}</Text>
@@ -188,37 +302,6 @@ export default function TasksScreen() {
           <AnimatedButton title={t('common.save')} onPress={() => {}} style={{ marginTop: 12 }} />
         </PremiumCard>
 
-        {/* Task Calendar */}
-        <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.taskCalendar')}</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, paddingHorizontal: 10 }}>
-            <TouchableOpacity><ChevronLeft color={theme.textSecondary} /></TouchableOpacity>
-            <Text style={{ color: theme.text, fontWeight: '700', fontSize: 16 }}>June 2026</Text>
-            <TouchableOpacity><ChevronRight color={theme.textSecondary} /></TouchableOpacity>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-            {calendarDays.map((d, i) => (
-              <Text key={i} style={{ color: theme.textSecondary, width: 30, textAlign: 'center', fontWeight: 'bold' }}>{d}</Text>
-            ))}
-          </View>
-          {/* Simple calendar grid mockup */}
-          {[1, 2, 3, 4, 5].map((week) => (
-            <View key={week} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-              {[1, 2, 3, 4, 5, 6, 7].map((dayOffset) => {
-                const day = (week - 1) * 7 + dayOffset - 1; // Approx layout
-                const isCurrent = day === 17;
-                return (
-                  <View key={dayOffset} style={{ width: 30, height: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: isCurrent ? theme.primary : 'transparent', borderRadius: 15 }}>
-                    {day > 0 && day <= 30 ? (
-                      <Text style={{ color: isCurrent ? '#FFF' : theme.text }}>{day}</Text>
-                    ) : null}
-                  </View>
-                );
-              })}
-            </View>
-          ))}
-        </PremiumCard>
-
       </ScrollView>
     </View>
   );
@@ -231,8 +314,8 @@ const styles = StyleSheet.create({
   subTitle: { fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8, marginTop: 4 },
   taskRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
   taskTitle: { marginLeft: 12, fontSize: 16 },
-  input: { padding: 12, borderRadius: Radii.input },
-  addBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderRadius: Radii.input, justifyContent: 'center' },
+  input: { padding: 12, borderRadius: Radii.input, height: 48 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderRadius: Radii.input, height: 48, justifyContent: 'center' },
   dayBadge: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   textArea: { padding: 16, borderRadius: Radii.input, minHeight: 120 }
 });

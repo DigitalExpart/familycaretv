@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="BouncingVerse" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/screensaver/BouncingVerse.brs" />
+    <interface>
+        <function name="setData" />
+    </interface>
+    <children>
+        <!-- Ken Burns Base Art -->
+        <Poster id="bgArt" width="2200" height="1200" translation="[-140, -60]" loadDisplayMode="scaleToFit" />
+        
+        <!-- Ken Burns Animation -->
+        <Animation id="kenBurnsAnim" duration="30" easeFunction="linear" repeat="true">
+            <Vector2DFieldInterpolator id="kbTranslation" key="[0, 0.5, 1]" keyValue="[[-140, -60], [0, 0], [-140, -60]]" fieldToInterp="bgArt.translation" />
+        </Animation>
+
+        <Label id="verseText" width="1000" wrap="true" translation="[460, 400]" font="font:LargeBoldSystemFont" color="0xFFFFFF" />
+    </children>
+</component>

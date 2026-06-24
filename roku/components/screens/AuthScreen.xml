@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="AuthScreen" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/screens/AuthScreen.brs" />
+    <children>
+        <Rectangle id="bg" width="1920" height="1080" color="0x121212" />
+        <Label id="title" translation="[760, 200]" font="font:LargeBoldSystemFont" color="0xFFFFFF" text="Link Your TV" />
+        <Label id="instructions" translation="[660, 300]" font="font:MediumSystemFont" color="0xCCCCCC" text="Enter this code in your FamilyCare Mobile App:" />
+        <Label id="codeLabel" translation="[810, 400]" font="font:LargeBoldSystemFont" color="0x00FF00" text="LOADING..." />
+        <ApiTask id="authTask" />
+    </children>
+</component>

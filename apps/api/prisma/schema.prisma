@@ -245,6 +245,12 @@ enum NotificationType {
   EVENT
   VACCINE
   HOMEWORK
+  DAILY_TASK
+  KIDS_TASK
+  PET_MEDICATION
+  PET_VACCINATION
+  BIBLE_VERSE
+  EMERGENCY
 }
 
 model Notification {
@@ -297,7 +303,10 @@ model Task {
   title     String
   category  TaskCategory
   completed Boolean      @default(false)
-  date      DateTime
+  date      DateTime?
+  time      String?
+  isDaily   Boolean      @default(false)
+  daysOfWeek String[]
 
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
@@ -362,6 +371,10 @@ model ChildTask {
   title     String
   category  String
   completed Boolean  @default(false)
+  date      DateTime?
+  time      String?
+  isDaily   Boolean  @default(false)
+  daysOfWeek String[]
   createdAt DateTime @default(now())
 
   child     ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
@@ -448,6 +461,7 @@ model Pet {
   vaccinations  PetVaccination[]
   medications   PetMedication[]
   notes         PetNote[]
+  tasks         PetTask[]
 }
 
 model Veterinarian {
@@ -493,6 +507,20 @@ model PetNote {
   petId     String
   content   String
 
+  createdAt DateTime @default(now())
+
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model PetTask {
+  id        String   @id @default(uuid())
+  petId     String
+  title     String
+  completed Boolean  @default(false)
+  date      DateTime?
+  time      String?
+  isDaily   Boolean  @default(false)
+  daysOfWeek String[]
   createdAt DateTime @default(now())
 
   pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)

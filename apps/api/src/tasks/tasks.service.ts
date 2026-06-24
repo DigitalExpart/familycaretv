@@ -14,19 +14,39 @@ export class TasksService {
     });
   }
 
+  async findAll(userId: string) {
+    return this.prisma.task.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
   async findAllToday(userId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const todayName = dayNames[today.getDay()];
+
     return this.prisma.task.findMany({
       where: {
         userId,
-        date: {
-          gte: today,
-          lt: tomorrow,
-        },
+        OR: [
+          {
+            date: {
+              gte: today,
+              lt: tomorrow,
+            },
+          },
+          {
+            isDaily: true,
+          },
+          {
+            daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] }
+          }
+        ]
       },
       orderBy: { createdAt: 'asc' },
     });

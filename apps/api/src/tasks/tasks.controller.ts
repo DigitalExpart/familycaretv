@@ -17,6 +17,12 @@ export class TasksController {
     return this.tasksService.create(user.id, body);
   }
 
+  @Get()
+  @ApiOperation({ summary: 'Get all tasks' })
+  findAll(@CurrentUser() user: any) {
+    return this.tasksService.findAll(user.id);
+  }
+
   @Get('today')
   @ApiOperation({ summary: 'Get all tasks for today' })
   findAllToday(@CurrentUser() user: any) {

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PatientsScreen" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/screens/PatientsScreen.brs" />
+    <children>
+        <Rectangle id="bg" width="1920" height="1080" color="0x121212" />
+        <Label id="titleText" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0xFFFFFF" text="Patients" />
+        <RowList id="dataList" translation="[100, 150]" itemComponentName="PremiumCard" numRows="5" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFF" />
+        <ApiTask id="fetchTask" />
+    </children>
+</component>

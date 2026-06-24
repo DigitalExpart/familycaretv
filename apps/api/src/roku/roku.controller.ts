@@ -29,9 +29,16 @@ export class RokuController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('dashboard')
-  async getDashboard(@Request() req: any) {
-    return this.rokuService.getDashboard(req.user.userId);
+  @Get('home')
+  async getHome(@Request() req: any) {
+    return this.rokuService.getHome(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('updates')
+  async getUpdates(@Request() req: any) {
+    const since = req.query.since as string;
+    return this.rokuService.getUpdates(req.user.userId, since);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,5 +51,29 @@ export class RokuController {
   @Get('subscription-status')
   async getSubscriptionStatus(@Request() req: any) {
     return this.rokuService.getSubscriptionStatus(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('patients')
+  async getPatients(@Request() req: any) {
+    return this.rokuService.getPatients(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('tasks')
+  async getTasks(@Request() req: any) {
+    return this.rokuService.getTasks(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('kids')
+  async getKids(@Request() req: any) {
+    return this.rokuService.getKids(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('pets')
+  async getPets(@Request() req: any) {
+    return this.rokuService.getPets(req.user.userId);
   }
 }

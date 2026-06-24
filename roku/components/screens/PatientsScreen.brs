@@ -1,0 +1,50 @@
+sub init()
+    m.dataList = m.top.findNode("dataList")
+    m.fetchTask = m.top.findNode("fetchTask")
+    m.fetchTask.observeField("response", "onDataReceived")
+    m.top.observeField("visible", "onVisibleChange")
+end sub
+
+sub onVisibleChange()
+    if m.top.visible = true
+        m.fetchTask.request = { endpoint: "/roku/patients", method: "GET" }
+        m.fetchTask.control = "RUN"
+    end if
+end sub
+
+sub onDataReceived()
+    res = m.fetchTask.response
+    if res <> invalid and res.statusCode = 200 and res.data <> invalid
+        data = res.data
+        content = CreateObject("roSGNode", "ContentNode")
+        row1 = createRow("Doctors", data[0].doctors); row2 = createRow("Medications", data[0].medications); row3 = createRow("Appointments", data[0].events); row4 = createRow("Notes", data[0].notes); row5 = createRow("Emergency", data[0].emergencyContacts)
+        if row1 <> invalid then content.appendChild(row1)
+        if row2 <> invalid then content.appendChild(row2)
+        if row3 <> invalid then content.appendChild(row3)
+        if row4 <> invalid then content.appendChild(row4)
+        if row5 <> invalid then content.appendChild(row5)
+        m.dataList.content = content
+    end if
+end sub
+
+function createRow(title as String, items as Object) as Object
+    if items = invalid or items.count() = 0 then return invalid
+    row = CreateObject("roSGNode", "ContentNode")
+    row.title = title
+    for each item in items
+        itemNode = CreateObject("roSGNode", "ContentNode")
+        itemNode.title = item.title
+        if itemNode.title = invalid then itemNode.title = item.name
+        if itemNode.title = invalid then itemNode.title = "Item"
+        itemNode.description = "Details"
+        if item.imageUrl <> invalid
+            itemNode.HDPosterUrl = item.imageUrl
+        else if item.audioUrl <> invalid
+            itemNode.HDPosterUrl = "pkg:/images/audio_icon.jpg"
+        else
+            itemNode.HDPosterUrl = "pkg:/images/placeholder.jpg"
+        end if
+        row.appendChild(itemNode)
+    end for
+    return row
+end function

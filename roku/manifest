@@ -1,7 +1,8 @@
 title=FamilyCare TV
 subtitle=The TV platform for senior care
-major_version=0
-minor_version=1
-build_version=1
+major_version=1
+minor_version=0
+build_version=0
 ui_resolutions=fhd
 bs_const=build_env="development"
+screensaver_title=FamilyCare TV Screensaver

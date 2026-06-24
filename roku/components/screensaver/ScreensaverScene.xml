@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="ScreensaverScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/components/screensaver/ScreensaverScene.brs" />
+    <children>
+        <Rectangle id="bg" width="1920" height="1080" color="0x000000" />
+        <BouncingVerse id="bouncingVerse" />
+        
+        <!-- UI Elements Overlay -->
+        <Label id="clockText" translation="[1650, 50]" font="font:LargeBoldSystemFont" color="0xFFFFFF" />
+        <Label id="dateText" translation="[1650, 110]" font="font:MediumSystemFont" color="0xCCCCCC" />
+        
+        <Poster id="qrCode" width="150" height="150" translation="[50, 50]" loadDisplayMode="scaleToFit" />
+        <Label translation="[50, 210]" font="font:SmallSystemFont" color="0xFFFFFF" text="Scan to link TV" />
+
+        <NotificationTicker id="notificationTicker" translation="[0, 1000]" />
+        
+        <ApiTask id="screensaverTask" />
+        <Timer id="clockTimer" duration="1" repeat="true" control="start" />
+    </children>
+</component>

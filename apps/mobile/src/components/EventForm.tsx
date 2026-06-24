@@ -7,6 +7,7 @@ import { Event, EventType, ReminderStatus } from 'shared-types';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/theme';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -31,6 +32,9 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
+
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
+  const [showTimePicker, setShowTimePicker] = React.useState(false);
 
   const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -104,23 +108,62 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
       </View>
       {errors.type && <Text style={styles.errorText}>{errors.type.message}</Text>}
 
-      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.date')} (YYYY-MM-DDTHH:mm) *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.date')} *</Text>
       <Controller
         control={control}
         name="startDateTime"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={[
-              styles.input, 
-              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border },
-              errors.startDateTime && styles.inputError
-            ]}
-            onChangeText={onChange}
-            value={value}
-            placeholder="e.g. 2026-10-15T14:30"
-            placeholderTextColor={theme.textSecondary}
-          />
-        )}
+        render={({ field: { onChange, value } }) => {
+          const dateVal = value ? new Date(value) : new Date();
+          return (
+            <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
+              <TouchableOpacity
+                style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, borderColor: errors.startDateTime ? '#FF3B30' : theme.border, justifyContent: 'center' }]}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Text style={{ color: theme.text }}>{dateVal.toLocaleDateString()}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, borderColor: errors.startDateTime ? '#FF3B30' : theme.border, justifyContent: 'center' }]}
+                onPress={() => setShowTimePicker(true)}
+              >
+                <Text style={{ color: theme.text }}>{dateVal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+              </TouchableOpacity>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={dateVal}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      const newDate = new Date(dateVal);
+                      newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                      onChange(newDate.toISOString());
+                    }
+                  }}
+                />
+              )}
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={dateVal}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowTimePicker(false);
+                    if (selectedDate) {
+                      const newDate = new Date(dateVal);
+                      newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes(), 0, 0);
+                      onChange(newDate.toISOString());
+                    }
+                  }}
+                />
+              )}
+            </View>
+          );
+        }}
       />
       {errors.startDateTime && <Text style={styles.errorText}>{errors.startDateTime.message}</Text>}
 

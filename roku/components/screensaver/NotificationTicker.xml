@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="NotificationTicker" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/screensaver/NotificationTicker.brs" />
+    <interface>
+        <function name="setNotifications" />
+    </interface>
+    <children>
+        <Rectangle width="1920" height="80" color="0x222222" />
+        <Label id="tickerText" translation="[1920, 20]" font="font:MediumSystemFont" color="0xFFFFFF" />
+        
+        <Animation id="scrollAnim" duration="20" easeFunction="linear" repeat="true">
+            <Vector2DFieldInterpolator id="scrollInterp" key="[0, 1]" keyValue="[[1920, 20], [-2000, 20]]" fieldToInterp="tickerText.translation" />
+        </Animation>
+    </children>
+</component>

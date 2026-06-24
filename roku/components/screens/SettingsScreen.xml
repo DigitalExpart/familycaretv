@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="SettingsScreen" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/screens/SettingsScreen.brs" />
+    <children>
+        <Rectangle id="bg" width="1920" height="1080" color="0x121212" />
+        <Label text="Settings" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0xFFFFFF" />
+        <Label id="accountInfo" translation="[100, 150]" font="font:MediumSystemFont" color="0xCCCCCC" />
+        <Button id="btnUnlink" text="Unlink Device" translation="[100, 250]" />
+        <ApiTask id="fetchTask" />
+    </children>
+</component>

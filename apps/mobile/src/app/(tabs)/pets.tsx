@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, ActivityIndicator, TextInput } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, ActivityIndicator, TextInput, Platform } from 'react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { Dog, Stethoscope, Syringe, Pill, Plus, Calendar as CalendarIcon, X, AlertTriangle, FileText } from 'lucide-react-native';
+import { Dog, Stethoscope, Syringe, Pill, Plus, Calendar as CalendarIcon, X, AlertTriangle, FileText, CheckCircle, Circle, Clock, Repeat } from 'lucide-react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar } from 'react-native-calendars';
+import { DaysOfWeekSelector } from '../../components/ui/DaysOfWeekSelector';
 
 export default function PetsScreen() {
   const { t } = useTranslation();
@@ -41,9 +44,25 @@ export default function PetsScreen() {
   const [emergencyName, setEmergencyName] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [notes, setNotes] = useState('');
-  const [vaccines, setVaccines] = useState([{ name: '', dateGiven: '', nextDue: '' }]);
-  const [medications, setMedications] = useState([{ name: '', dosage: '' }]);
+  const [vaccines, setVaccines] = useState<{ name: string, dateGiven: Date | null, nextDue: Date | null }[]>([{ name: '', dateGiven: null, nextDue: null }]);
+  const [medications, setMedications] = useState<{ name: string, dosage: string }[]>([{ name: '', dosage: '' }]);
   
+  // Tasks
+  const [localTasks, setLocalTasks] = useState<{ id?: string, title: string, category: string, completed: boolean, date?: Date, time?: string, isDaily?: boolean, daysOfWeek?: string[] }[]>([]);
+  const [newTask, setNewTask] = useState('');
+  const [taskDate, setTaskDate] = useState<Date>(new Date());
+  const [taskTime, setTaskTime] = useState<Date>(new Date());
+  const [isDailyTask, setIsDailyTask] = useState(false);
+  const [taskDaysOfWeek, setTaskDaysOfWeek] = useState<string[]>([]);
+
+  // Pickers
+  const [openPicker, setOpenPicker] = useState<{ type: 'vaccineDateGiven' | 'vaccineNextDue' | 'taskDate' | 'taskTime', index?: number } | null>(null);
+
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+
   useEffect(() => {
     setIsEditing(false);
     if (activeTab === '+ Add') {
@@ -76,8 +95,8 @@ export default function PetsScreen() {
         if (pet.vaccinations && pet.vaccinations.length > 0) {
           setVaccines(pet.vaccinations.map((v: any) => ({
             name: v.vaccineName, 
-            dateGiven: v.dateGiven ? v.dateGiven.substring(0, 10) : '', 
-            nextDue: v.nextDue ? v.nextDue.substring(0, 10) : ''
+            dateGiven: v.dateGiven ? new Date(v.dateGiven) : null, 
+            nextDue: v.nextDue ? new Date(v.nextDue) : null
           })));
         } else {
           setVaccines([]);
@@ -89,6 +108,21 @@ export default function PetsScreen() {
           })));
         } else {
           setMedications([]);
+        }
+
+        if (pet.tasks && pet.tasks.length > 0) {
+          setLocalTasks(pet.tasks.map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            category: t.category || 'PET_CARE',
+            completed: t.completed,
+            date: t.date ? new Date(t.date) : undefined,
+            time: t.time,
+            isDaily: t.isDaily,
+            daysOfWeek: t.daysOfWeek || []
+          })));
+        } else {
+          setLocalTasks([]);
         }
       }
     }
@@ -104,30 +138,50 @@ export default function PetsScreen() {
     setEmergencyName('');
     setEmergencyPhone('');
     setNotes('');
-    setVaccines([{ name: '', dateGiven: '', nextDue: '' }]);
+    setVaccines([{ name: '', dateGiven: null, nextDue: null }]);
     setMedications([{ name: '', dosage: '' }]);
+    setLocalTasks([]);
   };
 
   const createPetMutation = useMutation({
-    mutationFn: async (newPet: any) => {
-      return await api.post('/pets', newPet);
-    },
+    mutationFn: async (newPet: any) => api.post('/pets', newPet),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
       setActiveTab(name);
     }
   });
 
-  const parseDate = (dateStr: string) => {
-    if (!dateStr) return null;
-    const parts = dateStr.split(/[-/]/);
-    if (parts.length === 3) {
-      // rough assumption: yyyy-mm-dd or dd/mm/yyyy. Try new Date
-      const d = new Date(dateStr);
-      if (!isNaN(d.getTime())) return d.toISOString();
+  const updatePetMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => api.patch(`/pets/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      setIsEditing(false);
     }
-    return null;
-  };
+  });
+
+  const deletePetMutation = useMutation({
+    mutationFn: async (id: string) => api.delete(`/pets/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      setActiveTab('+ Add');
+    }
+  });
+
+  const toggleTaskMutation = useMutation({
+    mutationFn: async ({ petId, taskId, completed }: { petId: string, taskId: string, completed: boolean }) => api.patch(`/pets/${petId}/tasks/${taskId}`, { completed }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+    }
+  });
+
+  const addTaskMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => api.post(`/pets/${id}/tasks`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+    }
+  });
 
   const handleSave = () => {
     if (!name) return;
@@ -140,36 +194,25 @@ export default function PetsScreen() {
       clinics: emergencyName || emergencyPhone ? [{ name: emergencyName, phone: emergencyPhone }] : undefined,
       vaccinations: vaccines.filter(v => v.name).map(v => ({
         vaccineName: v.name,
-        dateGiven: parseDate(v.dateGiven),
-        nextDue: parseDate(v.nextDue)
+        dateGiven: v.dateGiven ? v.dateGiven.toISOString() : undefined,
+        nextDue: v.nextDue ? v.nextDue.toISOString() : undefined
       })),
       medications: medications.filter(m => m.name).map(m => ({
         name: m.name,
         dosage: m.dosage
       })),
-      notes: notes ? [{ content: notes }] : undefined
+      notes: notes ? [{ content: notes }] : undefined,
+      tasks: localTasks.map(t => ({
+        title: t.title,
+        category: t.category,
+        completed: t.completed,
+        date: t.date?.toISOString(),
+        time: t.time,
+        isDaily: t.isDaily,
+        daysOfWeek: t.daysOfWeek
+      }))
     });
   };
-
-  const updatePetMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string, data: any }) => {
-      return await api.patch(`/pets/${id}`, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pets'] });
-      setIsEditing(false);
-    }
-  });
-
-  const deletePetMutation = useMutation({
-    mutationFn: async (id: string) => {
-      return await api.delete(`/pets/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pets'] });
-      setActiveTab('+ Add');
-    }
-  });
 
   const handleUpdate = () => {
     if (!name) return;
@@ -187,14 +230,23 @@ export default function PetsScreen() {
         clinics: emergencyName || emergencyPhone ? [{ name: emergencyName, phone: emergencyPhone }] : [],
         vaccinations: vaccines.filter(v => v.name).map(v => ({
           vaccineName: v.name,
-          dateGiven: parseDate(v.dateGiven),
-          nextDue: parseDate(v.nextDue)
+          dateGiven: v.dateGiven ? v.dateGiven.toISOString() : undefined,
+          nextDue: v.nextDue ? v.nextDue.toISOString() : undefined
         })),
         medications: medications.filter(m => m.name).map(m => ({
           name: m.name,
           dosage: m.dosage
         })),
-        notes: notes ? [{ content: notes }] : []
+        notes: notes ? [{ content: notes }] : [],
+        tasks: localTasks.map(t => ({
+          title: t.title,
+          category: t.category,
+          completed: t.completed,
+          date: t.date?.toISOString(),
+          time: t.time,
+          isDaily: t.isDaily,
+          daysOfWeek: t.daysOfWeek
+        }))
       }
     });
   };
@@ -204,6 +256,90 @@ export default function PetsScreen() {
     if (!pet) return;
     deletePetMutation.mutate(pet.id);
   };
+
+  const handleAddTask = () => {
+    if (!newTask.trim()) return;
+    const timeStr = taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (activeTab === '+ Add') {
+      setLocalTasks([...localTasks, {
+        title: newTask,
+        category: 'PET_CARE',
+        completed: false,
+        date: taskDate,
+        time: timeStr,
+        isDaily: isDailyTask,
+        daysOfWeek: taskDaysOfWeek
+      }]);
+      setNewTask('');
+      setTaskDaysOfWeek([]);
+    } else {
+      const pet = profiles.find((p: any) => p.name === activeTab);
+      if (pet) {
+        addTaskMutation.mutate({
+          id: pet.id,
+          data: {
+            title: newTask,
+            category: 'PET_CARE',
+            date: taskDate.toISOString(),
+            time: timeStr,
+            isDaily: isDailyTask,
+            daysOfWeek: taskDaysOfWeek
+          }
+        });
+        setNewTask('');
+        setTaskDaysOfWeek([]);
+      }
+    }
+  };
+
+  const toggleTask = (task: any, index: number) => {
+    if (activeTab === '+ Add') {
+      const newTasks = [...localTasks];
+      newTasks[index].completed = !newTasks[index].completed;
+      setLocalTasks(newTasks);
+    } else {
+      const pet = profiles.find((p: any) => p.name === activeTab);
+      if (pet && task.id) {
+        toggleTaskMutation.mutate({ petId: pet.id, taskId: task.id, completed: !task.completed });
+      }
+    }
+  };
+
+  const getVisibleTasks = () => {
+    const [year, month, day] = selectedCalendarDate.split('-');
+    const selectedDateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const selectedDayName = dayNames[selectedDateObj.getDay()];
+
+    return localTasks.filter((t: any) => {
+      if (t.isDaily) return true;
+      if (t.daysOfWeek && t.daysOfWeek.includes(selectedDayName)) return true;
+      if (!t.date) return true;
+      const td = new Date(t.date);
+      const dateStr = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`;
+      return dateStr === selectedCalendarDate;
+    });
+  };
+
+  const visibleTasks = getVisibleTasks();
+
+  const markedDates: any = {};
+  localTasks.forEach((t: any) => {
+    if (t.date && !t.isDaily && (!t.daysOfWeek || t.daysOfWeek.length === 0)) {
+      const d = new Date(t.date);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      if (!markedDates[dateStr]) {
+        markedDates[dateStr] = { marked: true, dotColor: theme.primary };
+      }
+    }
+  });
+  if (!markedDates[selectedCalendarDate]) {
+    markedDates[selectedCalendarDate] = { selected: true, selectedColor: theme.warning };
+  } else {
+    markedDates[selectedCalendarDate].selected = true;
+    markedDates[selectedCalendarDate].selectedColor = theme.warning;
+  }
 
   if (isLoading) {
     return (
@@ -263,6 +399,7 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={name}
                 onChangeText={setName}
+                editable={isFormEditable}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -273,6 +410,7 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={breed}
                 onChangeText={setBreed}
+                editable={isFormEditable}
               />
             </View>
           </View>
@@ -286,6 +424,8 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={age}
                 onChangeText={setAge}
+                keyboardType="numeric"
+                editable={isFormEditable}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -296,9 +436,83 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={weight}
                 onChangeText={setWeight}
+                keyboardType="numeric"
+                editable={isFormEditable}
               />
             </View>
           </View>
+        </PremiumCard>
+
+        {/* Tasks Section */}
+        <PremiumCard style={{ marginBottom: 20 }}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>Pet Tasks</Text>
+          
+          {/* Calendar */}
+          <Calendar
+            current={selectedCalendarDate}
+            onDayPress={(day: any) => setSelectedCalendarDate(day.dateString)}
+            markedDates={markedDates}
+            style={{ marginBottom: 16, borderRadius: 12, overflow: 'hidden' }}
+            theme={{
+              backgroundColor: theme.surfaceSecondary,
+              calendarBackground: theme.surfaceSecondary,
+              textSectionTitleColor: theme.textSecondary,
+              selectedDayBackgroundColor: theme.warning,
+              selectedDayTextColor: '#ffffff',
+              todayTextColor: theme.warning,
+              dayTextColor: theme.text,
+              textDisabledColor: theme.textSecondary + '50',
+              dotColor: theme.warning,
+              selectedDotColor: '#ffffff',
+              arrowColor: theme.warning,
+              monthTextColor: theme.text,
+            }}
+          />
+
+          {visibleTasks.map((task, index) => (
+            <TouchableOpacity key={task.id || index.toString()} style={styles.taskRow} onPress={() => toggleTask(task, index)}>
+              {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
+              <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>
+                {task.title} {task.time ? `(${task.time})` : ''}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          {isFormEditable && (
+            <View style={{ marginTop: 16 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                <TextInput 
+                  style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginRight: 8 }]} 
+                  placeholder="Task Name"
+                  placeholderTextColor={theme.textSecondary}
+                  value={newTask}
+                  onChangeText={setNewTask}
+                />
+              </View>
+              <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+                <TouchableOpacity onPress={() => setOpenPicker({ type: 'taskDate' })} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>
+                  <CalendarIcon color={theme.textSecondary} size={16} style={{ marginRight: 8 }} />
+                  <Text style={{ color: theme.text }}>{taskDate.toLocaleDateString()}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setOpenPicker({ type: 'taskTime' })} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>
+                  <Clock color={theme.textSecondary} size={16} style={{ marginRight: 8 }} />
+                  <Text style={{ color: theme.text }}>{taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setIsDailyTask(!isDailyTask)} style={[styles.input, { paddingHorizontal: 12, backgroundColor: isDailyTask ? theme.warning : theme.surfaceSecondary, justifyContent: 'center', alignItems: 'center' }]}>
+                  <Repeat color={isDailyTask ? '#FFF' : theme.textSecondary} size={20} />
+                </TouchableOpacity>
+              </View>
+              
+              {!isDailyTask && (
+                <DaysOfWeekSelector selectedDays={taskDaysOfWeek} onChange={setTaskDaysOfWeek} />
+              )}
+              
+              <TouchableOpacity onPress={handleAddTask} style={[styles.addBtn, { backgroundColor: theme.warning }]}>
+                <Plus color="#FFF" size={20} />
+                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>Add Task</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </PremiumCard>
 
         {/* Veterinarian */}
@@ -317,6 +531,7 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={vetName}
                 onChangeText={setVetName}
+                editable={isFormEditable}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -327,6 +542,7 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={vetPhone}
                 onChangeText={setVetPhone}
+                editable={isFormEditable}
               />
             </View>
           </View>
@@ -348,6 +564,7 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={emergencyName}
                 onChangeText={setEmergencyName}
+                editable={isFormEditable}
               />
             </View>
             <View style={{ flex: 1 }}>
@@ -358,27 +575,10 @@ export default function PetsScreen() {
                 placeholderTextColor={theme.textSecondary}
                 value={emergencyPhone}
                 onChangeText={setEmergencyPhone}
+                editable={isFormEditable}
               />
             </View>
           </View>
-        </PremiumCard>
-
-        {/* Notes */}
-        <PremiumCard style={{ marginBottom: 20 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <FileText color={theme.warning} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('pets.notes')}</Text>
-          </View>
-          <TextInput
-            style={[styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
-            placeholder={t('pets.notes')}
-            placeholderTextColor={theme.textSecondary}
-            multiline
-            numberOfLines={4}
-            textAlignVertical="top"
-            value={notes}
-            onChangeText={setNotes}
-          />
         </PremiumCard>
 
         {/* Vaccines */}
@@ -396,6 +596,7 @@ export default function PetsScreen() {
                   value={v.name}
                   placeholder={t('pets.form.name')}
                   placeholderTextColor={theme.textSecondary}
+                  editable={isFormEditable}
                   onChangeText={(text) => {
                     const newVacs = [...vaccines];
                     newVacs[idx].name = text;
@@ -411,40 +612,32 @@ export default function PetsScreen() {
                   </TouchableOpacity>
                 )}
               </View>
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ flex: 1, marginRight: 8 }}>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flex: 1 }}>
                   <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dateGiven')}</Text>
-                  <View style={[styles.inputWrapper, { backgroundColor: theme.surface }]}>
-                    <TextInput 
-                      value={v.dateGiven}
-                      onChangeText={(text) => {
-                        const newVacs = [...vaccines];
-                        newVacs[idx].dateGiven = text;
-                        setVaccines(newVacs);
-                      }}
-                      placeholder="dd/mm/yyyy" 
-                      placeholderTextColor={theme.textSecondary} 
-                      style={{ color: theme.text, flex: 1 }}
-                    />
+                  <TouchableOpacity 
+                    style={[styles.inputWrapper, { backgroundColor: theme.surface }]}
+                    onPress={() => isFormEditable && setOpenPicker({ type: 'vaccineDateGiven', index: idx })}
+                    disabled={!isFormEditable}
+                  >
+                    <Text style={{ color: v.dateGiven ? theme.text : theme.textSecondary, flex: 1 }}>
+                      {v.dateGiven ? v.dateGiven.toLocaleDateString() : 'Select Date'}
+                    </Text>
                     <CalendarIcon color={theme.textSecondary} size={16} />
-                  </View>
+                  </TouchableOpacity>
                 </View>
-                <View style={{ flex: 1, marginLeft: 8 }}>
+                <View style={{ flex: 1 }}>
                   <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.nextDue')}</Text>
-                  <View style={[styles.inputWrapper, { backgroundColor: theme.surface }]}>
-                    <TextInput 
-                      value={v.nextDue}
-                      onChangeText={(text) => {
-                        const newVacs = [...vaccines];
-                        newVacs[idx].nextDue = text;
-                        setVaccines(newVacs);
-                      }}
-                      placeholder="dd/mm/yyyy" 
-                      placeholderTextColor={theme.textSecondary} 
-                      style={{ color: theme.text, flex: 1 }}
-                    />
+                  <TouchableOpacity 
+                    style={[styles.inputWrapper, { backgroundColor: theme.surface }]}
+                    onPress={() => isFormEditable && setOpenPicker({ type: 'vaccineNextDue', index: idx })}
+                    disabled={!isFormEditable}
+                  >
+                    <Text style={{ color: v.nextDue ? theme.text : theme.textSecondary, flex: 1 }}>
+                      {v.nextDue ? v.nextDue.toLocaleDateString() : 'Select Date'}
+                    </Text>
                     <CalendarIcon color={theme.textSecondary} size={16} />
-                  </View>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -453,7 +646,7 @@ export default function PetsScreen() {
           {isFormEditable && (
             <TouchableOpacity 
               style={[styles.outlineBtn, { borderColor: theme.warning }]}
-              onPress={() => setVaccines([...vaccines, { name: '', dateGiven: '', nextDue: '' }])}
+              onPress={() => setVaccines([...vaccines, { name: '', dateGiven: null, nextDue: null }])}
             >
               <Plus color={theme.warning} size={16} />
               <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Vaccine</Text>
@@ -476,6 +669,7 @@ export default function PetsScreen() {
                   value={med.name} 
                   placeholder={t('pets.form.name')}
                   placeholderTextColor={theme.textSecondary}
+                  editable={isFormEditable}
                   onChangeText={(text) => {
                     const newMeds = [...medications];
                     newMeds[idx].name = text;
@@ -498,6 +692,7 @@ export default function PetsScreen() {
                   placeholder="e.g. 1 pill daily" 
                   placeholderTextColor={theme.textSecondary} 
                   value={med.dosage}
+                  editable={isFormEditable}
                   onChangeText={(text) => {
                     const newMeds = [...medications];
                     newMeds[idx].dosage = text;
@@ -517,6 +712,25 @@ export default function PetsScreen() {
               <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>
             </TouchableOpacity>
           )}
+        </PremiumCard>
+        
+        {/* Notes */}
+        <PremiumCard style={{ marginBottom: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <FileText color={theme.warning} size={20} />
+            <Text style={[styles.sectionTitle, { color: theme.warning, marginLeft: 8, marginBottom: 0 }]}>{t('pets.notes')}</Text>
+          </View>
+          <TextInput
+            style={[styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text }]}
+            placeholder={t('pets.notes')}
+            placeholderTextColor={theme.textSecondary}
+            multiline
+            numberOfLines={4}
+            textAlignVertical="top"
+            value={notes}
+            onChangeText={setNotes}
+            editable={isFormEditable}
+          />
         </PremiumCard>
 
         {activeTab === '+ Add' ? (
@@ -559,6 +773,38 @@ export default function PetsScreen() {
         )}
 
       </ScrollView>
+
+      {/* Global DateTimePicker */}
+      {openPicker && (
+        <DateTimePicker
+          value={
+            openPicker.type === 'taskDate' ? taskDate :
+            openPicker.type === 'taskTime' ? taskTime :
+            openPicker.type === 'vaccineDateGiven' ? (vaccines[openPicker.index!].dateGiven || new Date()) :
+            (vaccines[openPicker.index!].nextDue || new Date())
+          }
+          mode={openPicker.type === 'taskTime' ? 'time' : 'date'}
+          display="default"
+          onChange={(event, selectedDate) => {
+            const picker = openPicker;
+            setOpenPicker(null);
+            if (selectedDate) {
+              if (picker.type === 'taskDate') setTaskDate(selectedDate);
+              else if (picker.type === 'taskTime') setTaskTime(selectedDate);
+              else if (picker.type === 'vaccineDateGiven') {
+                const newVacs = [...vaccines];
+                newVacs[picker.index!].dateGiven = selectedDate;
+                setVaccines(newVacs);
+              }
+              else if (picker.type === 'vaccineNextDue') {
+                const newVacs = [...vaccines];
+                newVacs[picker.index!].nextDue = selectedDate;
+                setVaccines(newVacs);
+              }
+            }
+          }}
+        />
+      )}
     </View>
   );
 }
@@ -574,6 +820,8 @@ const styles = StyleSheet.create({
   itemCard: { padding: 16, borderRadius: Radii.card, marginBottom: 12 },
   deleteBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', marginLeft: 12 },
   inputWrapper: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, borderRadius: Radii.input, height: 48 },
-  inlineInput: { flex: 1 },
-  outlineBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderRadius: Radii.card, borderWidth: 1 }
+  outlineBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 12, borderRadius: Radii.card, borderWidth: 1 },
+  taskRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
+  taskTitle: { marginLeft: 12, fontSize: 16 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderRadius: Radii.input, height: 48, justifyContent: 'center' },
 });

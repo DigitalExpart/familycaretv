@@ -6,9 +6,12 @@ import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { Baby, School, CheckCircle, Circle, Plus, ChevronLeft, ChevronRight, PawPrint, FileText } from 'lucide-react-native';
+import { Baby, School, CheckCircle, Circle, Plus, ChevronLeft, ChevronRight, PawPrint, FileText, Calendar as CalendarIcon, Clock, Repeat } from 'lucide-react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar } from 'react-native-calendars';
+import { DaysOfWeekSelector } from '../../components/ui/DaysOfWeekSelector';
 
 const { width } = Dimensions.get('window');
 
@@ -43,7 +46,18 @@ export default function KidsScreen() {
   const [notes, setNotes] = useState('');
   const [newTask, setNewTask] = useState('');
   const [taskCategory, setTaskCategory] = useState<'CHORE' | 'HOMEWORK'>('CHORE');
-  const [localTasks, setLocalTasks] = useState<{ id: string, title: string, category: string, completed: boolean }[]>([]);
+  const [taskDate, setTaskDate] = useState<Date>(new Date());
+  const [taskTime, setTaskTime] = useState<Date>(new Date());
+  const [isDailyTask, setIsDailyTask] = useState(false);
+  const [taskDaysOfWeek, setTaskDaysOfWeek] = useState<string[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+
+  const [localTasks, setLocalTasks] = useState<{ id: string, title: string, category: string, completed: boolean, date?: Date, time?: string, isDaily?: boolean, daysOfWeek?: string[] }[]>([]);
 
   useEffect(() => {
     setIsEditing(false);
@@ -74,7 +88,26 @@ export default function KidsScreen() {
   }, [activeTab, kidsData]);
 
   const activeProfile = profiles.find((p: any) => p.name === activeTab);
-  const tasks = activeTab === '+ Add' ? localTasks : (activeProfile?.tasks || []);
+  const allTasks = activeTab === '+ Add' ? localTasks : (activeProfile?.tasks || []);
+  
+  // Filter tasks based on selectedCalendarDate
+  const tasks = allTasks.filter((t: any) => {
+    if (t.isDaily) return true;
+    
+    const d = new Date();
+    const [year, month, day] = selectedCalendarDate.split('-');
+    const selectedDateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const selectedDayName = dayNames[selectedDateObj.getDay()];
+
+    if (t.daysOfWeek && t.daysOfWeek.includes(selectedDayName)) return true;
+
+    if (!t.date) return true; // Show tasks without dates
+    const td = new Date(t.date);
+    const dateStr = `${td.getFullYear()}-${String(td.getMonth() + 1).padStart(2, '0')}-${String(td.getDate()).padStart(2, '0')}`;
+    return dateStr === selectedCalendarDate;
+  });
+
   const chores = tasks.filter((t: any) => t.category === 'CHORE');
   const homework = tasks.filter((t: any) => t.category === 'HOMEWORK');
 
@@ -124,7 +157,7 @@ export default function KidsScreen() {
       notes: notes ? [{ content: notes }] : []
     };
     if (activeTab === '+ Add') {
-      payload.tasks = localTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed }));
+      payload.tasks = localTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, daysOfWeek: t.daysOfWeek }));
       createProfileMutation.mutate(payload);
     } else if (activeProfile) {
       updateProfileMutation.mutate({ id: activeProfile.id, data: payload });
@@ -137,14 +170,33 @@ export default function KidsScreen() {
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
+    const timeStr = taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if (activeTab === '+ Add') {
-      setLocalTasks([...localTasks, { id: Date.now().toString(), title: newTask, category: taskCategory, completed: false }]);
+      setLocalTasks([...localTasks, { 
+        id: Date.now().toString(), 
+        title: newTask, 
+        category: taskCategory, 
+        completed: false,
+        date: taskDate,
+        time: timeStr,
+        isDaily: isDailyTask,
+        daysOfWeek: taskDaysOfWeek
+      }]);
       setNewTask('');
+      setTaskDaysOfWeek([]);
     } else if (activeProfile) {
       addTaskMutation.mutate({
         id: activeProfile.id,
-        data: { title: newTask, category: taskCategory }
+        data: { 
+          title: newTask, 
+          category: taskCategory,
+          date: taskDate.toISOString(),
+          time: timeStr,
+          isDaily: isDailyTask,
+          daysOfWeek: taskDaysOfWeek
+        }
       });
+      setTaskDaysOfWeek([]);
     }
   };
 
@@ -156,27 +208,22 @@ export default function KidsScreen() {
     }
   };
 
-  // Calendar Logic (Responsive to current month)
-  const today = new Date();
-  const currentMonthName = today.toLocaleString('default', { month: 'long', year: 'numeric' });
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getDay();
-  const calendarDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-  // Build grid
-  const daysGrid = [];
-  let currentWeek = [];
-  for (let i = 0; i < firstDayOfMonth; i++) currentWeek.push(null);
-  for (let i = 1; i <= daysInMonth; i++) {
-    currentWeek.push(i);
-    if (currentWeek.length === 7) {
-      daysGrid.push(currentWeek);
-      currentWeek = [];
+  // Calendar marked dates
+  const markedDates: any = {};
+  allTasks.forEach((t: any) => {
+    if (t.date && !t.isDaily) {
+      const d = new Date(t.date);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      if (!markedDates[dateStr]) {
+        markedDates[dateStr] = { marked: true, dotColor: theme.primary };
+      }
     }
-  }
-  if (currentWeek.length > 0) {
-    while (currentWeek.length < 7) currentWeek.push(null);
-    daysGrid.push(currentWeek);
+  });
+  if (!markedDates[selectedCalendarDate]) {
+    markedDates[selectedCalendarDate] = { selected: true, selectedColor: theme.warning };
+  } else {
+    markedDates[selectedCalendarDate].selected = true;
+    markedDates[selectedCalendarDate].selectedColor = theme.warning;
   }
 
   if (isLoading) {
@@ -311,45 +358,84 @@ export default function KidsScreen() {
                 </TouchableOpacity>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ marginBottom: 12 }}>
                 <TextInput 
-                  style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginRight: 12 }]} 
+                  style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginBottom: 8 }]} 
                   placeholder={taskCategory === 'CHORE' ? "Add a chore..." : t('kids.addHomework')} 
                   placeholderTextColor={theme.textSecondary}
                   value={newTask}
                   onChangeText={setNewTask}
                 />
+                <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                  <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>
+                    <CalendarIcon color={theme.textSecondary} size={16} style={{ marginRight: 8 }} />
+                    <Text style={{ color: theme.text }}>{taskDate.toLocaleDateString()}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setShowTimePicker(true)} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>
+                    <Clock color={theme.textSecondary} size={16} style={{ marginRight: 8 }} />
+                    <Text style={{ color: theme.text }}>{taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setIsDailyTask(!isDailyTask)} style={[styles.input, { paddingHorizontal: 12, backgroundColor: isDailyTask ? theme.warning : theme.surfaceSecondary, justifyContent: 'center', alignItems: 'center' }]}>
+                    <Repeat color={isDailyTask ? '#FFF' : theme.textSecondary} size={20} />
+                  </TouchableOpacity>
+                </View>
+                {!isDailyTask && (
+                  <DaysOfWeekSelector selectedDays={taskDaysOfWeek} onChange={setTaskDaysOfWeek} />
+                )}
                 <TouchableOpacity onPress={handleAddTask} style={[styles.addBtn, { backgroundColor: theme.warning }]}>
                   <Plus color="#FFF" size={20} />
                   <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('common.add')}</Text>
                 </TouchableOpacity>
               </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={taskDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) setTaskDate(selectedDate);
+                  }}
+                />
+              )}
+              {showTimePicker && (
+                <DateTimePicker
+                  value={taskTime}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowTimePicker(false);
+                    if (selectedDate) setTaskTime(selectedDate);
+                  }}
+                />
+              )}
             </PremiumCard>
 
             {/* Kids Calendar */}
             <PremiumCard style={{ marginBottom: 20 }}>
-              <Text style={[styles.sectionTitle, { color: theme.warning }]}>{t('kids.calendar')}</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 16, paddingHorizontal: 10 }}>
-                <Text style={{ color: theme.text, fontWeight: '700', fontSize: 16 }}>{currentMonthName}</Text>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-                {calendarDays.map((d, i) => (
-                  <Text key={i} style={{ color: theme.textSecondary, width: 30, textAlign: 'center', fontWeight: 'bold' }}>{d}</Text>
-                ))}
-              </View>
-              {daysGrid.map((week, wIndex) => (
-                <View key={wIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-                  {week.map((day, dIndex) => {
-                    const isCurrent = day === today.getDate();
-                    return (
-                      <View key={dIndex} style={{ width: 30, height: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: isCurrent ? theme.warning : 'transparent', borderRadius: 15 }}>
-                        {day ? <Text style={{ color: isCurrent ? '#FFF' : theme.text }}>{day}</Text> : null}
-                      </View>
-                    );
-                  })}
-                </View>
-              ))}
-        </PremiumCard>
+              <Text style={[styles.sectionTitle, { color: theme.warning, marginBottom: 12 }]}>{t('kids.calendar')}</Text>
+              <Calendar
+                current={selectedCalendarDate}
+                onDayPress={(day: any) => setSelectedCalendarDate(day.dateString)}
+                markedDates={markedDates}
+                theme={{
+                  backgroundColor: theme.surfaceSecondary,
+                  calendarBackground: theme.surfaceSecondary,
+                  textSectionTitleColor: theme.textSecondary,
+                  selectedDayBackgroundColor: theme.warning,
+                  selectedDayTextColor: '#ffffff',
+                  todayTextColor: theme.warning,
+                  dayTextColor: theme.text,
+                  textDisabledColor: theme.textSecondary + '50',
+                  dotColor: theme.warning,
+                  selectedDotColor: '#ffffff',
+                  arrowColor: theme.warning,
+                  monthTextColor: theme.text,
+                  indicatorColor: theme.warning,
+                }}
+              />
+            </PremiumCard>
 
         {/* Kids Notes */}
         <PremiumCard style={{ marginBottom: 20 }}>

@@ -72,4 +72,10 @@ export class PetsController {
   addNote(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
     return this.petsService.addNote(id, user.id, body);
   }
+
+  @Post(':id/tasks')
+  @ApiOperation({ summary: 'Add a task to a pet' })
+  addTask(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
+    return this.petsService.addTask(id, user.id, body);
+  }
 }

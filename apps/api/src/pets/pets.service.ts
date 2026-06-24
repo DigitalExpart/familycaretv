@@ -6,7 +6,7 @@ export class PetsService {
   constructor(private prisma: PrismaService) {}
 
   async createPet(userId: string, data: any) {
-    const { veterinarians, clinics, vaccinations, medications, notes, ...rest } = data;
+    const { veterinarians, clinics, vaccinations, medications, notes, tasks, ...rest } = data;
     
     return this.prisma.pet.create({
       data: {
@@ -17,6 +17,7 @@ export class PetsService {
         ...(vaccinations?.length ? { vaccinations: { create: vaccinations } } : {}),
         ...(medications?.length ? { medications: { create: medications } } : {}),
         ...(notes?.length ? { notes: { create: notes } } : {}),
+        ...(tasks?.length ? { tasks: { create: tasks } } : {}),
       },
     });
   }
@@ -30,6 +31,7 @@ export class PetsService {
         vaccinations: true,
         medications: true,
         notes: true,
+        tasks: true,
       },
     });
   }
@@ -43,6 +45,7 @@ export class PetsService {
         vaccinations: true,
         medications: true,
         notes: true,
+        tasks: true,
       },
     });
     if (!pet || pet.userId !== userId) throw new NotFoundException('Pet not found');
@@ -51,7 +54,7 @@ export class PetsService {
 
   async updatePet(id: string, userId: string, data: any) {
     await this.getPet(id, userId); // verify ownership
-    const { veterinarians, clinics, vaccinations, medications, notes, ...rest } = data;
+    const { veterinarians, clinics, vaccinations, medications, notes, tasks, ...rest } = data;
     
     return this.prisma.pet.update({ 
       where: { id }, 
@@ -62,6 +65,7 @@ export class PetsService {
         ...(vaccinations !== undefined ? { vaccinations: { deleteMany: {}, create: vaccinations } } : {}),
         ...(medications !== undefined ? { medications: { deleteMany: {}, create: medications } } : {}),
         ...(notes !== undefined ? { notes: { deleteMany: {}, create: notes } } : {}),
+        ...(tasks !== undefined ? { tasks: { deleteMany: {}, create: tasks } } : {}),
       } 
     });
   }
@@ -99,5 +103,11 @@ export class PetsService {
   async addNote(petId: string, userId: string, data: any) {
     await this.getPet(petId, userId);
     return this.prisma.petNote.create({ data: { ...data, petId } });
+  }
+
+  // --- Tasks ---
+  async addTask(petId: string, userId: string, data: any) {
+    await this.getPet(petId, userId);
+    return this.prisma.petTask.create({ data: { ...data, petId } });
   }
 }

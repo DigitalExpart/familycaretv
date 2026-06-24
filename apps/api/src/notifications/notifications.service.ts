@@ -48,6 +48,113 @@ export class NotificationsService {
 
     const virtualAlerts: any[] = [];
 
+    // Daily & Scheduled Tasks
+    const todaysTasks = await this.prisma.task.findMany({
+      where: {
+        userId,
+        time: { not: null },
+        OR: [
+          { isDaily: true }, 
+          { date: { gte: today, lt: tomorrow } },
+          { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }
+        ]
+      }
+    });
+
+    todaysTasks.forEach(task => {
+      const [hours, minutes] = task.time!.split(':').map(Number);
+      const taskTime = new Date(today);
+      taskTime.setHours(hours, minutes, 0, 0);
+      
+      const virtualId = `task-${task.id}`;
+      if (!readVirtualIds.includes(virtualId)) {
+        virtualAlerts.push({
+          id: virtualId,
+          userId,
+          type: 'SYSTEM',
+          title: `Task Reminder: ${task.title}`,
+          message: `It is time for your task: ${task.title}.`,
+          isRead: false,
+          actionUrl: '/tasks',
+          createdAt: taskTime,
+        });
+      }
+    });
+
+    // Kids Tasks
+    const children = await this.prisma.childProfile.findMany({ where: { userId }, select: { id: true, name: true } });
+    const childIds = children.map(c => c.id);
+    
+    const childTasks = await this.prisma.childTask.findMany({
+      where: {
+        childId: { in: childIds },
+        time: { not: null },
+        OR: [
+          { isDaily: true }, 
+          { date: { gte: today, lt: tomorrow } },
+          { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }
+        ]
+      },
+      include: { child: { select: { name: true } } }
+    });
+
+    childTasks.forEach(task => {
+      const [hours, minutes] = task.time!.split(':').map(Number);
+      const taskTime = new Date(today);
+      taskTime.setHours(hours, minutes, 0, 0);
+      
+      const virtualId = `childtask-${task.id}`;
+      if (!readVirtualIds.includes(virtualId)) {
+        virtualAlerts.push({
+          id: virtualId,
+          userId,
+          type: 'SYSTEM',
+          title: `Kid's Task Reminder: ${task.title}`,
+          message: `It is time for ${task.child.name} to do: ${task.title}.`,
+          isRead: false,
+          actionUrl: '/kids',
+          createdAt: taskTime,
+        });
+      }
+    });
+
+    // Pet Tasks
+    const pets = await this.prisma.pet.findMany({ where: { userId }, select: { id: true, name: true } });
+    const petIds = pets.map(p => p.id);
+
+    const petTasks = await this.prisma.petTask.findMany({
+      where: {
+        petId: { in: petIds },
+        time: { not: null },
+        OR: [
+          { isDaily: true }, 
+          { date: { gte: today, lt: tomorrow } },
+          { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }
+        ]
+      },
+      include: { pet: { select: { name: true } } }
+    });
+
+    petTasks.forEach(task => {
+      const [hours, minutes] = task.time!.split(':').map(Number);
+      const taskTime = new Date(today);
+      taskTime.setHours(hours, minutes, 0, 0);
+      
+      const virtualId = `pettask-${task.id}`;
+      if (!readVirtualIds.includes(virtualId)) {
+        virtualAlerts.push({
+          id: virtualId,
+          userId,
+          type: 'SYSTEM',
+          title: `Pet Task Reminder: ${task.title}`,
+          message: `It is time for ${task.pet.name}'s task: ${task.title}.`,
+          isRead: false,
+          actionUrl: '/pets',
+          createdAt: taskTime,
+        });
+      }
+    });
+
     todaysMedications.forEach(med => {
       med.timesOfDay.forEach(timeStr => {
         const [hours, minutes] = timeStr.split(':').map(Number);
@@ -94,7 +201,7 @@ export class NotificationsService {
   }
 
   async markAsRead(userId: string, notificationId: string) {
-    if (notificationId.startsWith('med-') || notificationId.startsWith('event-')) {
+    if (notificationId.startsWith('med-') || notificationId.startsWith('event-') || notificationId.startsWith('task-') || notificationId.startsWith('childtask-') || notificationId.startsWith('pettask-')) {
       const existing = await this.prisma.notification.findFirst({
         where: { userId, actionUrl: `read:${notificationId}` }
       });
@@ -119,7 +226,7 @@ export class NotificationsService {
   }
 
   async markAsUnread(userId: string, notificationId: string) {
-    if (notificationId.startsWith('med-') || notificationId.startsWith('event-')) {
+    if (notificationId.startsWith('med-') || notificationId.startsWith('event-') || notificationId.startsWith('task-') || notificationId.startsWith('childtask-') || notificationId.startsWith('pettask-')) {
       return this.prisma.notification.deleteMany({
         where: { userId, actionUrl: `read:${notificationId}` }
       });

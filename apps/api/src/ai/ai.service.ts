@@ -15,7 +15,7 @@ export class AiService {
     }
   }
 
-  async lookupMedication(medication: string, language: 'en' | 'es') {
+  async lookupMedication(medication: string, language: 'en' | 'es' = 'en') {
     // 1. Check cache
     const cached = await this.prisma.medicationReference.findUnique({
       where: {

@@ -273,8 +273,8 @@ export class RokuService {
           where: { type: 'APPOINTMENT' },
           orderBy: { startDateTime: 'asc' }
         },
-        notes: true,
-        emergencyContacts: true,
+        patientNotes: true,
+        contacts: true,
       }
     });
   }
@@ -286,13 +286,13 @@ export class RokuService {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const tasks = await this.prisma.task.findMany({
-      where: { userId, dueDate: { gte: today, lt: tomorrow } },
-      orderBy: { dueDate: 'asc' }
+      where: { userId, date: { gte: today, lt: tomorrow } },
+      orderBy: { date: 'asc' }
     });
 
-    const morning = tasks.filter(t => t.dueDate && t.dueDate.getHours() < 12);
-    const daytime = tasks.filter(t => t.dueDate && t.dueDate.getHours() >= 12 && t.dueDate.getHours() < 18);
-    const evening = tasks.filter(t => t.dueDate && t.dueDate.getHours() >= 18);
+    const morning = tasks.filter(t => t.category === 'MORNING');
+    const daytime = tasks.filter(t => t.category === 'DAYTIME');
+    const evening = tasks.filter(t => t.category === 'EVENING');
     const completed = tasks.filter(t => t.completed);
 
     return {
@@ -305,12 +305,12 @@ export class RokuService {
   }
 
   async getKids(userId: string) {
-    return this.prisma.patient.findMany({
-      where: { userId, isChild: true },
+    return this.prisma.childProfile.findMany({
+      where: { userId },
       include: {
         tasks: {
           where: { completed: false },
-          orderBy: { dueDate: 'asc' }
+          orderBy: { date: 'asc' }
         },
         events: true,
         notes: true,

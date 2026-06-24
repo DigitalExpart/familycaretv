@@ -6,6 +6,17 @@ import { NotificationType } from '@prisma/client';
 export class NotificationsService {
   constructor(private prisma: PrismaService) {}
 
+  private parseTimeStr(timeStr: string): { hours: number, minutes: number } {
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+    if (!match) return { hours: 0, minutes: 0 };
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const ampm = match[3]?.toUpperCase();
+    if (ampm === 'PM' && hours < 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+    return { hours, minutes };
+  }
+
   async getUserNotifications(userId: string) {
     const dbNotifications = await this.prisma.notification.findMany({
       where: { userId },
@@ -62,7 +73,7 @@ export class NotificationsService {
     });
 
     todaysTasks.forEach(task => {
-      const [hours, minutes] = task.time!.split(':').map(Number);
+      const { hours, minutes } = this.parseTimeStr(task.time!);
       const taskTime = new Date(today);
       taskTime.setHours(hours, minutes, 0, 0);
       
@@ -99,7 +110,7 @@ export class NotificationsService {
     });
 
     childTasks.forEach(task => {
-      const [hours, minutes] = task.time!.split(':').map(Number);
+      const { hours, minutes } = this.parseTimeStr(task.time!);
       const taskTime = new Date(today);
       taskTime.setHours(hours, minutes, 0, 0);
       
@@ -136,7 +147,7 @@ export class NotificationsService {
     });
 
     petTasks.forEach(task => {
-      const [hours, minutes] = task.time!.split(':').map(Number);
+      const { hours, minutes } = this.parseTimeStr(task.time!);
       const taskTime = new Date(today);
       taskTime.setHours(hours, minutes, 0, 0);
       
@@ -157,7 +168,7 @@ export class NotificationsService {
 
     todaysMedications.forEach(med => {
       med.timesOfDay.forEach(timeStr => {
-        const [hours, minutes] = timeStr.split(':').map(Number);
+        const { hours, minutes } = this.parseTimeStr(timeStr);
         const taskTime = new Date(today);
         taskTime.setHours(hours, minutes, 0, 0);
         

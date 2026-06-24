@@ -25,7 +25,7 @@ export function useMarkNotificationRead() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data } = await api.patch(`/notifications/${id}/read`);
+      const { data } = await api.patch(`/notifications/${encodeURIComponent(id)}/read`);
       return data;
     },
     onSuccess: () => {
@@ -39,7 +39,7 @@ export function useMarkNotificationUnread() {
   
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data } = await api.patch(`/notifications/${id}/unread`);
+      const { data } = await api.patch(`/notifications/${encodeURIComponent(id)}/unread`);
       return data;
     },
     onSuccess: () => {

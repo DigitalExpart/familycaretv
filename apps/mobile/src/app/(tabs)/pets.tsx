@@ -12,6 +12,7 @@ import { api } from '../../api/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'react-native-calendars';
 import { DaysOfWeekSelector } from '../../components/ui/DaysOfWeekSelector';
+import { scheduleMedicationNotifications } from '../../utils/notifications';
 
 export default function PetsScreen() {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function PetsScreen() {
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [vaccines, setVaccines] = useState<{ name: string, dateGiven: Date | null, nextDue: Date | null }[]>([{ name: '', dateGiven: null, nextDue: null }]);
-  const [medications, setMedications] = useState<{ name: string, dosage: string }[]>([{ name: '', dosage: '' }]);
+  const [medications, setMedications] = useState<{ name: string, dosage: string, time?: Date | null }[]>([{ name: '', dosage: '', time: null }]);
   
   // Tasks
   const [localTasks, setLocalTasks] = useState<{ id?: string, title: string, category: string, completed: boolean, date?: Date, time?: string, isDaily?: boolean, daysOfWeek?: string[] }[]>([]);
@@ -56,7 +57,7 @@ export default function PetsScreen() {
   const [taskDaysOfWeek, setTaskDaysOfWeek] = useState<string[]>([]);
 
   // Pickers
-  const [openPicker, setOpenPicker] = useState<{ type: 'vaccineDateGiven' | 'vaccineNextDue' | 'taskDate' | 'taskTime', index?: number } | null>(null);
+  const [openPicker, setOpenPicker] = useState<{ type: 'vaccineDateGiven' | 'vaccineNextDue' | 'taskDate' | 'taskTime' | 'medicationTime', index?: number } | null>(null);
 
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<string>(() => {
     const d = new Date();
@@ -104,7 +105,7 @@ export default function PetsScreen() {
 
         if (pet.medications && pet.medications.length > 0) {
           setMedications(pet.medications.map((m: any) => ({
-            name: m.name, dosage: m.dosage || ''
+            name: m.name, dosage: m.dosage || '', time: m.time ? new Date(`1970-01-01T${m.time}`) : null
           })));
         } else {
           setMedications([]);
@@ -139,7 +140,7 @@ export default function PetsScreen() {
     setEmergencyPhone('');
     setNotes('');
     setVaccines([{ name: '', dateGiven: null, nextDue: null }]);
-    setMedications([{ name: '', dosage: '' }]);
+    setMedications([{ name: '', dosage: '', time: null }]);
     setLocalTasks([]);
   };
 
@@ -197,10 +198,17 @@ export default function PetsScreen() {
         dateGiven: v.dateGiven ? v.dateGiven.toISOString() : undefined,
         nextDue: v.nextDue ? v.nextDue.toISOString() : undefined
       })),
-      medications: medications.filter(m => m.name).map(m => ({
-        name: m.name,
-        dosage: m.dosage
-      })),
+      medications: medications.filter(m => m.name).map(m => {
+        const timeStr = m.time ? m.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined;
+        if (timeStr) {
+           scheduleMedicationNotifications(`med-${Date.now()}`, m.name, ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], [timeStr]);
+        }
+        return {
+          name: m.name,
+          dosage: m.dosage,
+          time: timeStr
+        };
+      }),
       notes: notes ? [{ content: notes }] : undefined,
       tasks: localTasks.map(t => ({
         title: t.title,
@@ -233,10 +241,17 @@ export default function PetsScreen() {
           dateGiven: v.dateGiven ? v.dateGiven.toISOString() : undefined,
           nextDue: v.nextDue ? v.nextDue.toISOString() : undefined
         })),
-        medications: medications.filter(m => m.name).map(m => ({
-          name: m.name,
-          dosage: m.dosage
-        })),
+        medications: medications.filter(m => m.name).map(m => {
+          const timeStr = m.time ? m.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined;
+          if (timeStr) {
+             scheduleMedicationNotifications(`med-${Date.now()}`, m.name, ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], [timeStr]);
+          }
+          return {
+            name: m.name,
+            dosage: m.dosage,
+            time: timeStr
+          };
+        }),
         notes: notes ? [{ content: notes }] : [],
         tasks: localTasks.map(t => ({
           title: t.title,
@@ -685,20 +700,35 @@ export default function PetsScreen() {
                   </TouchableOpacity>
                 )}
               </View>
-              <View>
-                <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dosage')}</Text>
-                <TextInput 
-                  style={[styles.input, { backgroundColor: theme.surface, color: theme.text, height: 40 }]} 
-                  placeholder="e.g. 1 pill daily" 
-                  placeholderTextColor={theme.textSecondary} 
-                  value={med.dosage}
-                  editable={isFormEditable}
-                  onChangeText={(text) => {
-                    const newMeds = [...medications];
-                    newMeds[idx].dosage = text;
-                    setMedications(newMeds);
-                  }}
-                />
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dosage')}</Text>
+                  <TextInput 
+                    style={[styles.input, { backgroundColor: theme.surface, color: theme.text, height: 40 }]} 
+                    placeholder="e.g. 1 pill daily" 
+                    placeholderTextColor={theme.textSecondary} 
+                    value={med.dosage}
+                    editable={isFormEditable}
+                    onChangeText={(text) => {
+                      const newMeds = [...medications];
+                      newMeds[idx].dosage = text;
+                      setMedications(newMeds);
+                    }}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.label, { color: theme.textSecondary }]}>TIME</Text>
+                  <TouchableOpacity 
+                    style={[styles.inputWrapper, { backgroundColor: theme.surface, height: 40 }]}
+                    onPress={() => isFormEditable && setOpenPicker({ type: 'medicationTime', index: idx })}
+                    disabled={!isFormEditable}
+                  >
+                    <Text style={{ color: med.time ? theme.text : theme.textSecondary, flex: 1 }}>
+                      {med.time ? med.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Set Time'}
+                    </Text>
+                    <Clock color={theme.textSecondary} size={16} />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           ))}
@@ -706,7 +736,7 @@ export default function PetsScreen() {
           {isFormEditable && (
             <TouchableOpacity 
               style={[styles.outlineBtn, { borderColor: theme.warning }]}
-              onPress={() => setMedications([...medications, { name: '', dosage: '' }])}
+              onPress={() => setMedications([...medications, { name: '', dosage: '', time: null }])}
             >
               <Plus color={theme.warning} size={16} />
               <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>
@@ -779,18 +809,23 @@ export default function PetsScreen() {
         <DateTimePicker
           value={
             openPicker.type === 'taskDate' ? taskDate :
-            openPicker.type === 'taskTime' ? taskTime :
+            (openPicker.type === 'taskTime' || openPicker.type === 'medicationTime') ? (openPicker.type === 'medicationTime' ? (medications[openPicker.index!].time || new Date()) : taskTime) :
             openPicker.type === 'vaccineDateGiven' ? (vaccines[openPicker.index!].dateGiven || new Date()) :
             (vaccines[openPicker.index!].nextDue || new Date())
           }
-          mode={openPicker.type === 'taskTime' ? 'time' : 'date'}
+          mode={(openPicker.type === 'taskTime' || openPicker.type === 'medicationTime') ? 'time' : 'date'}
           display="default"
           onChange={(event, selectedDate) => {
             const picker = openPicker;
             setOpenPicker(null);
-            if (selectedDate) {
+            if (event.type === 'set' && selectedDate) {
               if (picker.type === 'taskDate') setTaskDate(selectedDate);
               else if (picker.type === 'taskTime') setTaskTime(selectedDate);
+              else if (picker.type === 'medicationTime') {
+                const newMeds = [...medications];
+                newMeds[picker.index!].time = selectedDate;
+                setMedications(newMeds);
+              }
               else if (picker.type === 'vaccineDateGiven') {
                 const newVacs = [...vaccines];
                 newVacs[picker.index!].dateGiven = selectedDate;

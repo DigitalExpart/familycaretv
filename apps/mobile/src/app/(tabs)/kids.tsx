@@ -42,6 +42,10 @@ export default function KidsScreen() {
   const [phone, setPhone] = useState('');
   const [teacher, setTeacher] = useState('');
   const [hours, setHours] = useState('');
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const [startTime, setStartTime] = useState<Date>(new Date(new Date().setHours(8, 0, 0, 0)));
+  const [endTime, setEndTime] = useState<Date>(new Date(new Date().setHours(15, 0, 0, 0)));
   const [bus, setBus] = useState('');
   const [notes, setNotes] = useState('');
   const [newTask, setNewTask] = useState('');
@@ -306,7 +310,43 @@ export default function KidsScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.label, { color: theme.textSecondary }]}>HOURS</Text>
-              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder="8AM - 3PM" placeholderTextColor={theme.textSecondary} value={hours} onChangeText={setHours} editable={isFormEditable} />
+              <TouchableOpacity 
+                style={[styles.input, { backgroundColor: theme.surfaceSecondary, justifyContent: 'center' }]}
+                disabled={!isFormEditable}
+                onPress={() => setShowStartTimePicker(true)}
+              >
+                <Text style={{ color: hours ? theme.text : theme.textSecondary }}>{hours || "8AM - 3PM"}</Text>
+              </TouchableOpacity>
+              {showStartTimePicker && (
+                <DateTimePicker
+                  value={startTime}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowStartTimePicker(false);
+                    if (event.type === 'set' && selectedDate) {
+                      setStartTime(selectedDate);
+                      setShowEndTimePicker(true);
+                    }
+                  }}
+                />
+              )}
+              {showEndTimePicker && (
+                <DateTimePicker
+                  value={endTime}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowEndTimePicker(false);
+                    if (event.type === 'set' && selectedDate) {
+                      setEndTime(selectedDate);
+                      const startStr = startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' ', '');
+                      const endStr = selectedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' ', '');
+                      setHours(`${startStr} - ${endStr}`);
+                    }
+                  }}
+                />
+              )}
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.label, { color: theme.textSecondary }]}>BUS</Text>

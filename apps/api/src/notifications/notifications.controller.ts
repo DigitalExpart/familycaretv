@@ -1,6 +1,7 @@
-import { Controller, Get, Patch, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Patch, Param, UseGuards } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Notifications')
@@ -12,8 +13,8 @@ export class NotificationsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all notifications for current user' })
-  async getNotifications(@Request() req) {
-    const notifications = await this.notificationsService.getUserNotifications(req.user.userId);
+  async getNotifications(@CurrentUser() user: any) {
+    const notifications = await this.notificationsService.getUserNotifications(user.id);
     return {
       success: true,
       data: notifications,
@@ -22,8 +23,8 @@ export class NotificationsController {
 
   @Patch(':id/read')
   @ApiOperation({ summary: 'Mark a notification as read' })
-  async markAsRead(@Request() req, @Param('id') id: string) {
-    await this.notificationsService.markAsRead(req.user.userId, id);
+  async markAsRead(@CurrentUser() user: any, @Param('id') id: string) {
+    await this.notificationsService.markAsRead(user.id, id);
     return {
       success: true,
       message: 'Notification marked as read',
@@ -32,8 +33,8 @@ export class NotificationsController {
 
   @Patch(':id/unread')
   @ApiOperation({ summary: 'Mark a notification as unread' })
-  async markAsUnread(@Request() req, @Param('id') id: string) {
-    await this.notificationsService.markAsUnread(req.user.userId, id);
+  async markAsUnread(@CurrentUser() user: any, @Param('id') id: string) {
+    await this.notificationsService.markAsUnread(user.id, id);
     return {
       success: true,
       message: 'Notification marked as unread',
@@ -42,8 +43,8 @@ export class NotificationsController {
 
   @Patch('read-all')
   @ApiOperation({ summary: 'Mark all notifications as read' })
-  async markAllAsRead(@Request() req) {
-    await this.notificationsService.markAllAsRead(req.user.userId);
+  async markAllAsRead(@CurrentUser() user: any) {
+    await this.notificationsService.markAllAsRead(user.id);
     return {
       success: true,
       message: 'All notifications marked as read',

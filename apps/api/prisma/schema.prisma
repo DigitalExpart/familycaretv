@@ -49,6 +49,8 @@ model User {
   journals           DailyJournal[] @relation("UserJournals")
   kids               ChildProfile[] @relation("UserKids")
   pets               Pet[]          @relation("UserPets")
+
+  expoPushTokens     String[]
 }
 
 enum Role {
@@ -261,6 +263,10 @@ model Notification {
   message     String
   isRead      Boolean          @default(false)
   actionUrl   String?
+  scheduledAt DateTime?
+  expiresAt   DateTime?
+  status      String           @default("PENDING")
+  priority    String           @default("NORMAL")
   createdAt   DateTime         @default(now())
 
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)

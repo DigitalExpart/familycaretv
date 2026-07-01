@@ -6,6 +6,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthStore } from '../store/auth.store';
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [isSplashFinished, setIsSplashFinished] = useState(false);
   const { user, isLoading: isAuthLoading, restoreSession } = useAuthStore();
+  usePushNotifications(user?.id);
   const { fontsLoaded, fontError } = useFonts();
   const segments = useSegments();
   const router = useRouter();

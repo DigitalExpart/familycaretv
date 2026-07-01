@@ -17,6 +17,7 @@ export function useNotifications() {
       const { data } = await api.get('/notifications');
       return data;
     },
+    refetchInterval: 30000,
   });
 }
 

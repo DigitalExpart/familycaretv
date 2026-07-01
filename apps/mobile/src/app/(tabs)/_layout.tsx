@@ -4,11 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../constants/theme';
 import { Platform } from 'react-native';
+import { useNotifications } from '../../features/notifications/notifications-api';
 
 export default function TabsLayout() {
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
+  const { data: notificationsResponse } = useNotifications();
+  const unreadCount = notificationsResponse?.data?.filter((n: any) => !n.isRead).length || 0;
 
   return (
     <Tabs
@@ -61,9 +64,8 @@ export default function TabsLayout() {
         options={{
           title: t('nav.notifications'),
           tabBarIcon: ({ color, size }) => <Bell color={color} size={size} />,
-          tabBarBadge: 3, // Hardcoded for now, will connect to state later
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
           tabBarBadgeStyle: { backgroundColor: theme.accent },
-          href: null,
         }}
       />
       <Tabs.Screen

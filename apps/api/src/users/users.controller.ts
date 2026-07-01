@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Delete, Param, Body, UseGuards, UnauthorizedException, Query } from '@nestjs/common';
+import { Controller, Get, Put, Delete, Patch, Param, Body, UseGuards, UnauthorizedException, Query } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { PrismaService } from '../database/prisma.service';
@@ -290,6 +290,33 @@ export class UsersController {
     return {
       success: true,
       data: dbUser,
+    };
+  }
+
+  @Patch('me/push-token')
+  @ApiOperation({ summary: 'Register Expo Push Token' })
+  async registerPushToken(@CurrentUser() user: any, @Body() body: { pushToken: string }) {
+    if (!body.pushToken) {
+      return { success: false, message: 'pushToken is required' };
+    }
+
+    const dbUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: { expoPushTokens: true }
+    });
+
+    const tokens = dbUser?.expoPushTokens || [];
+    if (!tokens.includes(body.pushToken)) {
+      tokens.push(body.pushToken);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { expoPushTokens: tokens }
+      });
+    }
+
+    return {
+      success: true,
+      message: 'Push token registered',
     };
   }
 }

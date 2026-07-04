@@ -85,6 +85,7 @@ export class UsersController {
         avatarUrl: true,
         timezone: true,
         role: true,
+        planTier: true,
         subscriptionStatus: true,
         createdAt: true,
         updatedAt: true,

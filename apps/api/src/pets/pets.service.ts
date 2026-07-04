@@ -51,7 +51,7 @@ export class PetsService {
     if (rest.weight !== undefined) petData.weight = rest.weight !== null ? Number(rest.weight) || null : null;
 
     try {
-      return await this.prisma.pet.create({
+      const pet = await this.prisma.pet.create({
         data: {
           ...petData,
           userId,

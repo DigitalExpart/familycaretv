@@ -535,6 +535,7 @@ model PetMedication {
   name      String
   dosage    String?
   frequency String?
+  time      String?
 
   pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }

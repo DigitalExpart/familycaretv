@@ -23,10 +23,11 @@ export class PetsService {
   }
 
   private sanitizeMedicationData(medications: any[]) {
-    return medications.map(({ name, dosage, frequency }) => ({
+    return medications.map(({ name, dosage, frequency, time }) => ({
       name,
       ...(dosage !== undefined ? { dosage } : {}),
       ...(frequency !== undefined ? { frequency } : {}),
+      ...(time !== undefined ? { time } : {}),
     })).filter(m => m.name);
   }
 

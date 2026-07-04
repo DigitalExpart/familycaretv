@@ -4,15 +4,15 @@
 
 export const PLAN_LIMITS = {
   FREE_TRIAL: {
-    patients: Infinity,
-    kids: Infinity,
-    pets: Infinity,
-    medications: Infinity,
-    appointments: Infinity,
-    notes: Infinity,
-    tasks: Infinity,
-    rokuDevices: Infinity,
-    aiLookupsPerDay: Infinity,
+    patients: 2,
+    kids: 3,
+    pets: 2,
+    medications: 3,
+    appointments: 3,
+    notes: 4,
+    tasks: 3,
+    rokuDevices: 1,
+    aiLookupsPerDay: 3,
     familyMembers: 0,
   },
   PERSONAL: {

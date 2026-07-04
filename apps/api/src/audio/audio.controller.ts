@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { createClient } from '@supabase/supabase-js';
 import { AudioService } from './audio.service';
 import { CreateAudioDto } from './dto/create-audio.dto';
 import { UpdateAudioDto } from './dto/update-audio.dto';
@@ -21,21 +21,34 @@ export class AudioController {
   @Roles(Role.ADMIN)
   @Post()
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: './public/uploads/audio',
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      }
-    })
-  }))
-  create(@Body() createAudioDto: CreateAudioDto, @UploadedFile() file: Express.Multer.File) {
+  @UseInterceptors(FileInterceptor('file'))
+  async create(@Body() createAudioDto: CreateAudioDto, @UploadedFile() file: Express.Multer.File) {
     if (file) {
-      // Create the URL to access the file statically
-      createAudioDto.audioUrl = `${process.env.API_URL || 'http://localhost:3000'}/public/uploads/audio/${file.filename}`;
-    } else if (!createAudioDto.audioUrl) {
-      throw new BadRequestException('Either a file or audioUrl must be provided');
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseKey) {
+        throw new BadRequestException('Supabase credentials not configured on server');
+      }
+
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const filename = `${uniqueSuffix}${extname(file.originalname)}`;
+
+      const { data, error } = await supabase.storage
+        .from('audio')
+        .upload(filename, file.buffer, {
+          contentType: file.mimetype,
+          upsert: true
+        });
+
+      if (error) {
+        throw new BadRequestException(`Failed to upload to Supabase: ${error.message}`);
+      }
+
+      const { data: publicUrlData } = supabase.storage.from('audio').getPublicUrl(filename);
+      createAudioDto.audioUrl = publicUrlData.publicUrl;
+    } else if (!createAudioDto.audioUrl && !createAudioDto.youtubeUrl) {
+      throw new BadRequestException('Either an audio file, audioUrl, or youtubeUrl must be provided');
     }
     return this.audioService.create(createAudioDto);
   }

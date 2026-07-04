@@ -23,7 +23,7 @@ export default function MusicScreen() {
     }
   });
 
-  const categories = categoriesData?.data || [];
+  const categories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
 
   if (isLoading) {
     return (
@@ -65,17 +65,15 @@ export default function MusicScreen() {
               ) : null}
               {category.tracks?.map((song: any) => (
                 <PremiumCard key={song.id} style={{ marginBottom: 12, backgroundColor: theme.surfaceSecondary }}>
-                  <TextInput
-                    style={[styles.input, { backgroundColor: theme.surface, color: theme.text }]}
-                    value={song.title}
-                    editable={false}
-                  />
+                  <Text style={[styles.songTitle, { color: theme.text }]}>
+                    {song.title}
+                  </Text>
                   {song.description ? (
-                    <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 8, paddingHorizontal: 4 }}>
+                    <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 4, paddingHorizontal: 4 }}>
                       {song.description}
                     </Text>
                   ) : null}
-                  <View style={{ flexDirection: 'row', marginTop: 12, gap: 12 }}>
+                  <View style={{ flexDirection: 'row', marginTop: 12, gap: 12, flexWrap: 'wrap' }}>
                     {song.youtubeUrl ? (
                       <TouchableOpacity 
                         style={[styles.actionBtn, { backgroundColor: theme.surface }]}
@@ -84,6 +82,18 @@ export default function MusicScreen() {
                         <Play color={theme.error} size={16} />
                         <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>
                           {t('music.listenYoutube') || 'Listen on YouTube'}
+                        </Text>
+                      </TouchableOpacity>
+                    ) : null}
+                    
+                    {song.audioUrl ? (
+                      <TouchableOpacity 
+                        style={[styles.actionBtn, { backgroundColor: theme.surface }]}
+                        onPress={() => handlePlay(song.audioUrl)}
+                      >
+                        <Play color={theme.primary} size={16} />
+                        <Text style={{ color: theme.primary, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>
+                          {t('music.listenAudio') || 'Play Audio'}
                         </Text>
                       </TouchableOpacity>
                     ) : null}
@@ -102,6 +112,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 20, paddingBottom: 100 },
   headerTitle: { fontSize: 20, fontWeight: 'bold', marginLeft: 8 },
-  input: { padding: 12, borderRadius: Radii.input, height: 48, fontWeight: '500' },
+  songTitle: { fontSize: 16, fontWeight: '600', paddingHorizontal: 4 },
   actionBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radii.card }
 });

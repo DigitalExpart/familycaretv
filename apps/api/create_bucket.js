@@ -1,25 +1,24 @@
 const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DIRECT_URL
+    }
+  }
+});
 
 async function main() {
   try {
-    console.log('Inserting bucket...');
-    await prisma.$executeRawUnsafe(`
-      INSERT INTO storage.buckets (id, name, public) 
-      VALUES ('books', 'books', true) 
-      ON CONFLICT DO NOTHING;
-    `);
-    
     console.log('Creating policy...');
     await prisma.$executeRawUnsafe(`
-      CREATE POLICY "Public Access" 
+      CREATE POLICY "Public Access Audio" 
       ON storage.objects FOR ALL 
-      USING ( bucket_id = 'books' );
+      USING ( bucket_id = 'audio' );
     `);
     
-    console.log('Bucket and policy created!');
+    console.log('Policy created!');
   } catch (e) {
-    console.log('Error (maybe it already exists or permissions issue):', e.message);
+    console.log('Error:', e.message);
   }
 }
 

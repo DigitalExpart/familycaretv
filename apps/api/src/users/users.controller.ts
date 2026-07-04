@@ -51,6 +51,24 @@ export class UsersController {
     return { success: true };
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Patch('admin/:id/subscription')
+  @ApiOperation({ summary: 'Manually update a user subscription plan (Admin only)' })
+  async updateSubscriptionAdmin(
+    @Param('id') id: string,
+    @Body() body: { planTier: 'FREE_TRIAL' | 'PERSONAL' | 'FAMILY', status: string }
+  ) {
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: {
+        planTier: body.planTier,
+        subscriptionStatus: body.status,
+      },
+    });
+    return { success: true, user: updated };
+  }
+
   @Get('me')
   @ApiOperation({ summary: 'Get current user profile' })
   async getMe(@CurrentUser() user: any) {

@@ -61,6 +61,31 @@ export default function UsersActivity() {
     }
   };
 
+  const handleUpdateSubscription = async (id: string, planTier: string, status: string) => {
+    if (!confirm(`Are you sure you want to manually set this user's plan to ${planTier} (${status})?`)) return;
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}/users/admin/${id}/subscription`, {
+        method: 'PATCH',
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ planTier, status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('User subscription updated successfully.');
+        fetchUsers(); // Refresh the list
+      } else {
+        alert(data.message || 'Failed to update subscription.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred while updating the subscription.');
+    }
+  };
+
   const filteredUsers = users.filter(u => 
     u.email.toLowerCase().includes(search.toLowerCase()) || 
     (u.firstName + ' ' + u.lastName).toLowerCase().includes(search.toLowerCase())
@@ -248,7 +273,52 @@ export default function UsersActivity() {
                 )}
 
                 {activeTab === 'Settings' && (
-                  <div className="space-y-6">
+                  <div className="space-y-8">
+                    
+                    {/* Subscription Management */}
+                    <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl">
+                      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        Manage Subscription
+                      </h3>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Current Plan</div>
+                          <div className="font-bold text-indigo-700">{selectedUser.planTier || 'FREE_TRIAL'}</div>
+                        </div>
+                        <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Status</div>
+                          <div className={`font-bold ${selectedUser.subscriptionStatus === 'active' || selectedUser.subscriptionStatus === 'trialing' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                            {selectedUser.subscriptionStatus || 'trialing'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 pt-4 border-t border-slate-200">
+                        <p className="text-sm text-slate-600 font-medium mb-2">Manually Override Plan (Fix Payments/Errors)</p>
+                        <div className="flex flex-wrap gap-3">
+                          <button 
+                            onClick={() => handleUpdateSubscription(selectedUser.id, 'FAMILY', 'active')}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-all"
+                          >
+                            Upgrade to FAMILY (Active)
+                          </button>
+                          <button 
+                            onClick={() => handleUpdateSubscription(selectedUser.id, 'PERSONAL', 'active')}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-all"
+                          >
+                            Upgrade to PERSONAL (Active)
+                          </button>
+                          <button 
+                            onClick={() => handleUpdateSubscription(selectedUser.id, 'FREE_TRIAL', 'expired')}
+                            className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition-all"
+                          >
+                            Revert to FREE (Expired)
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     <div>
                       <h3 className="text-lg font-bold text-red-600 mb-2">Danger Zone</h3>
                       <p className="text-slate-500 text-sm mb-4">Deleting this user is irreversible. All of their data, patients, and devices will be permanently removed.</p>

@@ -112,7 +112,10 @@
       "contentPlaceholder": "Escribe tu nota aquí..."
     },
     "actions": {
-      "save": "Guardar Nota"
+      "save": "Guardar Nota",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Estás seguro de que quieres eliminar esta nota?"
     }
   },
   "notifications": {

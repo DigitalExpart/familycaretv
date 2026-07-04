@@ -112,7 +112,10 @@
       "contentPlaceholder": "Write your note here..."
     },
     "actions": {
-      "save": "Save Note"
+      "save": "Save Note",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Are you sure you want to delete this note?"
     }
   },
   "doctors": {

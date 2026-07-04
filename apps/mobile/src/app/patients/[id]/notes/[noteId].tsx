@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useNote, useDeleteNote } from '../../../../features/notes/notes-api';
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../components/EmptyState';
 import { useTranslation } from 'react-i18next';
+import { Button } from '../../../../components/ui/Button';
 
 export default function NoteDetailScreen() {
   const { id, noteId } = useLocalSearchParams<{ id: string, noteId: string }>();
@@ -60,7 +61,7 @@ export default function NoteDetailScreen() {
         <View style={{ height: 16 }} />
         <Button 
           title={t('notes.actions.delete')} 
-          color="red" 
+          variant="danger" 
           onPress={handleDelete} 
           disabled={deleteMutation.isPending}
         />

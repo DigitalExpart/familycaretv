@@ -535,7 +535,8 @@ export default function KidsScreen() {
                 <AnimatedButton 
                   title={deleteProfileMutation.isPending ? t('common.loading') : t('common.delete')} 
                   onPress={handleDelete} 
-                  style={{ flex: 1, backgroundColor: theme.error }} 
+                  variant="danger"
+                  style={{ flex: 1 }} 
                 />
               </View>
             )}

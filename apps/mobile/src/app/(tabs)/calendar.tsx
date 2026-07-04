@@ -8,7 +8,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Calendar } from 'react-native-calendars';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../api/client';
-import { useUpcomingEvents } from '../../features/events/events-api';
+import { useCalendarEvents } from '../../features/events/events-api';
 
 export default function CalendarScreen() {
   const { t } = useTranslation();
@@ -24,8 +24,13 @@ export default function CalendarScreen() {
   };
 
   const [selectedDate, setSelectedDate] = useState(getTodayString());
+  const [currentMonth, setCurrentMonth] = useState(getTodayString().substring(0, 7));
 
-  const { data: upcomingData, isLoading: eventsLoading } = useUpcomingEvents();
+  // Fetch for the current month
+  const startDate = `${currentMonth}-01`;
+  const endDate = `${currentMonth}-31`;
+
+  const { data: upcomingData, isLoading: eventsLoading } = useCalendarEvents(startDate, endDate);
   const allEvents = Array.isArray(upcomingData) ? upcomingData : (upcomingData?.data || []);
   
   // Filter events for selected date locally
@@ -81,6 +86,10 @@ export default function CalendarScreen() {
         onDayPress={(day: any) => {
           setSelectedDate(day.dateString);
         }}
+        onMonthChange={(month: any) => {
+          // month.dateString is like "2026-07-01"
+          setCurrentMonth(month.dateString.substring(0, 7));
+        }}
         markedDates={markedDates}
         theme={{
           backgroundColor: theme.background,
@@ -115,11 +124,18 @@ export default function CalendarScreen() {
             <View style={[styles.eventCard, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
               <Text style={[styles.eventTitle, { color: theme.text }]}>{item.title}</Text>
               <Text style={{ color: theme.textSecondary }}>
-                {item.type === 'APPOINTMENT' ? t('calendar.appointment', 'Appointment') : (item.type === 'MEDICATION' ? t('calendar.medication', 'Medication') : t('calendar.task', 'Task'))} • {new Date(item.startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {(() => {
+                  switch (item.type) {
+                    case 'APPOINTMENT': return t('calendar.appointment', 'Appointment');
+                    case 'MEDICATION': return t('calendar.medication', 'Medication');
+                    case 'PET_MEDICATION': return t('calendar.petMedication', 'Pet Medication');
+                    case 'PET_VACCINATION': return t('calendar.petVaccination', 'Pet Vaccination');
+                    case 'KIDS_TASK': return t('calendar.kidsTask', 'Kid\'s Task');
+                    case 'EVENT': return t('calendar.event', 'Event');
+                    default: return t('calendar.task', 'Task');
+                  }
+                })()} • {new Date(item.startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
-              {item.patient?.fullName && (
-                <Text style={{ color: theme.textSecondary, marginTop: 4 }}>{t('calendar.patient', 'Patient')}: {item.patient.fullName}</Text>
-              )}
             </View>
           )}
         />

@@ -81,7 +81,7 @@ export class RemindersService {
         // Convert that local time back into a true UTC Date object using date-fns-tz
         const scheduledAt = fromZonedTime(localTimeString, timezone);
 
-        if (scheduledAt > nowUtc) {
+        if (scheduledAt >= new Date(nowUtc.getTime() - 5 * 60000)) {
           remindersToCreate.push({
             userId,
             type,

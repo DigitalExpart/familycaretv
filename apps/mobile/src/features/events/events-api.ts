@@ -23,6 +23,17 @@ export function useUpcomingEvents() {
   });
 }
 
+export function useCalendarEvents(startDate?: string, endDate?: string) {
+  return useQuery({
+    queryKey: ['calendar', { startDate, endDate }],
+    queryFn: async () => {
+      const url = `/calendar${startDate ? `?startDate=${startDate}` : ''}${endDate ? `&endDate=${endDate}` : ''}`;
+      const { data } = await api.get(url);
+      return data;
+    },
+  });
+}
+
 export function useEvent(id: string) {
   return useQuery({
     queryKey: ['event', id],

@@ -16,11 +16,11 @@ export class CalendarAggregatorService {
       orderBy: { scheduledAt: 'asc' }
     });
 
-    // We can merge dynamic occurrences and Reminders
     return reminders.map(r => ({
+      id: r.id,
       type: r.type,
       title: r.title,
-      time: r.scheduledAt.toISOString(), // formatting logic later
+      startDateTime: r.scheduledAt.toISOString(),
       sourceId: r.sourceId,
       status: r.status,
     }));

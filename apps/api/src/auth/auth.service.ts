@@ -41,9 +41,10 @@ export class AuthService {
     let usedReferralCodeRecord: any = null;
 
     if (dto.referralCode) {
+      const codeToSearch = dto.referralCode.toUpperCase();
       // 1. First check if it's a custom admin ReferralCode
       usedReferralCodeRecord = await this.prisma.referralCode.findUnique({
-        where: { code: dto.referralCode },
+        where: { code: codeToSearch },
         include: { owner: true }
       });
 
@@ -73,7 +74,7 @@ export class AuthService {
       } else {
         // 2. Fallback to checking if it's a user's personal referral code
         referrer = await this.prisma.user.findUnique({
-          where: { referralCode: dto.referralCode },
+          where: { referralCode: codeToSearch },
         });
       }
 
@@ -136,7 +137,7 @@ export class AuthService {
           referredUserId: user.id,
           status: 'REGISTERED',
           commissionEligible: usedReferralCodeRecord ? (usedReferralCodeRecord.commissionRate > 0) : true,
-          usedCode: dto.referralCode,
+          usedCode: codeToSearch,
         },
       });
     }

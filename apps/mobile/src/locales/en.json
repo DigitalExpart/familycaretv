@@ -230,7 +230,11 @@
     "author": "Music by Eyben Colon",
     "description": "Songs written and composed by Eyben Colon, inspired by faith, healing and love.",
     "songsInSpanish": "Songs in Spanish",
-    "listenYoutube": "Listen on YouTube"
+    "listenYoutube": "Listen on YouTube",
+    "listenAudio": "Play Audio",
+    "noSongs": "No music available right now.",
+    "noSongsInCategory": "No songs available in this category.",
+    "uploadedMusic": "Uploaded Music"
   },
   "books": {
     "title": "Books Library",

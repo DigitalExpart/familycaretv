@@ -15,7 +15,7 @@ export default function MusicScreen() {
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
-  const { data: categoriesData, isLoading } = useQuery({
+  const { data: categoriesData, isLoading: isLoadingCategories } = useQuery({
     queryKey: ['music-categories'],
     queryFn: async () => {
       const response = await api.get('/music/categories');
@@ -23,9 +23,29 @@ export default function MusicScreen() {
     }
   });
 
-  const categories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
+  const { data: audioData, isLoading: isLoadingAudio } = useQuery({
+    queryKey: ['audio-tracks'],
+    queryFn: async () => {
+      const response = await api.get('/audio');
+      return response.data;
+    }
+  });
 
-  if (isLoading) {
+  const musicCategories = Array.isArray(categoriesData) ? categoriesData : (categoriesData?.data || []);
+  const audioTracks = Array.isArray(audioData) ? audioData : (audioData?.data || []);
+
+  const categories = [...musicCategories];
+
+  const uploadedMusic = audioTracks.filter(t => t.type === 'MUSIC');
+  if (uploadedMusic.length > 0) {
+    categories.push({
+      id: 'uploaded-music',
+      name: t('music.uploadedMusic') || 'Uploaded Music',
+      tracks: uploadedMusic
+    });
+  }
+
+  if (isLoadingCategories || isLoadingAudio) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background, justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color={theme.primary} />

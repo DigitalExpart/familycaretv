@@ -7,4 +7,5 @@ export class NotificationEvent {
   scheduledAt?: Date;
   expiresAt?: Date;
   priority?: string;
+  isInternal?: boolean;
 }

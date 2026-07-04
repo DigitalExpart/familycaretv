@@ -15,13 +15,7 @@ export default function CreatePatientScreen() {
   const theme = isDark ? Colors.dark : Colors.light;
 
   const handleSubmit = (data: any) => {
-    // Add time component to the date string so it can be parsed correctly by the backend
-    const patientData = {
-      ...data,
-      dateOfBirth: new Date(data.dateOfBirth).toISOString(),
-    };
-    
-    createMutation.mutate(patientData, {
+    createMutation.mutate(data, {
       onSuccess: () => {
         router.back();
       },

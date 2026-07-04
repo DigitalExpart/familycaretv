@@ -11,6 +11,7 @@ interface User {
   phone?: string;
   gender?: string;
   avatarUrl?: string;
+  timezone?: string;
 }
 
 interface AuthState {

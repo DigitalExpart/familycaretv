@@ -8,6 +8,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { Calendar } from 'react-native-calendars';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../api/client';
+import { useUpcomingEvents } from '../../features/events/events-api';
 
 export default function CalendarScreen() {
   const { t } = useTranslation();
@@ -24,29 +25,51 @@ export default function CalendarScreen() {
 
   const [selectedDate, setSelectedDate] = useState(getTodayString());
 
-  const { data: dashboardData, isLoading } = useQuery({
-    queryKey: ['calendar-tasks', selectedDate],
-    queryFn: async () => {
-      const { data } = await api.get(`/users/me/dashboard?date=${selectedDate}`);
-      return data;
-    },
-    enabled: !!selectedDate,
+  const { data: upcomingData, isLoading: eventsLoading } = useUpcomingEvents();
+  const allEvents = upcomingData?.data || [];
+  
+  // Filter events for selected date locally
+  const tasks = allEvents.filter((event: any) => {
+    if (!event.startDateTime) return false;
+    const eventDate = new Date(event.startDateTime);
+    const year = eventDate.getFullYear();
+    const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+    const day = String(eventDate.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    return dateStr === selectedDate;
   });
-
-  const tasks = dashboardData?.data?.todaysTasks || [];
 
   // Generate marked dates for the calendar
   const markedDates = useMemo(() => {
     const marks: any = {};
     
-    // We don't have all events for the month easily accessible without a new endpoint, 
-    // so we just mark the selected date for now.
+    // Mark all dates that have events
+    allEvents.forEach((event: any) => {
+      if (!event.startDateTime) return;
+      const eventDate = new Date(event.startDateTime);
+      const year = eventDate.getFullYear();
+      const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+      const day = String(eventDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
+      if (!marks[dateStr]) {
+        marks[dateStr] = { marked: true, dotColor: theme.primary };
+      }
+    });
+
+    // Handle selected date override
     if (selectedDate) {
-      marks[selectedDate] = { selected: true, selectedColor: theme.primary, marked: tasks.length > 0, dotColor: '#ffffff' };
+      const hasEvents = marks[selectedDate]?.marked || false;
+      marks[selectedDate] = { 
+        selected: true, 
+        selectedColor: theme.primary, 
+        marked: hasEvents, 
+        dotColor: '#ffffff' 
+      };
     }
 
     return marks;
-  }, [selectedDate, theme.primary, tasks.length]);
+  }, [selectedDate, theme.primary, allEvents]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -75,26 +98,26 @@ export default function CalendarScreen() {
         }}
       />
       
-      {isLoading ? (
+      {eventsLoading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
         <FlatList
           data={tasks}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
           contentContainerStyle={styles.list}
           ListEmptyComponent={
-            <EmptyState message={selectedDate ? "No events scheduled for this day." : "Select a day to see events."} />
+            <EmptyState message={selectedDate ? t('calendar.noEventsForDay', 'No events scheduled for this day.') : t('calendar.selectDay', 'Select a day to see events.')} />
           }
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: any }) => (
             <View style={[styles.eventCard, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
               <Text style={[styles.eventTitle, { color: theme.text }]}>{item.title}</Text>
               <Text style={{ color: theme.textSecondary }}>
-                {item.type === 'MEDICATION' ? 'Medication' : 'Event'} • {new Date(item.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {item.type === 'APPOINTMENT' ? t('calendar.appointment', 'Appointment') : (item.type === 'MEDICATION' ? t('calendar.medication', 'Medication') : t('calendar.task', 'Task'))} • {new Date(item.startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
-              {item.patientName && (
-                <Text style={{ color: theme.textSecondary, marginTop: 4 }}>Patient: {item.patientName}</Text>
+              {item.patient?.fullName && (
+                <Text style={{ color: theme.textSecondary, marginTop: 4 }}>{t('calendar.patient', 'Patient')}: {item.patient.fullName}</Text>
               )}
             </View>
           )}

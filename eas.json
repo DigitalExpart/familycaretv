@@ -1,0 +1,33 @@
+{
+  "cli": {
+    "version": ">= 16.28.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EAS_PROJECT_ROOT": "./apps/mobile",
+        "EXPO_PUBLIC_API_URL": "https://carefree-endurance-production-7621.up.railway.app"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EAS_PROJECT_ROOT": "./apps/mobile",
+        "EXPO_PUBLIC_API_URL": "https://carefree-endurance-production-7621.up.railway.app"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EAS_PROJECT_ROOT": "./apps/mobile",
+        "EXPO_PUBLIC_API_URL": "https://carefree-endurance-production-7621.up.railway.app"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

@@ -5,6 +5,7 @@ import { api } from '../../api/client';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image, TouchableOpacity } from 'react-native';
+import * as Localization from 'expo-localization';
 
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -22,7 +23,8 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     setIsLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const timezone = Localization.getCalendars()[0]?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const res = await api.post('/auth/login', { email, password, timezone });
       if (res.data.success) {
         await login(res.data.data.user, res.data.data.accessToken, res.data.data.refreshToken);
         router.replace('/(tabs)/dashboard');

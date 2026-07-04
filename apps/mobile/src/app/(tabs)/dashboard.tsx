@@ -173,10 +173,10 @@ export default function DashboardScreen() {
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('music.title')}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/coloring')}>
-              <Palette color="#EC4899" size={28} />
+            <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/books')}>
+              <BookOpen color="#EC4899" size={28} />
               <Text style={[styles.statValue, { color: theme.text }]}>-</Text>
-              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('coloring.title')}</Text>
+              <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('books.title')}</Text>
             </TouchableOpacity>
           </View>
 

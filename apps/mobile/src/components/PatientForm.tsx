@@ -10,16 +10,42 @@ import { useTranslation } from 'react-i18next';
 
 const patientSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
-  dateOfBirth: z.string().min(1, 'Date of birth is required'),
+  dobMonth: z.string().min(1, 'Month is required').refine(
+    (val) => { const n = parseInt(val, 10); return !isNaN(n) && n >= 1 && n <= 12; },
+    { message: 'Month must be 1-12' }
+  ),
+  dobDay: z.string().min(1, 'Day is required').refine(
+    (val) => { const n = parseInt(val, 10); return !isNaN(n) && n >= 1 && n <= 31; },
+    { message: 'Day must be 1-31' }
+  ),
+  dobYear: z.string().min(1, 'Year is required').refine(
+    (val) => { 
+      const n = parseInt(val, 10); 
+      const currentYear = new Date().getFullYear();
+      return !isNaN(n) && n >= 1900 && n <= currentYear; 
+    },
+    { message: 'Enter a valid year' }
+  ),
   gender: z.string().optional(),
   notes: z.string().optional(),
+}).refine((data) => {
+  // Cross-field validation: check that the date is actually valid
+  const month = parseInt(data.dobMonth, 10);
+  const day = parseInt(data.dobDay, 10);
+  const year = parseInt(data.dobYear, 10);
+  if (isNaN(month) || isNaN(day) || isNaN(year)) return false;
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}, {
+  message: 'Invalid date. Please check month and day.',
+  path: ['dobDay'],
 });
 
 type PatientFormData = z.infer<typeof patientSchema>;
 
 interface PatientFormProps {
   initialData?: Partial<Patient>;
-  onSubmit: (data: PatientFormData) => void;
+  onSubmit: (data: any) => void;
   isLoading?: boolean;
 }
 
@@ -28,15 +54,34 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
   const theme = isDark ? Colors.dark : Colors.light;
   const { t } = useTranslation();
 
+  // Parse initial date into separate fields
+  const initialDate = initialData?.dateOfBirth ? new Date(initialData.dateOfBirth) : null;
+
   const { control, handleSubmit, formState: { errors } } = useForm<PatientFormData>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
       fullName: initialData?.fullName || '',
-      dateOfBirth: initialData?.dateOfBirth ? new Date(initialData.dateOfBirth).toISOString().split('T')[0] : '',
+      dobMonth: initialDate ? String(initialDate.getMonth() + 1) : '',
+      dobDay: initialDate ? String(initialDate.getDate()) : '',
+      dobYear: initialDate ? String(initialDate.getFullYear()) : '',
       gender: initialData?.gender || '',
       notes: initialData?.notes || '',
     },
   });
+
+  const handleFormSubmit = (data: PatientFormData) => {
+    const month = parseInt(data.dobMonth, 10);
+    const day = parseInt(data.dobDay, 10);
+    const year = parseInt(data.dobYear, 10);
+    const dateOfBirth = new Date(year, month - 1, day).toISOString();
+
+    onSubmit({
+      fullName: data.fullName,
+      dateOfBirth,
+      gender: data.gender,
+      notes: data.notes,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -61,26 +106,85 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
       />
       {errors.fullName && <Text style={styles.errorText}>{errors.fullName.message}</Text>}
 
-      <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.dateOfBirth')} (YYYY-MM-DD)</Text>
-      <Controller
-        control={control}
-        name="dateOfBirth"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={[
-              styles.input, 
-              { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text },
-              errors.dateOfBirth && styles.inputError
-            ]}
-            placeholderTextColor={theme.textSecondary}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            placeholder="1990-01-01"
+      <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.dateOfBirth')}</Text>
+      <View style={styles.dobRow}>
+        <View style={styles.dobField}>
+          <Text style={[styles.dobLabel, { color: theme.textSecondary }]}>{t('common.month') || 'Month'}</Text>
+          <Controller
+            control={control}
+            name="dobMonth"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={[
+                  styles.dobInput,
+                  { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text },
+                  errors.dobMonth && styles.inputError
+                ]}
+                placeholderTextColor={theme.textSecondary}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="MM"
+                keyboardType="numeric"
+                maxLength={2}
+              />
+            )}
           />
-        )}
-      />
-      {errors.dateOfBirth && <Text style={styles.errorText}>{errors.dateOfBirth.message}</Text>}
+        </View>
+
+        <View style={styles.dobField}>
+          <Text style={[styles.dobLabel, { color: theme.textSecondary }]}>{t('common.day') || 'Day'}</Text>
+          <Controller
+            control={control}
+            name="dobDay"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={[
+                  styles.dobInput,
+                  { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text },
+                  errors.dobDay && styles.inputError
+                ]}
+                placeholderTextColor={theme.textSecondary}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="DD"
+                keyboardType="numeric"
+                maxLength={2}
+              />
+            )}
+          />
+        </View>
+
+        <View style={[styles.dobField, { flex: 1.5 }]}>
+          <Text style={[styles.dobLabel, { color: theme.textSecondary }]}>{t('common.year') || 'Year'}</Text>
+          <Controller
+            control={control}
+            name="dobYear"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={[
+                  styles.dobInput,
+                  { backgroundColor: theme.surfaceSecondary, borderColor: theme.border, color: theme.text },
+                  errors.dobYear && styles.inputError
+                ]}
+                placeholderTextColor={theme.textSecondary}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="YYYY"
+                keyboardType="numeric"
+                maxLength={4}
+              />
+            )}
+          />
+        </View>
+      </View>
+      {(errors.dobMonth || errors.dobDay || errors.dobYear) && (
+        <Text style={styles.errorText}>
+          {errors.dobMonth?.message || errors.dobDay?.message || errors.dobYear?.message}
+        </Text>
+      )}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.gender')}</Text>
       <Controller
@@ -125,7 +229,7 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
 
       <AnimatedButton 
         title={isLoading ? t('common.loading') : t('common.save')}
-        onPress={handleSubmit(onSubmit)}
+        onPress={handleSubmit(handleFormSubmit)}
         disabled={isLoading}
         style={{ marginTop: 16 }}
       />
@@ -161,5 +265,25 @@ const styles = StyleSheet.create({
   textArea: {
     height: 100,
     textAlignVertical: 'top',
+  },
+  dobRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  dobField: {
+    flex: 1,
+  },
+  dobLabel: {
+    fontSize: 12,
+    marginBottom: 4,
+    fontWeight: '500',
+  },
+  dobInput: {
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 8,
+    fontSize: 16,
+    textAlign: 'center',
   },
 });

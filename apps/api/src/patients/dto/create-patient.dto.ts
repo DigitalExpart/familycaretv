@@ -1,11 +1,13 @@
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePatientDto {
   @IsString()
   fullName: string;
 
-  @IsDateString()
-  dateOfBirth: string;
+  @Type(() => Date)
+  @IsDate()
+  dateOfBirth: Date;
 
   @IsOptional()
   @IsString()

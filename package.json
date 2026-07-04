@@ -16,5 +16,6 @@
   "devDependencies": {
     "turbo": "latest",
     "prettier": "latest"
-  }
+  },
+  "dependencies": {}
 }

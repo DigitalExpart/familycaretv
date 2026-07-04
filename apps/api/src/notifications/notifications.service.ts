@@ -8,15 +8,21 @@ export class NotificationsService {
 
   async getUserNotifications(userId: string) {
     return this.prisma.notification.findMany({
-      where: { userId },
-      orderBy: { scheduledAt: 'desc' },
+      where: { userId, isInternal: false },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async getUnreadNotifications(userId: string) {
     return this.prisma.notification.findMany({
-      where: { userId, isRead: false },
-      orderBy: { scheduledAt: 'desc' },
+      where: { userId, isRead: false, isInternal: false },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getUnreadCount(userId: string) {
+    return this.prisma.notification.count({
+      where: { userId, isRead: false, isInternal: false },
     });
   }
 
@@ -36,7 +42,7 @@ export class NotificationsService {
 
   async markAllAsRead(userId: string) {
     return this.prisma.notification.updateMany({
-      where: { userId, isRead: false },
+      where: { userId, isRead: false, isInternal: false },
       data: { isRead: true },
     });
   }
@@ -53,9 +59,23 @@ export class NotificationsService {
     title: string;
     message: string;
     actionUrl?: string;
+    isInternal?: boolean;
   }) {
     return this.prisma.notification.create({
-      data,
+      data: {
+        ...data,
+        isInternal: data.isInternal ?? false,
+      },
+    });
+  }
+
+  /**
+   * For admin use: get all notifications including internal ones
+   */
+  async getAllNotificationsAdmin(userId: string) {
+    return this.prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

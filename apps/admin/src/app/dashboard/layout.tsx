@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users, CheckSquare, Baby, Dog, Palette } from 'lucide-react';
+import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users, CheckSquare, Baby, Dog, Palette, Share2 } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -27,7 +27,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'Bible Verses', href: '/dashboard/bible-verses', icon: BookOpen },
     { name: 'Drawings', href: '/dashboard/drawings', icon: PenTool },
     { name: 'Audio & Music', href: '/dashboard/audio', icon: Music },
-    { name: 'Coloring', href: '/dashboard/coloring', icon: Palette },
+    { name: 'Books', href: '/dashboard/books', icon: BookOpen },
+    { name: 'Referrals', href: '/dashboard/referrals', icon: Share2 },
   ];
 
   return (

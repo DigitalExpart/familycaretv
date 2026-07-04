@@ -92,4 +92,33 @@ export class ReferralsService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  // Admin: Manage Referral Codes
+  async getAllReferralCodes() {
+    return this.prisma.referralCode.findMany({
+      include: {
+        owner: { select: { firstName: true, lastName: true, email: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async createReferralCode(data: any) {
+    return this.prisma.referralCode.create({
+      data,
+    });
+  }
+
+  async updateReferralCode(id: string, data: any) {
+    return this.prisma.referralCode.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async deleteReferralCode(id: string) {
+    return this.prisma.referralCode.delete({
+      where: { id },
+    });
+  }
 }

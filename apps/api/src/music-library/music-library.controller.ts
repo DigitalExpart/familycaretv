@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { MusicLibraryService } from './music-library.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
@@ -15,14 +16,20 @@ export class MusicLibraryController {
 
   @Get('categories')
   @ApiOperation({ summary: 'Get all music categories with tracks' })
-  getCategories() {
-    return this.musicService.getCategories();
+  getCategories(@CurrentUser() user: any) {
+    const isAdmin = user?.role === Role.ADMIN;
+    return this.musicService.getCategories(isAdmin);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all music tracks, optionally filtered by language' })
-  getAllTracks(@Query('language') language?: string) {
-    return this.musicService.getAllTracks(language);
+  @ApiOperation({ summary: 'Get all music tracks, optionally filtered by language and search' })
+  getAllTracks(
+    @CurrentUser() user: any,
+    @Query('language') language?: string,
+    @Query('search') search?: string
+  ) {
+    const isAdmin = user?.role === Role.ADMIN;
+    return this.musicService.getAllTracks(language, isAdmin, search);
   }
 
   @UseGuards(RolesGuard)
@@ -39,6 +46,14 @@ export class MusicLibraryController {
   @ApiOperation({ summary: 'Add a music track (Admin only)' })
   addTrack(@Body() body: any) {
     return this.musicService.addTrack(body);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a music track (Admin only)' })
+  updateTrack(@Param('id') id: string, @Body() body: any) {
+    return this.musicService.updateTrack(id, body);
   }
 
   @UseGuards(RolesGuard)

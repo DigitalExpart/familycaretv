@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { api } from '../api/client';
 
 Notifications.setNotificationHandler({
@@ -42,8 +43,9 @@ export function usePushNotifications(userId?: string) {
       if (finalStatus !== 'granted') {
         return;
       }
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? process.env.EXPO_PUBLIC_PROJECT_ID;
       token = await Notifications.getExpoPushTokenAsync({
-        projectId: process.env.EXPO_PUBLIC_PROJECT_ID, 
+        projectId, 
       });
     } else {
       console.log('Must use physical device for Push Notifications');

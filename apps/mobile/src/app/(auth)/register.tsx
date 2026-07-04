@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Check } from 'lucide-react-native';
 import { TouchableOpacity } from 'react-native';
+import * as Localization from 'expo-localization';
 
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -38,6 +39,7 @@ export default function RegisterScreen() {
     }
     setIsLoading(true);
     try {
+      const timezone = Localization.getCalendars()[0]?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
       const res = await api.post('/auth/register', { 
         firstName, 
         lastName, 
@@ -46,6 +48,7 @@ export default function RegisterScreen() {
         gender, 
         password,
         consent,
+        timezone,
         referralCode: referralCode.trim() || undefined
       });
       if (res.data.success) {

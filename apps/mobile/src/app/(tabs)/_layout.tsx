@@ -113,7 +113,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="coloring"
+        name="books"
         options={{
           href: null,
         }}

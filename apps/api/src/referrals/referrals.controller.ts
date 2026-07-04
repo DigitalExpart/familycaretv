@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Body, UseGuards, Req, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, Req, HttpCode, HttpStatus } from '@nestjs/common';
 import { ReferralsService } from './referrals.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('referrals')
 export class ReferralsController {
@@ -30,13 +33,38 @@ export class ReferralsController {
     return this.referralsService.getStats(req.user.sub);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @Get('admin/all')
-  getAllForAdmin(@Req() req: any) {
-    // Ideally use RolesGuard here to ensure ADMIN access
-    if (req.user.role !== 'ADMIN') {
-       return { success: false, message: 'Forbidden' };
-    }
+  getAllForAdmin() {
     return this.referralsService.getAllReferralsForAdmin();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/codes')
+  getAllReferralCodes() {
+    return this.referralsService.getAllReferralCodes();
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('admin/codes')
+  createReferralCode(@Body() body: any) {
+    return this.referralsService.createReferralCode(body);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Put('admin/codes/:id')
+  updateReferralCode(@Param('id') id: string, @Body() body: any) {
+    return this.referralsService.updateReferralCode(id, body);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete('admin/codes/:id')
+  deleteReferralCode(@Param('id') id: string) {
+    return this.referralsService.deleteReferralCode(id);
   }
 }

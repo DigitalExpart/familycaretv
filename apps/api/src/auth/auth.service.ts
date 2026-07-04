@@ -75,6 +75,7 @@ export class AuthService {
             phone: dto.phone,
             gender: dto.gender,
             hasConsentedToPrivacy: dto.consent ?? false,
+            timezone: dto.timezone,
             referralCode,
             referredById: referrer ? referrer.id : null,
           },
@@ -145,7 +146,10 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { refreshTokenHash: await bcrypt.hash(tokens.refreshToken, 10) },
+      data: { 
+        refreshTokenHash: await bcrypt.hash(tokens.refreshToken, 10),
+        ...(dto.timezone ? { timezone: dto.timezone } : {}),
+      },
     });
 
     return {

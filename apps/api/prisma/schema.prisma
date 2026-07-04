@@ -51,6 +51,9 @@ model User {
   pets               Pet[]          @relation("UserPets")
 
   expoPushTokens     String[]
+  timezone           String         @default("UTC")
+
+  referralCodes      ReferralCode[] @relation("ReferralCodeOwner")
 }
 
 enum Role {
@@ -262,6 +265,7 @@ model Notification {
   title       String
   message     String
   isRead      Boolean          @default(false)
+  isInternal  Boolean          @default(false)
   actionUrl   String?
   scheduledAt DateTime?
   expiresAt   DateTime?
@@ -290,6 +294,20 @@ model Referral {
 
   referrer           User           @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
   referredUser       User           @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
+}
+
+model ReferralCode {
+  id             String    @id @default(uuid())
+  code           String    @unique
+  ownerId        String?
+  owner          User?     @relation("ReferralCodeOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  commissionRate Float     @default(0)
+  status         String    @default("ACTIVE")
+  usageCount     Int       @default(0)
+  maxUsages      Int?
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 // ====================================================
@@ -406,17 +424,26 @@ model ChildNote {
 }
 
 // ====================================================
-// MODULE 4: COLORING BOOKS
+// MODULE 4: BOOK PROMOTION
 // ====================================================
 
-model ColoringPage {
-  id        String   @id @default(uuid())
-  title     String
-  imageUrl  String
-  language  String   @default("en")
+model Book {
+  id            String    @id @default(uuid())
+  title         String
+  subtitle      String?
+  author        String
+  description   String?
+  imageUrl      String?
+  qrCodeUrl     String?
+  storeUrl      String?
+  language      String    @default("en")
+  featured      Boolean   @default(false)
+  displayOrder  Int       @default(0)
+  scheduleStart DateTime?
+  scheduleEnd   DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // ====================================================
@@ -424,24 +451,27 @@ model ColoringPage {
 // ====================================================
 
 model MusicCategory {
-  id        String   @id @default(uuid())
-  name      String
+  id           String   @id @default(uuid())
+  name         String
+  displayOrder Int      @default(0)
 
-  tracks    MusicTrack[]
+  tracks       MusicTrack[]
 }
 
 model MusicTrack {
-  id          String   @id @default(uuid())
-  title       String
-  language    String   @default("en")
-  youtubeUrl  String?
-  audioUrl    String?
-  description String?
-  categoryId  String
+  id           String   @id @default(uuid())
+  title        String
+  language     String   @default("en")
+  youtubeUrl   String?
+  audioUrl     String?
+  description  String?
+  categoryId   String
+  enabled      Boolean  @default(true)
+  displayOrder Int      @default(0)
 
-  category    MusicCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category     MusicCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
 }
 
 // ====================================================

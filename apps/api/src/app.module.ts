@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -26,12 +27,13 @@ import { TasksModule } from './tasks/tasks.module';
 import { KidsModule } from './kids/kids.module';
 import { PetsModule } from './pets/pets.module';
 import { MusicLibraryModule } from './music-library/music-library.module';
-import { ColoringModule } from './coloring/coloring.module';
+import { BooksModule } from './books/books.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
@@ -60,7 +62,7 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     KidsModule,
     PetsModule,
     MusicLibraryModule,
-    ColoringModule,
+    BooksModule,
   ],
   controllers: [AppController],
   providers: [

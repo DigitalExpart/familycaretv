@@ -49,7 +49,8 @@ export class NotificationEngineService {
           scheduledAt: event.scheduledAt || new Date(),
           expiresAt: event.expiresAt,
           status: 'PENDING',
-          priority: event.priority || 'NORMAL'
+          priority: event.priority || 'NORMAL',
+          isInternal: event.isInternal ?? false,
         }
       });
 

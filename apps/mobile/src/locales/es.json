@@ -208,5 +208,33 @@
     "title": "Páginas para Colorear",
     "gallery": "Galería",
     "noPages": "No hay páginas para colorear todavía."
+  },
+  "doctors": {
+    "title": "Doctores",
+    "add": "Agregar Doctor",
+    "edit": "Editar Doctor",
+    "listEmpty": "No se encontraron doctores",
+    "form": {
+      "name": "Nombre Completo",
+      "specialty": "Especialidad",
+      "phone": "Teléfono",
+      "email": "Correo Electrónico",
+      "address": "Dirección",
+      "notes": "Notas"
+    }
+  },
+  "contacts": {
+    "title": "Contactos",
+    "add": "Agregar Contacto",
+    "edit": "Editar Contacto",
+    "listEmpty": "No se encontraron contactos",
+    "form": {
+      "name": "Nombre Completo",
+      "relationship": "Relación",
+      "phone": "Teléfono",
+      "email": "Correo Electrónico",
+      "address": "Dirección",
+      "isPrimary": "Contacto Principal"
+    }
   }
 }

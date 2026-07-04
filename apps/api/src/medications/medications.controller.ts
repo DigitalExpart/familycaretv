@@ -20,7 +20,7 @@ export class MedicationsController {
   ) {}
 
   @UseGuards(ThrottlerGuard)
-  @Throttle({ default: { limit: 20, ttl: 3600000 } })
+  @Throttle({ default: { limit: 60, ttl: 3600000 } })
   @Post('lookup')
   @ApiOperation({ summary: 'Lookup medication information using AI' })
   lookupMedication(@Body() dto: MedicationLookupDto) {

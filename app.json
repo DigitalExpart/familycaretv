@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "extra": {},
+    "android": {
+      "package": "com.shykhy.familycaretv"
+    },
+    "ios": {
+      "bundleIdentifier": "com.shykhy.familycaretv",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}

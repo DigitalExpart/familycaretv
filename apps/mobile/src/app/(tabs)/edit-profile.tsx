@@ -20,6 +20,7 @@ export default function EditProfileScreen() {
   const [phone, setPhone] = useState(user?.phone || '');
   const [gender, setGender] = useState(user?.gender || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || '');
+  const [timezone, setTimezone] = useState(user?.timezone || '');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function EditProfileScreen() {
       setPhone(user.phone || '');
       setGender(user.gender || '');
       setAvatarUrl(user.avatarUrl || '');
+      setTimezone(user.timezone || '');
     }
   }, [user]);
 
@@ -79,6 +81,7 @@ export default function EditProfileScreen() {
         phone,
         gender,
         avatarUrl,
+        timezone,
       });
 
       // Update local state
@@ -88,6 +91,7 @@ export default function EditProfileScreen() {
         phone: data.data.phone,
         gender: data.data.gender,
         avatarUrl: data.data.avatarUrl,
+        timezone: data.data.timezone,
       });
       alert('Profile updated successfully!');
       router.back();
@@ -172,6 +176,30 @@ export default function EditProfileScreen() {
             placeholder="Male / Female / Other"
             placeholderTextColor={theme.textSecondary}
           />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>Timezone</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <TextInput
+              style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }]}
+              value={timezone}
+              onChangeText={setTimezone}
+              placeholder="e.g. America/New_York"
+              placeholderTextColor={theme.textSecondary}
+            />
+            <TouchableOpacity 
+              style={[styles.detectButton, { backgroundColor: theme.surfaceSecondary, borderColor: theme.border }]}
+              onPress={() => {
+                import('expo-localization').then(Localization => {
+                  const detected = Localization.getCalendars()[0]?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+                  if (detected) setTimezone(detected);
+                });
+              }}
+            >
+              <Text style={{ color: theme.primary, fontWeight: '600' }}>Auto</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <TouchableOpacity 

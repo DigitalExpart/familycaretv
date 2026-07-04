@@ -11,10 +11,11 @@ if (Platform.OS === 'android' && (localIp === 'localhost' || localIp === '127.0.
   localIp = '10.0.2.2';
 }
 
-const defaultApiUrl = `http://${localIp}:3001`;
+const LIVE_API_URL = 'https://carefree-endurance-production-7621.up.railway.app';
+const defaultApiUrl = `http://${localIp}:3000`;
 
 export const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || defaultApiUrl,
+  baseURL: process.env.EXPO_PUBLIC_API_URL || LIVE_API_URL,
 });
 
 // Automatically add token to headers

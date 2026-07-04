@@ -65,6 +65,7 @@ export class UsersController {
         phone: true,
         gender: true,
         avatarUrl: true,
+        timezone: true,
         role: true,
         subscriptionStatus: true,
         createdAt: true,
@@ -273,6 +274,7 @@ export class UsersController {
         phone: body.phone,
         gender: body.gender,
         avatarUrl: body.avatarUrl,
+        timezone: body.timezone,
       },
       select: {
         id: true,
@@ -283,6 +285,7 @@ export class UsersController {
         phone: true,
         gender: true,
         avatarUrl: true,
+        timezone: true,
         role: true,
       },
     });

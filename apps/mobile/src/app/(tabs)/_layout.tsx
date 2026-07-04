@@ -63,6 +63,7 @@ export default function TabsLayout() {
         name="notifications"
         options={{
           title: t('nav.notifications'),
+          href: null,
           tabBarIcon: ({ color, size }) => <Bell color={color} size={size} />,
           tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
           tabBarBadgeStyle: { backgroundColor: theme.accent },

@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEvent, useDeleteEvent } from '../../../../features/events/events-api';
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../components/EmptyState';
+import { AnimatedButton } from '../../../../components/ui/AnimatedButton';
 
 const TYPE_COLORS: Record<string, string> = {
   APPOINTMENT: '#0066cc',
@@ -69,13 +70,20 @@ export default function EventDetailsScreen() {
 
       <View style={styles.card}>
         <Text style={styles.label}>Status</Text>
-        <Text style={styles.value}>{event.status}</Text>
+        <Text style={styles.value}>{new Date(event.startDateTime).getTime() < Date.now() ? 'INACTIVE' : event.status}</Text>
       </View>
 
       <View style={styles.actions}>
-        <Button title="Edit Event" onPress={() => router.push(`/patients/${patientId}/events/edit/${event.id}`)} />
+        <AnimatedButton 
+          title="Edit Event" 
+          onPress={() => router.push(`/patients/${patientId}/events/edit/${event.id}`)} 
+        />
         <View style={{ height: 16 }} />
-        <Button title="Delete Event" color="red" onPress={handleDelete} />
+        <AnimatedButton 
+          title="Delete Event" 
+          variant="danger" 
+          onPress={handleDelete} 
+        />
       </View>
     </ScrollView>
   );

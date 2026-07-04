@@ -22,7 +22,7 @@ export function EventCard({ event, onPress }: EventCardProps) {
       <Text style={styles.date}>
         {new Date(event.startDateTime).toLocaleString()}
       </Text>
-      <Text style={styles.status}>Status: {event.status}</Text>
+      <Text style={styles.status}>Status: {new Date(event.startDateTime).getTime() < Date.now() ? 'INACTIVE' : event.status}</Text>
     </TouchableOpacity>
   );
 }

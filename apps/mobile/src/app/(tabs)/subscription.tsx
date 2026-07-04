@@ -83,10 +83,12 @@ export default function SubscriptionScreen() {
             <Text style={styles.planPrice}>$4.99<Text style={styles.planPriceMonth}>/mo</Text></Text>
           </View>
           <View style={styles.planFeatures}>
-            <FeatureRow text="Individual health tracking" />
-            <FeatureRow text="1 personal profile" />
-            <FeatureRow text="Advanced AI health lookups" />
-            <FeatureRow text="Unlimited medication reminders" />
+            <FeatureRow text="2 patients & 3 kids" />
+            <FeatureRow text="2 pets" />
+            <FeatureRow text="3 medications & appointments" />
+            <FeatureRow text="4 notes & 3 tasks" />
+            <FeatureRow text="1 Roku device" />
+            <FeatureRow text="3 AI lookups per day" />
           </View>
           <TouchableOpacity 
             style={[styles.button, isPersonal ? styles.buttonDisabled : null]} 
@@ -108,9 +110,12 @@ export default function SubscriptionScreen() {
           </View>
           <View style={styles.planFeatures}>
             <FeatureRow text="Everything in Personal" />
-            <FeatureRow text="Add up to 5 family members" />
-            <FeatureRow text="Shared health calendar" />
-            <FeatureRow text="Family notifications & alerts" />
+            <FeatureRow text="Add up to 3 family members" />
+            <FeatureRow text="3 Roku devices" />
+            <FeatureRow text="Unlimited patients, kids & pets" />
+            <FeatureRow text="Unlimited medications & appointments" />
+            <FeatureRow text="Unlimited notes & tasks" />
+            <FeatureRow text="Unlimited AI lookups" />
           </View>
           <TouchableOpacity 
             style={[styles.button, styles.familyButton, isFamily ? styles.buttonDisabled : null]} 

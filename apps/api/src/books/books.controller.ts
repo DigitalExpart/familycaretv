@@ -1,13 +1,7 @@
 import { Controller, Get, Post, Put, Body, Param, Delete, UseGuards, Query, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { extname } from 'path';
-import * as fs from 'fs';
-
-const uploadDir = './public/uploads/books';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+import { createClient } from '@supabase/supabase-js';
 import { BooksService } from './books.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -39,21 +33,37 @@ export class BooksController {
   @Roles(Role.ADMIN)
   @Post('upload')
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: uploadDir,
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      }
-    })
-  }))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('File is required');
     }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseKey) {
+      throw new BadRequestException('Supabase credentials not configured on server');
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const filename = `${uniqueSuffix}${extname(file.originalname)}`;
+
+    const { data, error } = await supabase.storage
+      .from('books')
+      .upload(filename, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true
+      });
+
+    if (error) {
+      throw new BadRequestException(`Failed to upload to Supabase: ${error.message}`);
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('books').getPublicUrl(filename);
+
     return {
-      url: `${process.env.API_URL || 'http://localhost:3000'}/public/uploads/books/${file.filename}`
+      url: publicUrlData.publicUrl
     };
   }
 

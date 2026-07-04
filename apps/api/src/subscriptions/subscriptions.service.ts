@@ -89,26 +89,56 @@ export class SubscriptionsService {
    * Count all resources for a user.
    */
   async getResourceCounts(userId: string) {
-    const [patients, kids, pets, medications, appointments, notes, tasks, rokuDevices, familyMembers] =
-      await Promise.all([
-        this.prisma.patient.count({ where: { userId } }),
-        this.prisma.childProfile.count({ where: { userId } }),
-        this.prisma.pet.count({ where: { userId } }),
-        this.prisma.medication.count({
-          where: { patient: { userId } },
-        }),
-        this.prisma.event.count({
-          where: { patient: { userId }, type: 'APPOINTMENT' },
-        }),
-        this.prisma.patientNote.count({
-          where: { patient: { userId } },
-        }),
-        this.prisma.task.count({ where: { userId } }),
-        this.prisma.deviceLink.count({ where: { userId } }),
-        this.prisma.familyMember.count({ where: { ownerId: userId } }),
-      ]);
+    const [
+      patients,
+      kids,
+      pets,
+      medications,
+      petMedications,
+      appointments,
+      childEvents,
+      notes,
+      childNotes,
+      petNotes,
+      tasks,
+      childTasks,
+      petTasks,
+      rokuDevices,
+      familyMembers,
+    ] = await Promise.all([
+      this.prisma.patient.count({ where: { userId } }),
+      this.prisma.childProfile.count({ where: { userId } }),
+      this.prisma.pet.count({ where: { userId } }),
+      
+      this.prisma.medication.count({ where: { patient: { userId } } }),
+      this.prisma.petMedication.count({ where: { pet: { userId } } }),
+      
+      this.prisma.event.count({ where: { patient: { userId }, type: 'APPOINTMENT' } }),
+      this.prisma.childCalendarEvent.count({ where: { child: { userId } } }),
+      
+      this.prisma.patientNote.count({ where: { patient: { userId } } }),
+      this.prisma.childNote.count({ where: { child: { userId } } }),
+      this.prisma.petNote.count({ where: { pet: { userId } } }),
+      
+      this.prisma.task.count({ where: { userId } }),
+      this.prisma.childTask.count({ where: { child: { userId } } }),
+      this.prisma.petTask.count({ where: { pet: { userId } } }),
+      
+      this.prisma.deviceLink.count({ where: { userId } }),
+      this.prisma.familyMember.count({ where: { ownerId: userId } }),
+    ]);
 
-    return { patients, kids, pets, medications, appointments, notes, tasks, rokuDevices, familyMembers };
+    return { 
+      patients, 
+      kids, 
+      pets, 
+      medications: medications + petMedications, 
+      appointments: appointments + childEvents, 
+      notes: notes + childNotes + petNotes, 
+      tasks: tasks + childTasks + petTasks, 
+      rokuDevices, 
+      familyMembers 
+    };
   }
 
   /**

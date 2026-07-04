@@ -129,13 +129,14 @@ export class AuthService {
       throw new ConflictException('Failed to generate unique referral code');
     }
 
-    if (referrer) {
+    if (usedReferralCodeRecord || referrer) {
       await this.prisma.referral.create({
         data: {
-          referrerId: referrer.id,
+          referrerId: referrer ? referrer.id : null,
           referredUserId: user.id,
           status: 'REGISTERED',
           commissionEligible: usedReferralCodeRecord ? (usedReferralCodeRecord.commissionRate > 0) : true,
+          usedCode: dto.referralCode,
         },
       });
     }

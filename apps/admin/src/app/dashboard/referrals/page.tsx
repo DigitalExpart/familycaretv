@@ -204,10 +204,12 @@ export default function ReferralsPage() {
                   </tr>
                 ) : (
                   filteredReferrals.map((r) => (
-                    <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <tr key={r.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
                       <td className="p-4">
-                        <div className="font-medium text-slate-800">{r.referrer?.firstName} {r.referrer?.lastName}</div>
-                        <div className="text-xs text-slate-500">{r.referrer?.email}</div>
+                        <div className="font-medium text-slate-900">
+                          {r.referrer ? `${r.referrer.firstName} ${r.referrer.lastName}` : (r.usedCode ? `Code: ${r.usedCode}` : 'System Code')}
+                        </div>
+                        <div className="text-sm text-slate-500">{r.referrer?.email || 'N/A'}</div>
                       </td>
                       <td className="p-4">
                         <div className="font-medium text-slate-800">{r.referredUser?.firstName} {r.referredUser?.lastName}</div>

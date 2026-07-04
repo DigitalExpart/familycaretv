@@ -285,14 +285,15 @@ enum ReferralStatus {
 
 model Referral {
   id                 String         @id @default(uuid())
-  referrerId         String
+  referrerId         String?
   referredUserId     String         @unique
+  usedCode           String?
   status             ReferralStatus @default(PENDING)
   commissionEligible Boolean        @default(false)
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
-  referrer           User           @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referrer           User?          @relation("Referrer", fields: [referrerId], references: [id], onDelete: Cascade)
   referredUser       User           @relation("ReferredUser", fields: [referredUserId], references: [id], onDelete: Cascade)
 }
 

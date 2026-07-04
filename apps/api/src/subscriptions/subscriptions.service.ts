@@ -89,7 +89,7 @@ export class SubscriptionsService {
    * Count all resources for a user.
    */
   async getResourceCounts(userId: string) {
-    const [patients, kids, pets, medications, appointments, notes, tasks, rokuDevices] =
+    const [patients, kids, pets, medications, appointments, notes, tasks, rokuDevices, familyMembers] =
       await Promise.all([
         this.prisma.patient.count({ where: { userId } }),
         this.prisma.childProfile.count({ where: { userId } }),
@@ -105,9 +105,10 @@ export class SubscriptionsService {
         }),
         this.prisma.task.count({ where: { userId } }),
         this.prisma.deviceLink.count({ where: { userId } }),
+        this.prisma.familyMember.count({ where: { ownerId: userId } }),
       ]);
 
-    return { patients, kids, pets, medications, appointments, notes, tasks, rokuDevices };
+    return { patients, kids, pets, medications, appointments, notes, tasks, rokuDevices, familyMembers };
   }
 
   /**

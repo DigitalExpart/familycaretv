@@ -37,7 +37,7 @@ export const PLAN_LIMITS = {
     tasks: Infinity,
     rokuDevices: 3,
     aiLookupsPerDay: Infinity,
-    familyMembers: 2, // Owner + 2 invited members
+    familyMembers: 3, // 3 invited family members
   },
 } as const;
 

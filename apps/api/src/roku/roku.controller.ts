@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LinkDeviceDto } from './dto/link-device.dto';
 import { TokenDto } from './dto/token.dto';
 import { Throttle } from '@nestjs/throttler';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @Controller('roku')
 export class RokuController {
@@ -15,7 +16,8 @@ export class RokuController {
     return this.rokuService.generateDeviceCode();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ResourceLimitGuard)
+  @ResourceType('rokuDevices')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('link-device')
   async linkDevice(@Request() req: any, @Body() dto: LinkDeviceDto) {

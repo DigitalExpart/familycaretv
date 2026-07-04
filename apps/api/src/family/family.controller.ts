@@ -2,6 +2,7 @@ import { Controller, Post, Get, Delete, Body, Param, UseGuards, Req } from '@nes
 import { FamilyService } from './family.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Family')
 @ApiBearerAuth()
@@ -11,6 +12,8 @@ export class FamilyController {
   constructor(private readonly familyService: FamilyService) {}
 
   @Post('invite')
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('familyMembers')
   @ApiOperation({ summary: 'Invite a family member by email (Family Plan only)' })
   @ApiBody({ schema: { properties: { email: { type: 'string' } } } })
   async invite(@Req() req, @Body() body: { email: string }) {

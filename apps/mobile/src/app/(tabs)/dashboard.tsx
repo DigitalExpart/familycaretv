@@ -169,13 +169,13 @@ export default function DashboardScreen() {
 
             <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/music')}>
               <Music color="#8B5CF6" size={28} />
-              <Text style={[styles.statValue, { color: theme.text }]}>-</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.music ?? '-'}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('music.title')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.statBox, { backgroundColor: theme.surfaceSecondary }]} onPress={() => router.push('/books')}>
               <BookOpen color="#EC4899" size={28} />
-              <Text style={[styles.statValue, { color: theme.text }]}>-</Text>
+              <Text style={[styles.statValue, { color: theme.text }]}>{stats.books ?? '-'}</Text>
               <Text style={[styles.statLabel, { color: theme.textSecondary }]}>{t('books.title')}</Text>
             </TouchableOpacity>
           </View>

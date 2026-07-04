@@ -104,9 +104,25 @@ export default function PetsScreen() {
         }
 
         if (pet.medications && pet.medications.length > 0) {
-          setMedications(pet.medications.map((m: any) => ({
-            name: m.name, dosage: m.dosage || '', time: m.time ? new Date(`1970-01-01T${m.time}`) : null
-          })));
+          setMedications(pet.medications.map((m: any) => {
+            let parsedTime = null;
+            if (m.time) {
+              const timeParts = String(m.time).match(/(\d+):(\d+)\s*(AM|PM)?/i);
+              if (timeParts) {
+                let hours = parseInt(timeParts[1], 10);
+                const minutes = parseInt(timeParts[2], 10);
+                const period = timeParts[3]?.toUpperCase();
+                if (period === 'PM' && hours < 12) hours += 12;
+                if (period === 'AM' && hours === 12) hours = 0;
+                const d = new Date();
+                d.setHours(hours, minutes, 0, 0);
+                parsedTime = d;
+              }
+            }
+            return {
+              name: m.name, dosage: m.dosage || '', time: parsedTime
+            };
+          }));
         } else {
           setMedications([]);
         }

@@ -7,6 +7,10 @@ export interface DashboardStats {
     appointments: number;
     medications: number;
     notes: number;
+    kids: number;
+    pets: number;
+    books?: number;
+    music?: number;
   };
   todaysTasks: {
     id: string;

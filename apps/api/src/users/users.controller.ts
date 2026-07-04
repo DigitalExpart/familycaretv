@@ -229,6 +229,9 @@ export class UsersController {
       where: { userId }
     });
 
+    const booksCount = await this.prisma.book.count();
+    const musicCount = await this.prisma.musicTrack.count();
+
     const dailyTasks = await this.prisma.task.findMany({
       where: {
         userId,
@@ -249,6 +252,8 @@ export class UsersController {
           notes: notesCount,
           kids: kidsCount,
           pets: petsCount,
+          books: booksCount,
+          music: musicCount,
         },
         taskProgress: {
           completed: completedTasks,

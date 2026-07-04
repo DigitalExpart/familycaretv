@@ -234,7 +234,9 @@
   },
   "books": {
     "title": "Books Library",
-    "noBooks": "No books found."
+    "noBooks": "No books found.",
+    "scanQR": "Scan QR",
+    "buyNow": "Buy Now"
   },
   "coloring": {
     "title": "Coloring Pages",

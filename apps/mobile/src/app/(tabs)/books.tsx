@@ -94,10 +94,10 @@ export default function BooksScreen() {
               ) : null}
 
               {book.qrCodeUrl ? (
-                <View style={[styles.qrButton, { borderColor: theme.border }]}>
+                <View style={[styles.qrButton, { borderColor: theme.border, backgroundColor: theme.surfaceSecondary }]}>
                   <QrCode color={theme.text} size={18} />
                   <Text style={[styles.qrButtonText, { color: theme.text }]}>
-                    {t('books.scanQR') || 'Scan QR'}
+                    {t('books.scanQR')}
                   </Text>
                 </View>
               ) : null}

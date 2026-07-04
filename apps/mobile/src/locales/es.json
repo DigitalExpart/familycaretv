@@ -206,7 +206,9 @@
   },
   "books": {
     "title": "Biblioteca de Libros",
-    "noBooks": "No se encontraron libros."
+    "noBooks": "No se encontraron libros.",
+    "scanQR": "Escanear QR",
+    "buyNow": "Comprar Ahora"
   },
   "coloring": {
     "title": "Páginas para Colorear",

@@ -101,40 +101,16 @@ export class RokuService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { firstName: true, lastName: true, subscriptionStatus: true, trialEndsAt: true }
+      select: { firstName: true, lastName: true, subscriptionStatus: true, trialEndsAt: true, currentPeriodEnd: true }
     });
 
-    const patients = await this.prisma.patient.findMany({
-      where: { userId },
-      select: { id: true, fullName: true, dateOfBirth: true },
-    });
-
-    const todayTasks = await this.prisma.task.findMany({
-      where: { userId, date: { gte: today, lt: tomorrow } },
-      orderBy: { date: 'asc' },
-    });
-
-    const appointments = await this.prisma.event.findMany({
+    // Unified reminders for today
+    const reminders = await this.prisma.reminder.findMany({
       where: {
-        patient: { userId },
-        startDateTime: { gte: today, lt: tomorrow },
-        type: 'APPOINTMENT',
+        userId,
+        scheduledAt: { gte: today, lt: tomorrow }
       },
-      orderBy: { startDateTime: 'asc' },
-    });
-
-    const medications = await this.prisma.medication.findMany({
-      where: { patient: { userId } },
-    });
-
-    const kids = await this.prisma.childProfile.findMany({
-      where: { userId },
-      include: { tasks: true },
-    });
-
-    const pets = await this.prisma.pet.findMany({
-      where: { userId },
-      include: { medications: true, vaccinations: true },
+      orderBy: { scheduledAt: 'asc' }
     });
 
     const notifications = await this.prisma.notification.findMany({
@@ -148,35 +124,31 @@ export class RokuService {
       orderBy: { scheduledDate: 'desc' },
     });
 
-    const drawingOfTheDay = await this.prisma.drawing.findFirst({
-      where: { patient: { userId } },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    const music = await this.prisma.musicCategory.findMany({
-      include: { tracks: { take: 5 } },
-      take: 2,
+    const books = await this.prisma.book.findMany({
+      where: {
+        OR: [
+          { scheduleStart: null, scheduleEnd: null },
+          { scheduleStart: { lte: new Date() }, scheduleEnd: { gte: new Date() } }
+        ]
+      },
+      orderBy: { displayOrder: 'asc' }
     });
 
     return {
       user: {
         firstName: user?.firstName,
         lastName: user?.lastName,
+        subscription: {
+          active: user?.subscriptionStatus === 'active' || user?.subscriptionStatus === 'trialing',
+          plan: user?.subscriptionStatus,
+          renewal: user?.currentPeriodEnd
+        }
       },
-      patients,
-      todayTasks,
-      appointments,
-      medications,
-      kids,
-      pets,
+      reminders,
       notifications,
       verseOfTheDay,
-      drawingOfTheDay,
-      music,
-      subscription: {
-        status: user?.subscriptionStatus,
-        trialEndsAt: user?.trialEndsAt,
-      }
+      books,
+      timestamp: new Date().toISOString()
     };
   }
 

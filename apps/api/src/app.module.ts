@@ -28,6 +28,9 @@ import { KidsModule } from './kids/kids.module';
 import { PetsModule } from './pets/pets.module';
 import { MusicLibraryModule } from './music-library/music-library.module';
 import { BooksModule } from './books/books.module';
+import { RemindersModule } from './reminders/reminders.module';
+import { CalendarModule } from './calendar/calendar.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 
@@ -63,6 +66,9 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     PetsModule,
     MusicLibraryModule,
     BooksModule,
+    RemindersModule,
+    CalendarModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [

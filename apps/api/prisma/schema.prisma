@@ -40,6 +40,7 @@ model User {
   patients           Patient[]
   deviceLinks        DeviceLink[]
   notifications      Notification[]
+  reminders          Reminder[] @relation("UserReminders")
   
   referralsMade      Referral[] @relation("Referrer")
   referralReceived   Referral?  @relation("ReferredUser")
@@ -274,6 +275,23 @@ model Notification {
   createdAt   DateTime         @default(now())
 
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id          String   @id @default(uuid())
+  userId      String
+  type        String   // e.g. MEDICATION, TASK, PET_VACCINATION, BIBLE
+  title       String
+  message     String?
+  scheduledAt DateTime
+  status      String   @default("PENDING") // PENDING, SENT, CANCELLED
+  sourceType  String?
+  sourceId    String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation("UserReminders", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum ReferralStatus {

@@ -4,13 +4,23 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { PatientsService } from '../patients/patients.service';
 
+import { RemindersService } from '../reminders/reminders.service';
+
 @Injectable()
 export class EventsService {
-  constructor(private prisma: PrismaService, private patientsService: PatientsService) {}
+  constructor(private prisma: PrismaService, private patientsService: PatientsService, private remindersService: RemindersService) {}
 
   async create(userId: string, dto: CreateEventDto) {
     await this.patientsService.verifyOwnership(dto.patientId, userId);
-    return this.prisma.event.create({ data: dto });
+    const event = await this.prisma.event.create({ data: dto });
+    const patient = await this.prisma.patient.findUnique({ where: { id: event.patientId } });
+    const title = event.type === 'APPOINTMENT' ? 'Appointment' : 'Event';
+    await this.remindersService.createReminder({
+       userId, type: event.type === 'APPOINTMENT' ? 'APPOINTMENT_REMINDER' : 'EVENT',
+       title: `${title}: ${event.title}`, message: `${patient?.fullName || 'Patient'} has ${event.title}`,
+       scheduledAt: event.startDateTime, sourceType: 'EVENT', sourceId: event.id
+    });
+    return event;
   }
 
   async findAll(userId: string, patientId: string) {
@@ -26,12 +36,25 @@ export class EventsService {
   }
 
   async update(id: string, userId: string, dto: UpdateEventDto) {
-    const event = await this.findOne(id, userId);
-    return this.prisma.event.update({ where: { id: event.id }, data: dto });
+    const oldEvent = await this.findOne(id, userId);
+    const event = await this.prisma.event.update({ where: { id: oldEvent.id }, data: dto });
+    
+    await this.remindersService.cancelReminderBySource('EVENT', event.id);
+    const patient = await this.prisma.patient.findUnique({ where: { id: event.patientId } });
+    const title = event.type === 'APPOINTMENT' ? 'Appointment' : 'Event';
+    
+    await this.remindersService.createReminder({
+       userId, type: event.type === 'APPOINTMENT' ? 'APPOINTMENT_REMINDER' : 'EVENT',
+       title: `${title}: ${event.title}`, message: `${patient?.fullName || 'Patient'} has ${event.title}`,
+       scheduledAt: event.startDateTime, sourceType: 'EVENT', sourceId: event.id
+    });
+
+    return event;
   }
 
   async remove(id: string, userId: string) {
     const event = await this.findOne(id, userId);
+    await this.remindersService.cancelReminderBySource('EVENT', event.id);
     return this.prisma.event.delete({ where: { id: event.id } });
   }
 

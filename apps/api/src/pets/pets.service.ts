@@ -1,11 +1,12 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
+import { RemindersService } from '../reminders/reminders.service';
 
 @Injectable()
 export class PetsService {
   private readonly logger = new Logger(PetsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private remindersService: RemindersService) {}
 
   /**
    * Sanitize nested records by stripping fields that don't exist on the Prisma model.
@@ -162,18 +163,34 @@ export class PetsService {
 
   // --- Vaccinations ---
   async addVaccination(petId: string, userId: string, data: any) {
-    await this.getPet(petId, userId);
+    const pet = await this.getPet(petId, userId);
     const sanitized = this.sanitizeVaccinationData([data])[0];
     if (!sanitized) throw new NotFoundException('Invalid vaccination data');
-    return this.prisma.petVaccination.create({ data: { ...sanitized, petId } });
+    const vax = await this.prisma.petVaccination.create({ data: { ...sanitized, petId } });
+    if (vax.nextDue) {
+      await this.remindersService.createReminder({
+          userId, type: 'PET_VACCINATION', title: `Pet Vaccination: ${vax.vaccineName}`, message: `${pet.name} is due for ${vax.vaccineName}`,
+          scheduledAt: vax.nextDue, sourceType: 'PET_VACCINATION', sourceId: vax.id
+      });
+    }
+    return vax;
   }
 
   // --- Medications ---
   async addMedication(petId: string, userId: string, data: any) {
-    await this.getPet(petId, userId);
+    const pet = await this.getPet(petId, userId);
     const sanitized = this.sanitizeMedicationData([data])[0];
     if (!sanitized) throw new NotFoundException('Invalid medication data');
-    return this.prisma.petMedication.create({ data: { ...sanitized, petId } });
+    const med = await this.prisma.petMedication.create({ data: { ...sanitized, petId } });
+    if (med.time) {
+       const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+       await this.remindersService.syncRecurringReminders(
+          userId, 'PET_MEDICATION', med.id, 'PET_MEDICATION',
+          `Pet Medication: ${med.name}`, `Time to give ${pet.name} their medication: ${med.name}`,
+          ['Everyday'], [med.time], user?.timezone || 'UTC'
+       );
+    }
+    return med;
   }
 
   // --- Notes ---

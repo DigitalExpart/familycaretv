@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
+import { RemindersService } from '../reminders/reminders.service';
+import { fromZonedTime } from 'date-fns-tz';
 
 @Injectable()
 export class KidsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private remindersService: RemindersService) {}
 
   async createProfile(userId: string, data: any) {
     const { notes, tasks, ...rest } = data;
@@ -56,19 +58,95 @@ export class KidsService {
 
   // --- Tasks ---
   async addTask(childId: string, userId: string, data: any) {
-    await this.getProfile(childId, userId);
-    return this.prisma.childTask.create({ data: { ...data, childId } });
+    const profile = await this.getProfile(childId, userId);
+    const task = await this.prisma.childTask.create({ data: { ...data, childId } });
+    
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+    const tz = user?.timezone || 'UTC';
+    
+    if (task.time) {
+      if (task.isDaily || (task.daysOfWeek && task.daysOfWeek.length > 0)) {
+        await this.remindersService.syncRecurringReminders(
+          userId, 'KIDS_TASK', task.id, 'KIDS_TASK',
+          `Kid's Task: ${task.title}`, `It is time for ${profile.name} to do: ${task.title}`,
+          task.isDaily ? ['Everyday'] : task.daysOfWeek, [task.time], tz
+        );
+      } else if (task.date) {
+        // One-off
+        const match = task.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+        if (match) {
+           let hours = parseInt(match[1], 10);
+           const minutes = parseInt(match[2], 10);
+           const ampm = match[3]?.toUpperCase();
+           if (ampm === 'PM' && hours < 12) hours += 12;
+           if (ampm === 'AM' && hours === 12) hours = 0;
+           
+           const dateString = task.date.toISOString().split('T')[0];
+           const localTimeString = `${dateString} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+           const scheduledAt = fromZonedTime(localTimeString, tz);
+           
+           await this.remindersService.createReminder({
+             userId, type: 'KIDS_TASK', title: `Kid's Task: ${task.title}`, message: `${profile.name} needs to: ${task.title}`,
+             scheduledAt, sourceType: 'KIDS_TASK', sourceId: task.id
+           });
+        }
+      }
+    }
+    
+    return task;
   }
 
   async updateTask(taskId: string, childId: string, userId: string, data: any) {
-    await this.getProfile(childId, userId);
-    return this.prisma.childTask.update({ where: { id: taskId }, data });
+    const profile = await this.getProfile(childId, userId);
+    const task = await this.prisma.childTask.update({ where: { id: taskId }, data });
+    
+    await this.remindersService.cancelReminderBySource('KIDS_TASK', taskId);
+    const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+    const tz = user?.timezone || 'UTC';
+
+    if (task.time) {
+      if (task.isDaily || (task.daysOfWeek && task.daysOfWeek.length > 0)) {
+        await this.remindersService.syncRecurringReminders(
+          userId, 'KIDS_TASK', task.id, 'KIDS_TASK',
+          `Kid's Task: ${task.title}`, `It is time for ${profile.name} to do: ${task.title}`,
+          task.isDaily ? ['Everyday'] : task.daysOfWeek, [task.time], tz
+        );
+      } else if (task.date) {
+        // One-off
+        const match = task.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+        if (match) {
+           let hours = parseInt(match[1], 10);
+           const minutes = parseInt(match[2], 10);
+           const ampm = match[3]?.toUpperCase();
+           if (ampm === 'PM' && hours < 12) hours += 12;
+           if (ampm === 'AM' && hours === 12) hours = 0;
+           
+           const dateString = task.date.toISOString().split('T')[0];
+           const localTimeString = `${dateString} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+           const scheduledAt = fromZonedTime(localTimeString, tz);
+           
+           await this.remindersService.createReminder({
+             userId, type: 'KIDS_TASK', title: `Kid's Task: ${task.title}`, message: `${profile.name} needs to: ${task.title}`,
+             scheduledAt, sourceType: 'KIDS_TASK', sourceId: task.id
+           });
+        }
+      }
+    }
+    
+    return task;
   }
 
   // --- Events ---
   async addEvent(childId: string, userId: string, data: any) {
-    await this.getProfile(childId, userId);
-    return this.prisma.childCalendarEvent.create({ data: { ...data, childId } });
+    const profile = await this.getProfile(childId, userId);
+    const event = await this.prisma.childCalendarEvent.create({ data: { ...data, childId } });
+    
+    await this.remindersService.createReminder({
+        userId, type: 'EVENT', title: `Kid's Event: ${event.title}`, message: `${profile.name} has an event: ${event.title}`,
+        scheduledAt: event.date, sourceType: 'KIDS_EVENT', sourceId: event.id
+    });
+      
+    return event;
   }
 
   // --- Notes ---

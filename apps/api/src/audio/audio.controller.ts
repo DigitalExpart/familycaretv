@@ -47,8 +47,8 @@ export class AudioController {
 
       const { data: publicUrlData } = supabase.storage.from('audio').getPublicUrl(filename);
       createAudioDto.audioUrl = publicUrlData.publicUrl;
-    } else if (!createAudioDto.audioUrl && !createAudioDto.youtubeUrl) {
-      throw new BadRequestException('Either an audio file, audioUrl, or youtubeUrl must be provided');
+    } else if (!createAudioDto.audioUrl) {
+      throw new BadRequestException('Either an audio file or audioUrl must be provided');
     }
     return this.audioService.create(createAudioDto);
   }

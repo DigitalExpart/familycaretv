@@ -39,9 +39,9 @@ export class AuthService {
 
     let referrer: any = null;
     let usedReferralCodeRecord: any = null;
+    const codeToSearch = dto.referralCode ? dto.referralCode.toUpperCase() : null;
 
-    if (dto.referralCode) {
-      const codeToSearch = dto.referralCode.toUpperCase();
+    if (codeToSearch) {
       // 1. First check if it's a custom admin ReferralCode
       usedReferralCodeRecord = await this.prisma.referralCode.findUnique({
         where: { code: codeToSearch },

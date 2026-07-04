@@ -5,6 +5,7 @@ import { UpdatePatientDto } from './dto/update-patient.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Patients')
 @ApiBearerAuth()
@@ -13,6 +14,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('patients')
   @Post()
   @ApiOperation({ summary: 'Create a new patient' })
   create(@CurrentUser() user: any, @Body() createPatientDto: CreatePatientDto) {

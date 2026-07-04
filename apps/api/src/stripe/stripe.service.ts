@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import Stripe from 'stripe';
 
@@ -7,13 +7,22 @@ export class StripeService {
   private stripe: any;
   private readonly logger = new Logger(StripeService.name);
   
+  // Map Stripe Price IDs → plan tiers
+  private readonly priceToTier: Record<string, string> = {};
+
   constructor(private prisma: PrismaService) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-      apiVersion: '2025-02-24.acacia' as any, // Bypass TS error on API version
+      apiVersion: '2025-02-24.acacia' as any,
     });
+
+    // Build price → tier mapping from env vars
+    const personalPriceId = process.env.STRIPE_PRICE_PERSONAL;
+    const familyPriceId = process.env.STRIPE_PRICE_FAMILY;
+    if (personalPriceId) this.priceToTier[personalPriceId] = 'PERSONAL';
+    if (familyPriceId) this.priceToTier[familyPriceId] = 'FAMILY';
   }
 
-  async createCheckoutSession(userId: string) {
+  async createCheckoutSession(userId: string, plan: 'PERSONAL' | 'FAMILY' = 'PERSONAL') {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
@@ -32,7 +41,19 @@ export class StripeService {
       });
     }
 
-    const priceId = process.env.STRIPE_PRICE_ID_MONTHLY || 'price_placeholder';
+    // Select the correct Stripe Price ID based on plan
+    let priceId: string;
+    if (plan === 'FAMILY') {
+      priceId = process.env.STRIPE_PRICE_FAMILY || '';
+    } else {
+      priceId = process.env.STRIPE_PRICE_PERSONAL || '';
+    }
+
+    if (!priceId) {
+      // Fallback to the legacy single price ID
+      priceId = process.env.STRIPE_PRICE_ID_MONTHLY || 'price_placeholder';
+    }
+
     const baseUrl = process.env.FRONTEND_URL || 'http://localhost:8082';
 
     const session = await this.stripe.checkout.sessions.create({
@@ -45,11 +66,10 @@ export class StripeService {
           quantity: 1,
         },
       ],
-      subscription_data: {
-        trial_period_days: 14,
-      },
-      success_url: `${baseUrl}/subscription?success=true`,
+      // No trial_period_days for paid plans — trial is the free tier
+      success_url: `${baseUrl}/subscription?success=true&plan=${plan}`,
       cancel_url: `${baseUrl}/subscription?canceled=true`,
+      metadata: { plan },
     });
 
     return { url: session.url };
@@ -67,7 +87,6 @@ export class StripeService {
         throw err;
       }
     } else {
-      // For local testing without a secret, parse it directly (unsafe for prod!)
       event = JSON.parse(payload.toString());
     }
 
@@ -91,7 +110,6 @@ export class StripeService {
   private async updateSubscription(subscription: any) {
     const customerId = subscription.customer as string;
     
-    // Find user by stripeCustomerId
     const user = await this.prisma.user.findUnique({
       where: { stripeCustomerId: customerId },
       include: { referralReceived: true }
@@ -102,11 +120,28 @@ export class StripeService {
       return;
     }
 
+    // Determine plan tier from the Stripe Price ID
+    let planTier: 'PERSONAL' | 'FAMILY' = 'PERSONAL';
+    const items = subscription.items?.data || [];
+    for (const item of items) {
+      const priceId = item.price?.id;
+      if (priceId && this.priceToTier[priceId]) {
+        planTier = this.priceToTier[priceId] as 'PERSONAL' | 'FAMILY';
+        break;
+      }
+    }
+
+    // Also check session metadata as fallback
+    if (subscription.metadata?.plan) {
+      planTier = subscription.metadata.plan as 'PERSONAL' | 'FAMILY';
+    }
+
     await this.prisma.user.update({
       where: { id: user.id },
       data: {
         stripeSubscriptionId: subscription.id,
         subscriptionStatus: subscription.status,
+        planTier,
         currentPeriodEnd: new Date(subscription.current_period_end * 1000),
         trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
       },
@@ -127,10 +162,12 @@ export class StripeService {
   private async cancelSubscription(subscription: any) {
     const customerId = subscription.customer as string;
     
+    // When subscription is canceled, revert to FREE_TRIAL (expired)
     await this.prisma.user.updateMany({
       where: { stripeCustomerId: customerId },
       data: {
         subscriptionStatus: 'canceled',
+        planTier: 'FREE_TRIAL',
       },
     });
   }
@@ -140,6 +177,7 @@ export class StripeService {
       where: { id: userId },
       select: {
         subscriptionStatus: true,
+        planTier: true,
         trialEndsAt: true,
         currentPeriodEnd: true,
       }
@@ -148,8 +186,7 @@ export class StripeService {
     if (!user) throw new NotFoundException('User not found');
 
     // Basic trial logic if they don't have stripe setup yet
-    if (user.subscriptionStatus === 'trialing' && !user.trialEndsAt) {
-       // Let's grant them 14 days from their account creation
+    if (user.planTier === 'FREE_TRIAL' && !user.trialEndsAt) {
        const created = await this.prisma.user.findUnique({ where: { id: userId } });
        if (!created) throw new NotFoundException('User not found');
        
@@ -161,14 +198,15 @@ export class StripeService {
            where: { id: userId },
            data: { subscriptionStatus: 'expired' }
          });
-         return { status: 'expired', trialEndsAt: trialEnd, currentPeriodEnd: null };
+         return { status: 'expired', planTier: user.planTier, trialEndsAt: trialEnd, currentPeriodEnd: null };
        }
        
-       return { status: 'trialing', trialEndsAt: trialEnd, currentPeriodEnd: null };
+       return { status: 'trialing', planTier: user.planTier, trialEndsAt: trialEnd, currentPeriodEnd: null };
     }
 
     return {
       status: user.subscriptionStatus,
+      planTier: user.planTier,
       trialEndsAt: user.trialEndsAt,
       currentPeriodEnd: user.currentPeriodEnd,
     };

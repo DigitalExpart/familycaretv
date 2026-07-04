@@ -3,6 +3,7 @@ import { PrismaService } from '../database/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import * as crypto from 'crypto';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { PLAN_LIMITS } from '../common/config/plan-limits.config';
 
 @Injectable()
 export class RokuService {
@@ -46,6 +47,30 @@ export class RokuService {
     if (new Date() > link.expiresAt) {
       await this.prisma.deviceLink.delete({ where: { id: link.id } });
       throw new BadRequestException('Code has expired');
+    }
+
+    // Enforce Roku device limit per plan tier
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { planTier: true },
+    });
+
+    if (user) {
+      const tier = user.planTier as keyof typeof PLAN_LIMITS;
+      const limit = PLAN_LIMITS[tier]?.rokuDevices ?? Infinity;
+
+      if (limit !== Infinity) {
+        const currentDeviceCount = await this.prisma.deviceLink.count({
+          where: { userId, linkedAt: { not: null } },
+        });
+
+        if (currentDeviceCount >= limit) {
+          const tierName = String(tier) === 'PERSONAL' ? 'Personal' : String(tier);
+          throw new BadRequestException(
+            `Your ${tierName} plan allows up to ${limit} Roku device${limit === 1 ? '' : 's'}. Upgrade to the Family Plan for up to 3 devices.`
+          );
+        }
+      }
     }
 
     await this.prisma.deviceLink.update({

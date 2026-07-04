@@ -1,8 +1,8 @@
-import { Controller, Post, Req, Res, Headers, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Req, Res, Headers, UseGuards, Get, Body } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { Request, Response } from 'express';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody } from '@nestjs/swagger';
 
 @ApiTags('Stripe')
 @Controller('stripe')
@@ -12,18 +12,23 @@ export class StripeController {
   @Post('create-checkout-session')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  async createCheckoutSession(@Req() req: any) {
-    return this.stripeService.createCheckoutSession(req.user.id);
+  @ApiOperation({ summary: 'Create a Stripe checkout session for a specific plan' })
+  @ApiBody({ schema: { properties: { plan: { type: 'string', enum: ['PERSONAL', 'FAMILY'], default: 'PERSONAL' } } } })
+  async createCheckoutSession(@Req() req: any, @Body() body: { plan?: 'PERSONAL' | 'FAMILY' }) {
+    const plan = body?.plan || 'PERSONAL';
+    return this.stripeService.createCheckoutSession(req.user.id, plan);
   }
 
   @Get('status')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get Stripe subscription status' })
   async getSubscriptionStatus(@Req() req: any) {
     return this.stripeService.getSubscriptionStatus(req.user.id);
   }
 
   @Post('webhook')
+  @ApiOperation({ summary: 'Stripe webhook handler' })
   async handleWebhook(
     @Headers('stripe-signature') signature: string,
     @Req() req: any,
@@ -34,7 +39,6 @@ export class StripeController {
     }
 
     try {
-      // req.rawBody is available because we set rawBody: true in main.ts
       await this.stripeService.handleWebhook(signature, req.rawBody);
       res.status(200).send();
     } catch (err) {

@@ -20,6 +20,7 @@ model User {
   hasConsentedToPrivacy Boolean @default(false)
   language           String   @default("en")
   role               Role     @default(USER)
+  planTier           PlanTier @default(FREE_TRIAL)
   
   // Subscription / Stripe fields
   subscriptionStatus String   @default("trialing")
@@ -55,11 +56,20 @@ model User {
   timezone           String         @default("UTC")
 
   referralCodes      ReferralCode[] @relation("ReferralCodeOwner")
+  aiUsage            AiUsage[]
+  familyMembersOwned FamilyMember[] @relation("FamilyOwner")
+  familyMembership   FamilyMember?  @relation("FamilyMemberUser")
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum PlanTier {
+  FREE_TRIAL
+  PERSONAL
+  FAMILY
 }
 
 model Patient {
@@ -580,4 +590,45 @@ model PetTask {
   createdAt DateTime @default(now())
 
   pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+// ====================================================
+// AI USAGE TRACKING
+// ====================================================
+
+model AiUsage {
+  id        String   @id @default(uuid())
+  userId    String
+  date      DateTime @db.Date
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+// ====================================================
+// FAMILY MEMBER INVITATIONS
+// ====================================================
+
+enum FamilyMemberStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model FamilyMember {
+  id          String             @id @default(uuid())
+  ownerId     String
+  memberId    String?            @unique
+  email       String
+  status      FamilyMemberStatus @default(PENDING)
+  inviteCode  String             @unique @default(uuid())
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  owner       User               @relation("FamilyOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  member      User?              @relation("FamilyMemberUser", fields: [memberId], references: [id], onDelete: SetNull)
 }

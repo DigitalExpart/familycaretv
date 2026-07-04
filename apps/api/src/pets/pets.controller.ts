@@ -3,6 +3,7 @@ import { PetsService } from './pets.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Pets')
 @ApiBearerAuth()
@@ -11,6 +12,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 export class PetsController {
   constructor(private readonly petsService: PetsService) {}
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('pets')
   @Post()
   @ApiOperation({ summary: 'Create a new pet profile' })
   createPet(@CurrentUser() user: any, @Body() body: any) {

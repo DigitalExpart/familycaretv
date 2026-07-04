@@ -3,6 +3,7 @@ import { KidsService } from './kids.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Kids')
 @ApiBearerAuth()
@@ -11,6 +12,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 export class KidsController {
   constructor(private readonly kidsService: KidsService) {}
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('kids')
   @Post()
   @ApiOperation({ summary: 'Create a new child profile' })
   createProfile(@CurrentUser() user: any, @Body() body: any) {

@@ -3,6 +3,7 @@ import { TasksService } from './tasks.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Tasks')
 @ApiBearerAuth()
@@ -11,6 +12,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('tasks')
   @Post()
   @ApiOperation({ summary: 'Create a new task' })
   create(@CurrentUser() user: any, @Body() body: any) {

@@ -5,6 +5,7 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Notes')
 @ApiBearerAuth()
@@ -12,6 +13,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger'
 @Controller('notes')
 export class NotesController {
   constructor(private readonly service: NotesService) {}
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('notes')
   @Post()
   @ApiOperation({ summary: 'Create a note for a patient' })
   create(@CurrentUser() user: any, @Body() dto: CreateNoteDto) {

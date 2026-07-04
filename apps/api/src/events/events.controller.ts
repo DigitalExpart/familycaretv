@@ -5,6 +5,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
 
 @ApiTags('Events')
 @ApiBearerAuth()
@@ -34,6 +35,8 @@ export class EventsController {
     return this.service.getTicker(user.id, patientId);
   }
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('appointments')
   @Post()
   @ApiOperation({ summary: 'Create an event for a patient' })
   create(@CurrentUser() user: any, @Body() dto: CreateEventDto) {

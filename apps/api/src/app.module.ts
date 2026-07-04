@@ -31,8 +31,10 @@ import { BooksModule } from './books/books.module';
 import { RemindersModule } from './reminders/reminders.module';
 import { CalendarModule } from './calendar/calendar.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { FamilyModule } from './family/family.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
+import { ResourceLimitGuard } from './common/guards/resource-limit.guard';
 
 @Module({
   imports: [
@@ -69,6 +71,7 @@ import { SubscriptionGuard } from './common/guards/subscription.guard';
     RemindersModule,
     CalendarModule,
     SubscriptionsModule,
+    FamilyModule,
   ],
   controllers: [AppController],
   providers: [

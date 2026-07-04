@@ -23,7 +23,7 @@ export default function BooksScreen() {
     }
   });
 
-  const books = booksData?.data || [];
+  const books = Array.isArray(booksData) ? booksData : (booksData?.data || []);
 
   if (isLoading) {
     return (

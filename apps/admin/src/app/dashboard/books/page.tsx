@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { BookOpen, Plus, Trash2, Edit2, Link as LinkIcon, QrCode } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Edit2, Link as LinkIcon, QrCode, Upload } from 'lucide-react';
 
 export default function BooksPage() {
   const [books, setBooks] = useState<any[]>([]);
@@ -85,6 +85,32 @@ export default function BooksPage() {
     setFormData({ title: '', author: '', description: '', storeUrl: '', qrCodeUrl: '', imageUrl: '', featured: false, language: 'en', displayOrder: 0 });
     setIsEditing(false);
     setEditId(null);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'qrCodeUrl' | 'imageUrl') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formDataObj = new FormData();
+    formDataObj.append('file', file);
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://carefree-endurance-production-7621.up.railway.app'}/books/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formDataObj
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFormData(prev => ({ ...prev, [field]: data.url }));
+      } else {
+        alert('File upload failed');
+      }
+    } catch (error) {
+      console.error('File upload failed', error);
+      alert('File upload failed');
+    }
   };
 
   return (
@@ -200,11 +226,23 @@ export default function BooksPage() {
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-semibold text-slate-700 mb-1">QR Code Image URL</label>
-                  <input type="text" value={formData.qrCodeUrl} onChange={(e) => setFormData({...formData, qrCodeUrl: e.target.value})} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all" placeholder="https://..." />
+                  <div className="flex gap-2">
+                    <input type="text" value={formData.qrCodeUrl} onChange={(e) => setFormData({...formData, qrCodeUrl: e.target.value})} className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all" placeholder="https://..." />
+                    <label className="flex items-center justify-center px-4 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl cursor-pointer transition-all" title="Upload QR Code">
+                      <Upload className="w-5 h-5 text-slate-600" />
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'qrCodeUrl')} />
+                    </label>
+                  </div>
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Cover Image URL</label>
-                  <input type="text" value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all" placeholder="https://..." />
+                  <div className="flex gap-2">
+                    <input type="text" value={formData.imageUrl} onChange={(e) => setFormData({...formData, imageUrl: e.target.value})} className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none transition-all" placeholder="https://..." />
+                    <label className="flex items-center justify-center px-4 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl cursor-pointer transition-all" title="Upload Cover Image">
+                      <Upload className="w-5 h-5 text-slate-600" />
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'imageUrl')} />
+                    </label>
+                  </div>
                 </div>
                 <div className="col-span-2 flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
                   <input type="checkbox" id="featured" checked={formData.featured} onChange={(e) => setFormData({...formData, featured: e.target.checked})} className="w-5 h-5 rounded text-pink-500 focus:ring-pink-500" />

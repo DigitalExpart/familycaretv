@@ -181,10 +181,11 @@ export default function TasksScreen() {
               value={taskDate}
               mode="date"
               display="default"
-              onChange={(event, selectedDate) => {
+              onValueChange={(event, selectedDate) => {
                 setShowDatePicker(false);
                 if (selectedDate) setTaskDate(selectedDate);
               }}
+              onDismiss={() => setShowDatePicker(false)}
             />
           )}
           {showTimePicker && (
@@ -192,10 +193,11 @@ export default function TasksScreen() {
               value={taskTime}
               mode="time"
               display="default"
-              onChange={(event, selectedDate) => {
+              onValueChange={(event, selectedDate) => {
                 setShowTimePicker(false);
                 if (selectedDate) setTaskTime(selectedDate);
               }}
+              onDismiss={() => setShowTimePicker(false)}
             />
           )}
         </PremiumCard>

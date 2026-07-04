@@ -1,28 +1,39 @@
 import { useState, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
+import type * as NotificationsType from 'expo-notifications';
 import Constants from 'expo-constants';
 import { api } from '../api/client';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+let Notifications: typeof NotificationsType | null = null;
+
+try {
+  Notifications = require('expo-notifications');
+  if (Notifications) {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+  }
+} catch (e) {
+  console.log('Failed to load expo-notifications (expected in Expo Go SDK 53+):', e);
+}
 
 export function usePushNotifications(userId?: string) {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+  const [notification, setNotification] = useState<NotificationsType.Notification | undefined>(
     undefined
   );
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const notificationListener = useRef<NotificationsType.Subscription>();
+  const responseListener = useRef<NotificationsType.Subscription>();
 
   async function registerForPushNotificationsAsync() {
     let token;
+
+    if (!Notifications) return undefined;
 
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
@@ -34,19 +45,23 @@ export function usePushNotifications(userId?: string) {
     }
 
     if (Device.isDevice) {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
+      try {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+          return;
+        }
+        const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? process.env.EXPO_PUBLIC_PROJECT_ID;
+        token = await Notifications.getExpoPushTokenAsync({
+          projectId, 
+        });
+      } catch (e) {
+        console.log('Push notifications not available (expected in Expo Go SDK 53+):', e);
       }
-      if (finalStatus !== 'granted') {
-        return;
-      }
-      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? process.env.EXPO_PUBLIC_PROJECT_ID;
-      token = await Notifications.getExpoPushTokenAsync({
-        projectId, 
-      });
     } else {
       console.log('Must use physical device for Push Notifications');
     }
@@ -65,20 +80,32 @@ export function usePushNotifications(userId?: string) {
       }
     });
 
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
-    });
+    try {
+      if (Notifications) {
+        notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+          setNotification(notification);
+        });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(response);
-    });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+          console.log(response);
+        });
+      }
+    } catch (e) {
+      console.log('Push notification listeners not available:', e);
+    }
 
     return () => {
-      if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(notificationListener.current);
-      }
-      if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+      try {
+        if (Notifications) {
+          if (notificationListener.current) {
+            Notifications.removeNotificationSubscription(notificationListener.current);
+          }
+          if (responseListener.current) {
+            Notifications.removeNotificationSubscription(responseListener.current);
+          }
+        }
+      } catch (e) {
+        // ignore
       }
     };
   }, [userId]);

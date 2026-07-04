@@ -204,6 +204,10 @@
     "songsInSpanish": "Canciones en Español",
     "listenYoutube": "Escuchar en YouTube"
   },
+  "books": {
+    "title": "Biblioteca de Libros",
+    "noBooks": "No se encontraron libros."
+  },
   "coloring": {
     "title": "Páginas para Colorear",
     "gallery": "Galería",

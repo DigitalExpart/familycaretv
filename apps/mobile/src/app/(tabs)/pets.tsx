@@ -815,10 +815,10 @@ export default function PetsScreen() {
           }
           mode={(openPicker.type === 'taskTime' || openPicker.type === 'medicationTime') ? 'time' : 'date'}
           display="default"
-          onChange={(event, selectedDate) => {
+          onValueChange={(event, selectedDate) => {
             const picker = openPicker;
             setOpenPicker(null);
-            if (event.type === 'set' && selectedDate) {
+            if (selectedDate) {
               if (picker.type === 'taskDate') setTaskDate(selectedDate);
               else if (picker.type === 'taskTime') setTaskTime(selectedDate);
               else if (picker.type === 'medicationTime') {
@@ -838,6 +838,7 @@ export default function PetsScreen() {
               }
             }
           }}
+          onDismiss={() => setOpenPicker(null)}
         />
       )}
     </View>

@@ -26,7 +26,7 @@ export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(getTodayString());
 
   const { data: upcomingData, isLoading: eventsLoading } = useUpcomingEvents();
-  const allEvents = upcomingData?.data || [];
+  const allEvents = Array.isArray(upcomingData) ? upcomingData : (upcomingData?.data || []);
   
   // Filter events for selected date locally
   const tasks = allEvents.filter((event: any) => {
@@ -76,6 +76,7 @@ export default function CalendarScreen() {
       <GradientHeader title={t('nav.calendar')} showBack={false} />
       
       <Calendar
+        key={isDark ? 'dark' : 'light'}
         current={selectedDate}
         onDayPress={(day: any) => {
           setSelectedDate(day.dateString);

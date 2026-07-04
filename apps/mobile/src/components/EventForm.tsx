@@ -135,7 +135,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
                   value={dateVal}
                   mode="date"
                   display="default"
-                  onChange={(event, selectedDate) => {
+                  onValueChange={(event, selectedDate) => {
                     setShowDatePicker(false);
                     if (selectedDate) {
                       const newDate = new Date(dateVal);
@@ -143,6 +143,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
                       onChange(newDate.toISOString());
                     }
                   }}
+                  onDismiss={() => setShowDatePicker(false)}
                 />
               )}
 
@@ -151,7 +152,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
                   value={dateVal}
                   mode="time"
                   display="default"
-                  onChange={(event, selectedDate) => {
+                  onValueChange={(event, selectedDate) => {
                     setShowTimePicker(false);
                     if (selectedDate) {
                       const newDate = new Date(dateVal);
@@ -159,6 +160,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
                       onChange(newDate.toISOString());
                     }
                   }}
+                  onDismiss={() => setShowTimePicker(false)}
                 />
               )}
             </View>

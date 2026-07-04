@@ -322,13 +322,14 @@ export default function KidsScreen() {
                   value={startTime}
                   mode="time"
                   display="default"
-                  onChange={(event, selectedDate) => {
+                  onValueChange={(event, selectedDate) => {
                     setShowStartTimePicker(false);
-                    if (event.type === 'set' && selectedDate) {
+                    if (selectedDate) {
                       setStartTime(selectedDate);
                       setShowEndTimePicker(true);
                     }
                   }}
+                  onDismiss={() => setShowStartTimePicker(false)}
                 />
               )}
               {showEndTimePicker && (
@@ -336,15 +337,16 @@ export default function KidsScreen() {
                   value={endTime}
                   mode="time"
                   display="default"
-                  onChange={(event, selectedDate) => {
+                  onValueChange={(event, selectedDate) => {
                     setShowEndTimePicker(false);
-                    if (event.type === 'set' && selectedDate) {
+                    if (selectedDate) {
                       setEndTime(selectedDate);
                       const startStr = startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' ', '');
                       const endStr = selectedDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(' ', '');
                       setHours(`${startStr} - ${endStr}`);
                     }
                   }}
+                  onDismiss={() => setShowEndTimePicker(false)}
                 />
               )}
             </View>
@@ -433,10 +435,11 @@ export default function KidsScreen() {
                   value={taskDate}
                   mode="date"
                   display="default"
-                  onChange={(event, selectedDate) => {
+                  onValueChange={(event, selectedDate) => {
                     setShowDatePicker(false);
                     if (selectedDate) setTaskDate(selectedDate);
                   }}
+                  onDismiss={() => setShowDatePicker(false)}
                 />
               )}
               {showTimePicker && (
@@ -444,10 +447,11 @@ export default function KidsScreen() {
                   value={taskTime}
                   mode="time"
                   display="default"
-                  onChange={(event, selectedDate) => {
+                  onValueChange={(event, selectedDate) => {
                     setShowTimePicker(false);
                     if (selectedDate) setTaskTime(selectedDate);
                   }}
+                  onDismiss={() => setShowTimePicker(false)}
                 />
               )}
             </PremiumCard>

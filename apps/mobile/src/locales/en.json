@@ -232,6 +232,10 @@
     "songsInSpanish": "Songs in Spanish",
     "listenYoutube": "Listen on YouTube"
   },
+  "books": {
+    "title": "Books Library",
+    "noBooks": "No books found."
+  },
   "coloring": {
     "title": "Coloring Pages",
     "gallery": "Gallery",

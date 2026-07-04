@@ -49,7 +49,9 @@ export default function DashboardScreen() {
     medications: 0,
     notes: 0,
     kids: 0,
-    pets: 0
+    pets: 0,
+    books: 0,
+    music: 0
   };
 
   const todaysTasks = dashboardData?.todaysTasks || [];

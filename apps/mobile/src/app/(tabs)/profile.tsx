@@ -121,17 +121,17 @@ export default function ProfileScreen() {
           
           <View style={styles.divider} />
           
-          <View style={styles.settingRow}>
+          <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/(tabs)/subscription')}>
             <View style={styles.settingIconContainer}>
               <CreditCard color={theme.accent} size={24} />
             </View>
             <View style={styles.settingTextContainer}>
               <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.subscription')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
-                {user?.subscriptionStatus === 'active' ? 'Active' : 'Free / Trial'}
+                {user?.subscriptionStatus === 'active' ? 'Active' : 'Free Plan'}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
           
           <View style={styles.divider} />
           

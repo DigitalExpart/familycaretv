@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Button, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Button, ActivityIndicator, Alert, Modal } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +32,8 @@ interface MedicationFormProps {
 export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationFormProps) {
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
+  const router = useRouter();
+  const [showLimitModal, setShowLimitModal] = React.useState(false);
 
   const { control, handleSubmit, setValue, getValues, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema as any),
@@ -106,8 +109,12 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
             res.disclaimer + '\n\n' + (res.data.warnings ? `Warnings: ${res.data.warnings}` : '')
           );
         },
-        onError: () => {
-          Alert.alert('Lookup Failed', 'Could not retrieve information for this medication.');
+        onError: (error: any) => {
+          if (error?.response?.status === 403) {
+            setShowLimitModal(true);
+          } else {
+            Alert.alert('Lookup Failed', 'Could not retrieve information for this medication.');
+          }
         }
       }
     );
@@ -278,6 +285,37 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
           {isLoading ? 'Saving...' : 'Save Medication'}
         </Text>
       </TouchableOpacity>
+
+      <Modal
+        visible={showLimitModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLimitModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalCard, { backgroundColor: theme.background }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>Daily Limit Reached</Text>
+            <Text style={[styles.modalMessage, { color: theme.textSecondary }]}>
+              Your 3 daily free uses for AI Lookup have expired. Subscribe to get unlimited access!
+            </Text>
+            <TouchableOpacity 
+              style={[styles.modalButton, { backgroundColor: theme.primary }]}
+              onPress={() => {
+                setShowLimitModal(false);
+                router.push('/(tabs)/subscription');
+              }}
+            >
+              <Text style={styles.modalButtonText}>Subscribe for More</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.modalCancelButton}
+              onPress={() => setShowLimitModal(false)}
+            >
+              <Text style={{ color: theme.textSecondary, fontWeight: '600' }}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -348,5 +386,49 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalCard: {
+    width: '100%',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  modalMessage: {
+    fontSize: 15,
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  modalButton: {
+    width: '100%',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modalButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  modalCancelButton: {
+    padding: 12,
   },
 });

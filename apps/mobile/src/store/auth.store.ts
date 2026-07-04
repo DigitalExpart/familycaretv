@@ -8,6 +8,7 @@ interface User {
   firstName?: string;
   lastName?: string;
   subscriptionStatus?: string;
+  planTier?: 'FREE_TRIAL' | 'PERSONAL' | 'FAMILY';
   phone?: string;
   gender?: string;
   avatarUrl?: string;

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text, Switch, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, Switch, TouchableOpacity, Image, Alert } from 'react-native';
 import { useAuthStore } from '../../store/auth.store';
 import { useRouter } from 'expo-router';
 import { api } from '../../api/client';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { AnimatedButton } from '../../components/ui/AnimatedButton';
-import { LogOut, Settings, Globe, Shield, CreditCard, User as UserIcon, Edit2 } from 'lucide-react-native';
+import { LogOut, Settings, Globe, Shield, CreditCard, User as UserIcon, Edit2, Users } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
@@ -75,6 +75,11 @@ export default function ProfileScreen() {
             <Text style={[styles.profileName, { color: theme.text }]}>
               {user?.firstName} {user?.lastName}
             </Text>
+            <View style={styles.planBadge}>
+              <Text style={styles.planBadgeText}>
+                {user?.planTier === 'FAMILY' ? 'FAMILY PLAN' : (user?.planTier === 'PERSONAL' ? 'PERSONAL PLAN' : 'FREE PLAN')}
+              </Text>
+            </View>
           </View>
           <TouchableOpacity 
             style={[styles.editButton, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}
@@ -129,6 +134,36 @@ export default function ProfileScreen() {
               <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.subscription')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
                 {user?.subscriptionStatus === 'active' ? 'Active' : 'Free Plan'}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          
+          <View style={styles.divider} />
+          
+          <TouchableOpacity 
+            style={styles.settingRow} 
+            onPress={() => {
+              if (user?.planTier !== 'FAMILY') {
+                Alert.alert(
+                  "Upgrade Required", 
+                  "You need the Family Plan to add and manage family members. Would you like to view plans?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "View Plans", onPress: () => router.push('/(tabs)/subscription') }
+                  ]
+                );
+              } else {
+                router.push('/(tabs)/family');
+              }
+            }}
+          >
+            <View style={styles.settingIconContainer}>
+              <Users color={theme.primary} size={24} />
+            </View>
+            <View style={styles.settingTextContainer}>
+              <Text style={[styles.settingLabel, { color: theme.text }]}>Family Members</Text>
+              <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
+                Manage your family plan members
               </Text>
             </View>
           </TouchableOpacity>
@@ -210,6 +245,19 @@ const styles = StyleSheet.create({
   },
   profileEmail: {
     fontSize: 14,
+  },
+  planBadge: {
+    backgroundColor: '#0a7ea4',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  planBadgeText: {
+    color: '#FFF',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   editButton: {
     padding: 10,

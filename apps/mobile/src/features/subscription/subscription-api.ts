@@ -6,15 +6,15 @@ export function useSubscriptionStatus() {
     queryKey: ['subscription', 'status'],
     queryFn: async () => {
       const { data } = await api.get('/stripe/status');
-      return data as { status: string; trialEndsAt: string | null; currentPeriodEnd: string | null };
+      return data as { status: string; planTier: string; trialEndsAt: string | null; currentPeriodEnd: string | null };
     },
   });
 }
 
 export function useCheckoutSession() {
   return useMutation({
-    mutationFn: async () => {
-      const { data } = await api.post('/stripe/create-checkout-session');
+    mutationFn: async ({ plan }: { plan: 'PERSONAL' | 'FAMILY' }) => {
+      const { data } = await api.post('/stripe/create-checkout-session', { plan });
       return data as { url: string };
     },
   });

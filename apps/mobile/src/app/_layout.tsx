@@ -4,7 +4,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from '../hooks/useFonts';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useAuthStore } from '../store/auth.store';
+import { useTheme } from '../hooks/useTheme';
 import { useState } from 'react';
+import { Appearance } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
@@ -23,6 +25,11 @@ export default function RootLayout() {
   useEffect(() => {
     restoreSession();
   }, []);
+
+  const { isDark } = useTheme();
+  useEffect(() => {
+    Appearance.setColorScheme(isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   useEffect(() => {
     if (fontsLoaded || fontError) {

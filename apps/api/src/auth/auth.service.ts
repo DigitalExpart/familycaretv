@@ -38,18 +38,54 @@ export class AuthService {
     }
 
     let referrer: any = null;
+    let usedReferralCodeRecord: any = null;
+
     if (dto.referralCode) {
-      referrer = await this.prisma.user.findUnique({
-        where: { referralCode: dto.referralCode },
+      // 1. First check if it's a custom admin ReferralCode
+      usedReferralCodeRecord = await this.prisma.referralCode.findUnique({
+        where: { code: dto.referralCode },
+        include: { owner: true }
       });
-      if (!referrer) {
+
+      if (usedReferralCodeRecord) {
+        if (usedReferralCodeRecord.status !== 'ACTIVE') {
+          throw new BadRequestException({
+            success: false,
+            message: 'Referral code is no longer active',
+            errors: [],
+          });
+        }
+        if (usedReferralCodeRecord.maxUsages && usedReferralCodeRecord.usageCount >= usedReferralCodeRecord.maxUsages) {
+          throw new BadRequestException({
+            success: false,
+            message: 'Referral code usage limit reached',
+            errors: [],
+          });
+        }
+        if (usedReferralCodeRecord.expiresAt && new Date() > usedReferralCodeRecord.expiresAt) {
+          throw new BadRequestException({
+            success: false,
+            message: 'Referral code has expired',
+            errors: [],
+          });
+        }
+        referrer = usedReferralCodeRecord.owner;
+      } else {
+        // 2. Fallback to checking if it's a user's personal referral code
+        referrer = await this.prisma.user.findUnique({
+          where: { referralCode: dto.referralCode },
+        });
+      }
+
+      if (!usedReferralCodeRecord && !referrer) {
         throw new BadRequestException({
           success: false,
           message: 'Invalid referral code',
           errors: [],
         });
       }
-      if (referrer.email === dto.email) {
+
+      if (referrer && referrer.email === dto.email) {
         throw new BadRequestException({
           success: false,
           message: 'Cannot use your own referral code',
@@ -99,7 +135,15 @@ export class AuthService {
           referrerId: referrer.id,
           referredUserId: user.id,
           status: 'REGISTERED',
+          commissionEligible: usedReferralCodeRecord ? (usedReferralCodeRecord.commissionRate > 0) : true,
         },
+      });
+    }
+
+    if (usedReferralCodeRecord) {
+      await this.prisma.referralCode.update({
+        where: { id: usedReferralCodeRecord.id },
+        data: { usageCount: { increment: 1 } }
       });
     }
 

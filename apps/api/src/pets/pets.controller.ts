@@ -81,4 +81,16 @@ export class PetsController {
   addTask(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
     return this.petsService.addTask(id, user.id, body);
   }
+
+  @Patch(':id/tasks/:taskId')
+  @ApiOperation({ summary: 'Update a task for a pet' })
+  updateTask(@Param('id') id: string, @Param('taskId') taskId: string, @CurrentUser() user: any, @Body() body: any) {
+    return this.petsService.updateTask(taskId, id, user.id, body);
+  }
+
+  @Delete(':id/tasks/:taskId')
+  @ApiOperation({ summary: 'Delete a task for a pet' })
+  removeTask(@Param('id') id: string, @Param('taskId') taskId: string, @CurrentUser() user: any) {
+    return this.petsService.removeTask(taskId, id, user.id);
+  }
 }

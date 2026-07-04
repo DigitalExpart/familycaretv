@@ -6,7 +6,7 @@ import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { Baby, School, CheckCircle, Circle, Plus, ChevronLeft, ChevronRight, PawPrint, FileText, Calendar as CalendarIcon, Clock, Repeat } from 'lucide-react-native';
+import { Baby, School, CheckCircle, Circle, Plus, ChevronLeft, ChevronRight, PawPrint, FileText, Calendar as CalendarIcon, Clock, Repeat, Trash2 } from 'lucide-react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -154,6 +154,12 @@ export default function KidsScreen() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['kids'] })
   });
 
+  const deleteTaskMutation = useMutation({
+    mutationFn: async ({ kidId, taskId }: { kidId: string, taskId: string }) => 
+      api.delete(`/kids/${kidId}/tasks/${taskId}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['kids'] })
+  });
+
   const handleSave = () => {
     if (!name) return;
     const payload: any = {
@@ -210,6 +216,27 @@ export default function KidsScreen() {
     } else if (activeProfile) {
       toggleTaskMutation.mutate({ kidId: activeProfile.id, taskId: task.id, completed: !task.completed });
     }
+  };
+
+  const handleDeleteTask = (task: any) => {
+    Alert.alert(
+      "Delete Task",
+      "Are you sure you want to delete this task?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: () => {
+            if (activeTab === '+ Add') {
+              setLocalTasks(localTasks.filter(t => t.id !== task.id));
+            } else if (activeProfile) {
+              deleteTaskMutation.mutate({ kidId: activeProfile.id, taskId: task.id });
+            }
+          }
+        }
+      ]
+    );
   };
 
   // Calendar marked dates
@@ -373,10 +400,15 @@ export default function KidsScreen() {
               <View style={{ marginBottom: 16 }}>
                 {chores.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>No chores added.</Text>}
                 {chores.map((task: any) => (
-                  <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => handleToggleTask(task)}>
-                    {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                    <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-                  </TouchableOpacity>
+                  <View key={task.id} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => handleToggleTask(task)}>
+                      {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
+                      <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteTask(task)} style={{ padding: 8 }}>
+                      <Trash2 color={theme.danger || '#EF4444'} size={18} />
+                    </TouchableOpacity>
+                  </View>
                 ))}
               </View>
 
@@ -384,10 +416,15 @@ export default function KidsScreen() {
               <View style={{ marginBottom: 16 }}>
                 {homework.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>No homework added.</Text>}
                 {homework.map((task: any) => (
-                  <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => handleToggleTask(task)}>
-                    {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                    <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-                  </TouchableOpacity>
+                  <View key={task.id} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
+                    <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => handleToggleTask(task)}>
+                      {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
+                      <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteTask(task)} style={{ padding: 8 }}>
+                      <Trash2 color={theme.danger || '#EF4444'} size={18} />
+                    </TouchableOpacity>
+                  </View>
                 ))}
               </View>
 

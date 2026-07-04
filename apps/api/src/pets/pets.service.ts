@@ -206,4 +206,14 @@ export class PetsService {
     if (!sanitized) throw new NotFoundException('Invalid task data');
     return this.prisma.petTask.create({ data: { ...sanitized, petId } });
   }
+
+  async updateTask(taskId: string, petId: string, userId: string, data: any) {
+    await this.getPet(petId, userId);
+    return this.prisma.petTask.update({ where: { id: taskId }, data });
+  }
+
+  async removeTask(taskId: string, petId: string, userId: string) {
+    await this.getPet(petId, userId);
+    return this.prisma.petTask.delete({ where: { id: taskId } });
+  }
 }

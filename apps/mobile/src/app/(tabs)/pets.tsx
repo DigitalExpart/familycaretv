@@ -6,7 +6,7 @@ import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { Dog, Stethoscope, Syringe, Pill, Plus, Calendar as CalendarIcon, X, AlertTriangle, FileText, CheckCircle, Circle, Clock, Repeat } from 'lucide-react-native';
+import { Dog, Stethoscope, Syringe, Pill, Plus, Calendar as CalendarIcon, X, AlertTriangle, FileText, CheckCircle, Circle, Clock, Repeat, Trash2 } from 'lucide-react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -192,6 +192,14 @@ export default function PetsScreen() {
     }
   });
 
+  const deleteTaskMutation = useMutation({
+    mutationFn: async ({ petId, taskId }: { petId: string, taskId: string }) => api.delete(`/pets/${petId}/tasks/${taskId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+    }
+  });
+
   const addTaskMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => api.post(`/pets/${id}/tasks`, data),
     onSuccess: () => {
@@ -335,6 +343,32 @@ export default function PetsScreen() {
         toggleTaskMutation.mutate({ petId: pet.id, taskId: task.id, completed: !task.completed });
       }
     }
+  };
+
+  const handleDeleteTask = (task: any, index: number) => {
+    Alert.alert(
+      "Delete Task",
+      "Are you sure you want to delete this task?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: () => {
+            if (activeTab === '+ Add') {
+              const newTasks = [...localTasks];
+              newTasks.splice(index, 1);
+              setLocalTasks(newTasks);
+            } else {
+              const pet = profiles.find((p: any) => p.name === activeTab);
+              if (pet && task.id) {
+                deleteTaskMutation.mutate({ petId: pet.id, taskId: task.id });
+              }
+            }
+          }
+        }
+      ]
+    );
   };
 
   const getVisibleTasks = () => {
@@ -501,12 +535,17 @@ export default function PetsScreen() {
           />
 
           {visibleTasks.map((task, index) => (
-            <TouchableOpacity key={task.id || index.toString()} style={styles.taskRow} onPress={() => toggleTask(task, index)}>
-              {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-              <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>
-                {task.title} {task.time ? `(${task.time})` : ''}
-              </Text>
-            </TouchableOpacity>
+            <View key={task.id || index.toString()} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
+              <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => toggleTask(task, index)}>
+                {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
+                <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>
+                  {task.title} {task.time ? `(${task.time})` : ''}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteTask(task, index)} style={{ padding: 8 }}>
+                <Trash2 color={theme.danger || '#EF4444'} size={18} />
+              </TouchableOpacity>
+            </View>
           ))}
 
           {isFormEditable && (

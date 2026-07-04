@@ -136,6 +136,12 @@ export class KidsService {
     return task;
   }
 
+  async removeTask(taskId: string, childId: string, userId: string) {
+    await this.getProfile(childId, userId);
+    await this.remindersService.cancelReminderBySource('KIDS_TASK', taskId);
+    return this.prisma.childTask.delete({ where: { id: taskId } });
+  }
+
   // --- Events ---
   async addEvent(childId: string, userId: string, data: any) {
     const profile = await this.getProfile(childId, userId);

@@ -58,6 +58,12 @@ export class KidsController {
     return this.kidsService.updateTask(taskId, id, user.id, body);
   }
 
+  @Delete(':id/tasks/:taskId')
+  @ApiOperation({ summary: 'Delete a task for a child' })
+  removeTask(@Param('id') id: string, @Param('taskId') taskId: string, @CurrentUser() user: any) {
+    return this.kidsService.removeTask(taskId, id, user.id);
+  }
+
   @Post(':id/events')
   @ApiOperation({ summary: 'Add a calendar event for a child' })
   addEvent(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {

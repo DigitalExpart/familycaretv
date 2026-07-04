@@ -47,7 +47,20 @@ api.interceptors.response.use(
         }
       } else if (error.response.status === 403 && typeof error.response.data?.message === 'string') {
         // Handle plan limit reached or general forbidden
-        Alert.alert('Plan Limit Reached', error.response.data.message);
+        Alert.alert(
+          'Plan Limit Reached', 
+          error.response.data.message + '\n\nPlease subscribe to a higher plan to add more.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Upgrade Plan', 
+              onPress: () => {
+                const { router } = require('expo-router');
+                router.push('/profile');
+              } 
+            }
+          ]
+        );
       }
     }
     return Promise.reject(error);

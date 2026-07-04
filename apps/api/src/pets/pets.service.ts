@@ -55,22 +55,42 @@ export class PetsService {
         data: {
           ...petData,
           userId,
-          ...(veterinarians?.length ? { veterinarians: { create: veterinarians.map((v: any) => ({ name: v.name, phone: v.phone })).filter((v: any) => v.name) } } : {}),
-          ...(clinics?.length ? { clinics: { create: clinics.map((c: any) => ({ name: c.name, phone: c.phone })).filter((c: any) => c.name) } } : {}),
-          ...(vaccinations?.length ? { vaccinations: { create: this.sanitizeVaccinationData(vaccinations) } } : {}),
-          ...(medications?.length ? { medications: { create: this.sanitizeMedicationData(medications) } } : {}),
-          ...(notes?.length ? { notes: { create: notes.map((n: any) => ({ content: n.content })).filter((n: any) => n.content) } } : {}),
-          ...(tasks?.length ? { tasks: { create: this.sanitizeTaskData(tasks) } } : {}),
-        },
-        include: {
-          veterinarians: true,
-          clinics: true,
-          vaccinations: true,
-          medications: true,
-          notes: true,
-          tasks: true,
         },
       });
+
+      if (veterinarians?.length) {
+        for (const vet of veterinarians) {
+          if (vet.name) await this.addVet(pet.id, userId, vet);
+        }
+      }
+      if (clinics?.length) {
+        for (const clinic of clinics) {
+          if (clinic.name) await this.addClinic(pet.id, userId, clinic);
+        }
+      }
+      if (vaccinations?.length) {
+        for (const vax of vaccinations) {
+          if (vax.vaccineName) await this.addVaccination(pet.id, userId, vax);
+        }
+      }
+      if (medications?.length) {
+        for (const med of medications) {
+          if (med.name) await this.addMedication(pet.id, userId, med);
+        }
+      }
+      if (notes?.length) {
+        for (const note of notes) {
+          if (note.content) await this.addNote(pet.id, userId, note);
+        }
+      }
+      if (tasks?.length) {
+        for (const task of tasks) {
+          if (task.title) await this.addTask(pet.id, userId, task);
+        }
+      }
+
+      return this.getPet(pet.id, userId);
+
     } catch (error: any) {
       this.logger.error(`Failed to create pet: ${error.message}`, error.stack);
       throw error;

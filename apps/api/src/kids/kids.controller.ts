@@ -46,6 +46,8 @@ export class KidsController {
 
   // --- Sub-resources ---
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('tasks')
   @Post(':id/tasks')
   @ApiOperation({ summary: 'Add a task for a child' })
   addTask(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
@@ -64,12 +66,16 @@ export class KidsController {
     return this.kidsService.removeTask(taskId, id, user.id);
   }
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('appointments')
   @Post(':id/events')
   @ApiOperation({ summary: 'Add a calendar event for a child' })
   addEvent(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
     return this.kidsService.addEvent(id, user.id, body);
   }
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('notes')
   @Post(':id/notes')
   @ApiOperation({ summary: 'Add a note for a child' })
   addNote(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {

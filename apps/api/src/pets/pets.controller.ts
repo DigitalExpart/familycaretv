@@ -58,24 +58,31 @@ export class PetsController {
     return this.petsService.addClinic(id, user.id, body);
   }
 
+  // We don't have a specific limit for vaccinations, maybe skip or use medications
   @Post(':id/vaccinations')
   @ApiOperation({ summary: 'Add a vaccination to a pet' })
   addVaccination(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
     return this.petsService.addVaccination(id, user.id, body);
   }
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('medications')
   @Post(':id/medications')
   @ApiOperation({ summary: 'Add a medication to a pet' })
   addMedication(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
     return this.petsService.addMedication(id, user.id, body);
   }
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('notes')
   @Post(':id/notes')
   @ApiOperation({ summary: 'Add a note to a pet' })
   addNote(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {
     return this.petsService.addNote(id, user.id, body);
   }
 
+  @UseGuards(ResourceLimitGuard)
+  @ResourceType('tasks')
   @Post(':id/tasks')
   @ApiOperation({ summary: 'Add a task to a pet' })
   addTask(@Param('id') id: string, @CurrentUser() user: any, @Body() body: any) {

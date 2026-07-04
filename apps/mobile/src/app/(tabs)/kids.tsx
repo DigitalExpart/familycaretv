@@ -167,7 +167,15 @@ export default function KidsScreen() {
       notes: notes ? [{ content: notes }] : []
     };
     if (activeTab === '+ Add') {
-      payload.tasks = localTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, daysOfWeek: t.daysOfWeek }));
+      payload.tasks = localTasks.map(t => ({ 
+        title: t.title, 
+        category: t.category, 
+        completed: t.completed, 
+        daysOfWeek: t.daysOfWeek,
+        time: t.time,
+        date: t.date,
+        isDaily: t.isDaily
+      }));
       createProfileMutation.mutate(payload);
     } else if (activeProfile) {
       updateProfileMutation.mutate({ id: activeProfile.id, data: payload });
@@ -403,7 +411,13 @@ export default function KidsScreen() {
                   <View key={task.id} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => handleToggleTask(task)}>
                       {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                      <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
+                      <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>
+                        {task.title}
+                        {task.time ? ` (${task.time})` : ''}
+                        <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                          {task.isDaily ? ' - Everyday' : (task.daysOfWeek && task.daysOfWeek.length > 0 ? ` - ${task.daysOfWeek.map((d: string) => d.substring(0,3)).join(', ')}` : '')}
+                        </Text>
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDeleteTask(task)} style={{ padding: 8 }}>
                       <Trash2 color={theme.danger || '#EF4444'} size={18} />
@@ -419,7 +433,13 @@ export default function KidsScreen() {
                   <View key={task.id} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => handleToggleTask(task)}>
                       {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                      <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
+                      <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>
+                        {task.title}
+                        {task.time ? ` (${task.time})` : ''}
+                        <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                          {task.isDaily ? ' - Everyday' : (task.daysOfWeek && task.daysOfWeek.length > 0 ? ` - ${task.daysOfWeek.map((d: string) => d.substring(0,3)).join(', ')}` : '')}
+                        </Text>
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleDeleteTask(task)} style={{ padding: 8 }}>
                       <Trash2 color={theme.danger || '#EF4444'} size={18} />

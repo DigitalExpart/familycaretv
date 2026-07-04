@@ -9,14 +9,21 @@ export class KidsService {
 
   async createProfile(userId: string, data: any) {
     const { notes, tasks, ...rest } = data;
-    return this.prisma.childProfile.create({
+    const profile = await this.prisma.childProfile.create({
       data: {
         ...rest,
         userId,
         ...(notes?.length ? { notes: { create: notes } } : {}),
-        ...(tasks?.length ? { tasks: { create: tasks } } : {}),
       },
     });
+
+    if (tasks && tasks.length > 0) {
+      for (const taskData of tasks) {
+        await this.addTask(profile.id, userId, taskData);
+      }
+    }
+
+    return this.getProfile(profile.id, userId);
   }
 
   async findAllProfiles(userId: string) {

@@ -539,7 +539,11 @@ export default function PetsScreen() {
               <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => toggleTask(task, index)}>
                 {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
                 <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>
-                  {task.title} {task.time ? `(${task.time})` : ''}
+                  {task.title}
+                  {task.time ? ` (${task.time})` : ''}
+                  <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                    {task.isDaily ? ' - Everyday' : (task.daysOfWeek && task.daysOfWeek.length > 0 ? ` - ${task.daysOfWeek.map((d: string) => d.substring(0,3)).join(', ')}` : '')}
+                  </Text>
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeleteTask(task, index)} style={{ padding: 8 }}>

@@ -46,7 +46,7 @@ export default function PetsScreen() {
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [notes, setNotes] = useState('');
   const [vaccines, setVaccines] = useState<{ name: string, dateGiven: Date | null, nextDue: Date | null }[]>([{ name: '', dateGiven: null, nextDue: null }]);
-  const [medications, setMedications] = useState<{ name: string, dosage: string, time?: Date | null }[]>([{ name: '', dosage: '', time: null }]);
+  const [medications, setMedications] = useState<{ id?: string, name: string, dosage: string, time?: Date | null, isDaily?: boolean, daysOfWeek?: string[] }[]>([{ name: '', dosage: '', time: null, isDaily: false, daysOfWeek: [] }]);
   
   // Tasks
   const [localTasks, setLocalTasks] = useState<{ id?: string, title: string, category: string, completed: boolean, date?: Date, time?: string, isDaily?: boolean, daysOfWeek?: string[] }[]>([]);
@@ -120,7 +120,7 @@ export default function PetsScreen() {
               }
             }
             return {
-              name: m.name, dosage: m.dosage || '', time: parsedTime
+              id: m.id, name: m.name, dosage: m.dosage || '', time: parsedTime, isDaily: m.isDaily, daysOfWeek: m.daysOfWeek || []
             };
           }));
         } else {
@@ -156,7 +156,7 @@ export default function PetsScreen() {
     setEmergencyPhone('');
     setNotes('');
     setVaccines([{ name: '', dateGiven: null, nextDue: null }]);
-    setMedications([{ name: '', dosage: '', time: null }]);
+    setMedications([{ name: '', dosage: '', time: null, isDaily: false, daysOfWeek: [] }]);
     setLocalTasks([]);
   };
 
@@ -200,6 +200,14 @@ export default function PetsScreen() {
     }
   });
 
+  const deleteMedicationMutation = useMutation({
+    mutationFn: async ({ petId, medId }: { petId: string, medId: string }) => api.delete(`/pets/${petId}/medications/${medId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+    }
+  });
+
   const addTaskMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => api.post(`/pets/${id}/tasks`, data),
     onSuccess: () => {
@@ -224,13 +232,12 @@ export default function PetsScreen() {
       })),
       medications: medications.filter(m => m.name).map(m => {
         const timeStr = m.time ? m.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined;
-        if (timeStr) {
-           scheduleMedicationNotifications(`med-${Date.now()}`, m.name, ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], [timeStr]);
-        }
         return {
           name: m.name,
           dosage: m.dosage,
-          time: timeStr
+          time: timeStr,
+          isDaily: m.isDaily,
+          daysOfWeek: m.daysOfWeek
         };
       }),
       notes: notes ? [{ content: notes }] : undefined,
@@ -267,13 +274,12 @@ export default function PetsScreen() {
         })),
         medications: medications.filter(m => m.name).map(m => {
           const timeStr = m.time ? m.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined;
-          if (timeStr) {
-             scheduleMedicationNotifications(`med-${Date.now()}`, m.name, ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], [timeStr]);
-          }
           return {
             name: m.name,
             dosage: m.dosage,
-            time: timeStr
+            time: timeStr,
+            isDaily: m.isDaily,
+            daysOfWeek: m.daysOfWeek
           };
         }),
         notes: notes ? [{ content: notes }] : [],
@@ -363,6 +369,32 @@ export default function PetsScreen() {
               const pet = profiles.find((p: any) => p.name === activeTab);
               if (pet && task.id) {
                 deleteTaskMutation.mutate({ petId: pet.id, taskId: task.id });
+              }
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handleDeleteMedication = (med: any, index: number) => {
+    Alert.alert(
+      "Delete Medication",
+      "Are you sure you want to delete this medication?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: () => {
+            if (activeTab === '+ Add' || !med.id) {
+              const newMeds = [...medications];
+              newMeds.splice(index, 1);
+              setMedications(newMeds);
+            } else {
+              const pet = profiles.find((p: any) => p.name === activeTab);
+              if (pet && med.id) {
+                deleteMedicationMutation.mutate({ petId: pet.id, medId: med.id });
               }
             }
           }
@@ -739,7 +771,7 @@ export default function PetsScreen() {
             <View key={idx} style={[styles.itemCard, { backgroundColor: theme.surfaceSecondary }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                 <TextInput 
-                  style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, height: 40 }]} 
+                  style={[styles.input, { backgroundColor: theme.surface, color: theme.text, flex: 1, height: 40, marginRight: 8 }]} 
                   value={med.name} 
                   placeholder={t('pets.form.name')}
                   placeholderTextColor={theme.textSecondary}
@@ -750,7 +782,11 @@ export default function PetsScreen() {
                     setMedications(newMeds);
                   }}
                 />
-                {isFormEditable && (
+                {!isFormEditable ? (
+                  <TouchableOpacity onPress={() => handleDeleteMedication(med, idx)} style={{ padding: 8 }}>
+                    <Trash2 color={theme.danger || '#EF4444'} size={18} />
+                  </TouchableOpacity>
+                ) : (
                   <TouchableOpacity 
                     style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
                     onPress={() => setMedications(medications.filter((_, i) => i !== idx))}
@@ -759,7 +795,7 @@ export default function PetsScreen() {
                   </TouchableOpacity>
                 )}
               </View>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.dosage')}</Text>
                   <TextInput 
@@ -789,13 +825,51 @@ export default function PetsScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {isFormEditable && (
+                <View style={{ marginBottom: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, justifyContent: 'space-between' }}>
+                    <Text style={{ color: theme.text }}>Repeat Everyday?</Text>
+                    <TouchableOpacity 
+                      onPress={() => {
+                        const newMeds = [...medications];
+                        newMeds[idx].isDaily = !newMeds[idx].isDaily;
+                        setMedications(newMeds);
+                      }} 
+                      style={[styles.input, { width: 40, paddingHorizontal: 0, backgroundColor: med.isDaily ? theme.warning : theme.surfaceSecondary, justifyContent: 'center', alignItems: 'center' }]}
+                    >
+                      <Repeat color={med.isDaily ? '#FFF' : theme.textSecondary} size={20} />
+                    </TouchableOpacity>
+                  </View>
+                  {!med.isDaily && (
+                    <DaysOfWeekSelector 
+                      selectedDays={med.daysOfWeek || []} 
+                      onChange={(days) => {
+                        const newMeds = [...medications];
+                        newMeds[idx].daysOfWeek = days;
+                        setMedications(newMeds);
+                      }} 
+                    />
+                  )}
+                </View>
+              )}
+              
+              {!isFormEditable && !med.isDaily && med.daysOfWeek && med.daysOfWeek.length > 0 && (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                  {med.daysOfWeek.map((day, dIdx) => (
+                    <View key={dIdx} style={{ backgroundColor: theme.surface, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 }}>
+                      <Text style={{ color: theme.textSecondary, fontSize: 10 }}>{day}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           ))}
 
           {isFormEditable && (
             <TouchableOpacity 
               style={[styles.outlineBtn, { borderColor: theme.warning }]}
-              onPress={() => setMedications([...medications, { name: '', dosage: '', time: null }])}
+              onPress={() => setMedications([...medications, { name: '', dosage: '', time: null, isDaily: false, daysOfWeek: [] }])}
             >
               <Plus color={theme.warning} size={16} />
               <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>

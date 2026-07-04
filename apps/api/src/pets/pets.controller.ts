@@ -73,6 +73,12 @@ export class PetsController {
     return this.petsService.addMedication(id, user.id, body);
   }
 
+  @Delete(':id/medications/:medId')
+  @ApiOperation({ summary: 'Delete a medication for a pet' })
+  removeMedication(@Param('id') id: string, @Param('medId') medId: string, @CurrentUser() user: any) {
+    return this.petsService.removeMedication(medId, id, user.id);
+  }
+
   @UseGuards(ResourceLimitGuard)
   @ResourceType('notes')
   @Post(':id/notes')

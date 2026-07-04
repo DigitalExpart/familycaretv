@@ -24,11 +24,13 @@ export class PetsService {
   }
 
   private sanitizeMedicationData(medications: any[]) {
-    return medications.map(({ name, dosage, frequency, time }) => ({
+    return medications.map(({ name, dosage, frequency, time, isDaily, daysOfWeek }) => ({
       name,
       ...(dosage !== undefined ? { dosage } : {}),
       ...(frequency !== undefined ? { frequency } : {}),
       ...(time !== undefined ? { time } : {}),
+      ...(isDaily !== undefined ? { isDaily } : {}),
+      ...(daysOfWeek !== undefined ? { daysOfWeek } : {}),
     })).filter(m => m.name);
   }
 
@@ -204,13 +206,20 @@ export class PetsService {
     const med = await this.prisma.petMedication.create({ data: { ...sanitized, petId } });
     if (med.time) {
        const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+       const days = med.isDaily ? ['Everyday'] : (med.daysOfWeek && med.daysOfWeek.length > 0 ? med.daysOfWeek : ['Everyday']);
        await this.remindersService.syncRecurringReminders(
           userId, 'PET_MEDICATION', med.id, 'PET_MEDICATION',
           `Pet Medication: ${med.name}`, `Time to give ${pet.name} their medication: ${med.name}`,
-          ['Everyday'], [med.time], user?.timezone || 'UTC'
+          days, [med.time], user?.timezone || 'UTC'
        );
     }
     return med;
+  }
+
+  async removeMedication(medId: string, petId: string, userId: string) {
+    await this.getPet(petId, userId);
+    await this.remindersService.cancelReminderBySource('PET_MEDICATION', medId);
+    return this.prisma.petMedication.delete({ where: { id: medId } });
   }
 
   // --- Notes ---
@@ -221,10 +230,51 @@ export class PetsService {
 
   // --- Tasks ---
   async addTask(petId: string, userId: string, data: any) {
-    await this.getPet(petId, userId);
+    const pet = await this.getPet(petId, userId);
     const sanitized = this.sanitizeTaskData([data])[0];
     if (!sanitized) throw new NotFoundException('Invalid task data');
-    return this.prisma.petTask.create({ data: { ...sanitized, petId } });
+    const task = await this.prisma.petTask.create({ data: { ...sanitized, petId } });
+    
+    if (task.time) {
+      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+      const days = task.isDaily ? ['Everyday'] : (task.daysOfWeek || []);
+      
+      if (days.length > 0) {
+         await this.remindersService.syncRecurringReminders(
+           userId,
+           'PET_TASK',
+           task.id,
+           'PET_TASK',
+           `Pet Task: ${task.title}`,
+           `${pet.name} needs to: ${task.title}`,
+           days,
+           [task.time],
+           user?.timezone || 'UTC'
+         );
+      } else if (task.date) {
+         const tParts = task.time.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+         let hrs = 0, mins = 0;
+         if (tParts) {
+           hrs = parseInt(tParts[1]); mins = parseInt(tParts[2]);
+           if (tParts[3]?.toUpperCase() === 'PM' && hrs < 12) hrs += 12;
+           if (tParts[3]?.toUpperCase() === 'AM' && hrs === 12) hrs = 0;
+         }
+         const scheduleAt = new Date(task.date);
+         scheduleAt.setHours(hrs, mins, 0, 0);
+         
+         await this.remindersService.createReminder({
+           userId,
+           type: 'PET_TASK',
+           title: `Pet Task: ${task.title}`,
+           message: `${pet.name} needs to: ${task.title}`,
+           scheduledAt: scheduleAt,
+           sourceType: 'PET_TASK',
+           sourceId: task.id
+         });
+      }
+    }
+    
+    return task;
   }
 
   async updateTask(taskId: string, petId: string, userId: string, data: any) {
@@ -234,6 +284,7 @@ export class PetsService {
 
   async removeTask(taskId: string, petId: string, userId: string) {
     await this.getPet(petId, userId);
+    await this.remindersService.cancelReminderBySource('PET_TASK', taskId);
     return this.prisma.petTask.delete({ where: { id: taskId } });
   }
 }

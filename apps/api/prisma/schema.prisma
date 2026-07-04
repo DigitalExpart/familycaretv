@@ -564,6 +564,8 @@ model PetMedication {
   dosage    String?
   frequency String?
   time      String?
+  isDaily   Boolean  @default(false)
+  daysOfWeek String[]
 
   pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }

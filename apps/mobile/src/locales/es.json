@@ -195,7 +195,7 @@
   "kids": {
     "title": "Centro Infantil",
     "schoolInfo": "Info. Escolar",
-    "homework": "Tareas y Deberes",
+    "homework": "Deberes",
     "calendar": "Calendario Infantil",
     "addProfile": "Añadir Niño",
     "addHomework": "Añadir Tarea",
@@ -210,7 +210,13 @@
       "phone": "Teléfono",
       "subject": "Asignatura",
       "dueDate": "Fecha de Entrega"
-    }
+    },
+    "addChore": "Añadir tarea...",
+    "chores": "TAREAS",
+    "noChores": "No se añadieron tareas.",
+    "homeworkTab": "DEBERES",
+    "noHomework": "No se añadieron deberes.",
+    "chore": "Tarea"
   },
   "pets": {
     "title": "Centro de Mascotas",
@@ -230,8 +236,19 @@
       "phone": "TELÉFONO",
       "dateGiven": "FECHA APLICADA",
       "nextDue": "PRÓXIMA",
-      "dosage": "DOSIS"
-    }
+      "dosage": "DOSIS",
+      "time": "HORA",
+      "drName": "Nombre del Dr.",
+      "emergencyVet": "Vet. de Emergencia"
+    },
+    "tasks": "Tareas de Mascota",
+    "taskName": "Nombre de Tarea",
+    "addTask": "Añadir Tarea",
+    "selectDate": "Seleccionar Fecha",
+    "addVaccine": "Añadir Vacuna",
+    "addMedication": "Añadir Medicamento",
+    "setTime": "Establecer Hora",
+    "repeatEveryday": "¿Repetir Todos los Días?"
   },
   "music": {
     "title": "Biblioteca Musical",

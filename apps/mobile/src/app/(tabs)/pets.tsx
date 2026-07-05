@@ -511,7 +511,7 @@ export default function PetsScreen() {
             onPress={() => setActiveTab('+ Add')}
             style={[styles.tabBtn, { backgroundColor: activeTab === '+ Add' ? theme.warning : 'transparent' }]}
           >
-            <Text style={{ color: activeTab === '+ Add' ? '#FFF' : theme.textSecondary, fontWeight: '600' }}>+ Add</Text>
+            <Text style={{ color: activeTab === '+ Add' ? '#FFF' : theme.textSecondary, fontWeight: '600' }}>{t('common.add', '+ Add')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -582,7 +582,7 @@ export default function PetsScreen() {
 
         {/* Tasks Section */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>Pet Tasks</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('pets.tasks', 'Pet Tasks')}</Text>
           
           {/* Calendar */}
           <Calendar
@@ -629,7 +629,7 @@ export default function PetsScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginRight: 8 }]} 
-                  placeholder="Task Name"
+                  placeholder=t('pets.taskName', 'Task Name')
                   placeholderTextColor={theme.textSecondary}
                   value={newTask}
                   onChangeText={setNewTask}
@@ -655,7 +655,7 @@ export default function PetsScreen() {
               
               <TouchableOpacity onPress={handleAddTask} style={[styles.addBtn, { backgroundColor: theme.warning }]}>
                 <Plus color="#FFF" size={20} />
-                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>Add Task</Text>
+                <Text style={{ color: '#FFF', fontWeight: 'bold', marginLeft: 4 }}>{t('pets.addTask', 'Add Task')}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -673,7 +673,7 @@ export default function PetsScreen() {
               <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder="Dr. Name" 
+                placeholder=t('pets.form.drName', 'Dr. Name') 
                 placeholderTextColor={theme.textSecondary}
                 value={vetName}
                 onChangeText={setVetName}
@@ -706,7 +706,7 @@ export default function PetsScreen() {
               <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder="Emergency Vet" 
+                placeholder=t('pets.form.emergencyVet', 'Emergency Vet') 
                 placeholderTextColor={theme.textSecondary}
                 value={emergencyName}
                 onChangeText={setEmergencyName}
@@ -714,7 +714,7 @@ export default function PetsScreen() {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>PHONE</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.phone', 'PHONE')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
                 placeholder="(555) 000-0000" 
@@ -767,7 +767,7 @@ export default function PetsScreen() {
                     disabled={!isFormEditable}
                   >
                     <Text style={{ color: v.dateGiven ? theme.text : theme.textSecondary, flex: 1 }}>
-                      {v.dateGiven ? v.dateGiven.toLocaleDateString() : 'Select Date'}
+                      {v.dateGiven ? v.dateGiven.toLocaleDateString() : t('pets.selectDate', 'Select Date')}
                     </Text>
                     <CalendarIcon color={theme.textSecondary} size={16} />
                   </TouchableOpacity>
@@ -780,7 +780,7 @@ export default function PetsScreen() {
                     disabled={!isFormEditable}
                   >
                     <Text style={{ color: v.nextDue ? theme.text : theme.textSecondary, flex: 1 }}>
-                      {v.nextDue ? v.nextDue.toLocaleDateString() : 'Select Date'}
+                      {v.nextDue ? v.nextDue.toLocaleDateString() : t('pets.selectDate', 'Select Date')}
                     </Text>
                     <CalendarIcon color={theme.textSecondary} size={16} />
                   </TouchableOpacity>
@@ -795,7 +795,7 @@ export default function PetsScreen() {
               onPress={() => setVaccines([...vaccines, { name: '', dateGiven: null, nextDue: null }])}
             >
               <Plus color={theme.warning} size={16} />
-              <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Vaccine</Text>
+              <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>{t('pets.addVaccine', 'Add Vaccine')}</Text>
             </TouchableOpacity>
           )}
         </PremiumCard>
@@ -852,14 +852,14 @@ export default function PetsScreen() {
                   />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.label, { color: theme.textSecondary }]}>TIME</Text>
+                  <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.time', 'TIME')}</Text>
                   <TouchableOpacity 
                     style={[styles.inputWrapper, { backgroundColor: theme.surface, height: 40 }]}
                     onPress={() => isFormEditable && setOpenPicker({ type: 'medicationTime', index: idx })}
                     disabled={!isFormEditable}
                   >
                     <Text style={{ color: med.time ? theme.text : theme.textSecondary, flex: 1 }}>
-                      {med.time ? med.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Set Time'}
+                      {med.time ? med.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : t('pets.setTime', 'Set Time')}
                     </Text>
                     <Clock color={theme.textSecondary} size={16} />
                   </TouchableOpacity>
@@ -869,7 +869,7 @@ export default function PetsScreen() {
               {isFormEditable && (
                 <View style={{ marginBottom: 12 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, justifyContent: 'space-between' }}>
-                    <Text style={{ color: theme.text }}>Repeat Everyday?</Text>
+                    <Text style={{ color: theme.text }}>{t('pets.repeatEveryday', 'Repeat Everyday?')}</Text>
                     <TouchableOpacity 
                       onPress={() => {
                         const newMeds = [...medications];
@@ -912,7 +912,7 @@ export default function PetsScreen() {
               onPress={() => setMedications([...medications, { name: '', dosage: '', time: null, isDaily: false, daysOfWeek: [] }])}
             >
               <Plus color={theme.warning} size={16} />
-              <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>Add Medication</Text>
+              <Text style={{ color: theme.warning, fontWeight: '600', marginLeft: 4 }}>{t('pets.addMedication', 'Add Medication')}</Text>
             </TouchableOpacity>
           )}
         </PremiumCard>

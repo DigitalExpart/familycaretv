@@ -337,7 +337,7 @@ export default function KidsScreen() {
             onPress={() => setActiveTab('+ Add')}
             style={[styles.tabBtn, { backgroundColor: activeTab === '+ Add' ? theme.warning : 'transparent' }]}
           >
-            <Text style={{ color: activeTab === '+ Add' ? '#FFF' : theme.textSecondary, fontWeight: '600' }}>+ Add</Text>
+            <Text style={{ color: activeTab === '+ Add' ? '#FFF' : theme.textSecondary, fontWeight: '600' }}>{t('common.add', '+ Add')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -349,7 +349,7 @@ export default function KidsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <School color={theme.secondary} size={20} />
             <Text style={[styles.sectionTitle, { color: theme.secondary, marginLeft: 8, marginBottom: 0 }]}>
-              {activeTab === '+ Add' ? t('kids.schoolInfo') : `${name}'s ${t('kids.schoolInfo')}`}
+              {activeTab === '+ Add' ? t('kids.schoolInfo') : `${name} - ${t('kids.schoolInfo')}`}
             </Text>
           </View>
           
@@ -446,9 +446,9 @@ export default function KidsScreen() {
                 </Text>
               </View>
 
-              <Text style={[styles.subTitle, { color: theme.textSecondary }]}>CHORES</Text>
+              <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('kids.chores', 'CHORES')}</Text>
               <View style={{ marginBottom: 16 }}>
-                {chores.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>No chores added.</Text>}
+                {chores.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>{t('kids.noChores', 'No chores added.')}</Text>}
                 {chores.map((task: any) => (
                   <View key={task.id} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => handleToggleTask(task)}>
@@ -468,9 +468,9 @@ export default function KidsScreen() {
                 ))}
               </View>
 
-              <Text style={[styles.subTitle, { color: theme.textSecondary }]}>HOMEWORK</Text>
+              <Text style={[styles.subTitle, { color: theme.textSecondary }]}>{t('kids.homeworkTab', 'HOMEWORK')}</Text>
               <View style={{ marginBottom: 16 }}>
-                {homework.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>No homework added.</Text>}
+                {homework.length === 0 && <Text style={{ color: theme.textSecondary, fontSize: 12, fontStyle: 'italic' }}>{t('kids.noHomework', 'No homework added.')}</Text>}
                 {homework.map((task: any) => (
                   <View key={task.id} style={[styles.taskRow, { justifyContent: 'space-between' }]}>
                     <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }} onPress={() => handleToggleTask(task)}>
@@ -492,17 +492,17 @@ export default function KidsScreen() {
 
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
                 <TouchableOpacity onPress={() => setTaskCategory('CHORE')} style={[styles.categoryBtn, { backgroundColor: taskCategory === 'CHORE' ? theme.warning : theme.surfaceSecondary }]}>
-                  <Text style={{ color: taskCategory === 'CHORE' ? '#FFF' : theme.text }}>Chore</Text>
+                  <Text style={{ color: taskCategory === 'CHORE' ? '#FFF' : theme.text }}>{t('kids.chore', 'Chore')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setTaskCategory('HOMEWORK')} style={[styles.categoryBtn, { backgroundColor: taskCategory === 'HOMEWORK' ? theme.warning : theme.surfaceSecondary }]}>
-                  <Text style={{ color: taskCategory === 'HOMEWORK' ? '#FFF' : theme.text }}>Homework</Text>
+                  <Text style={{ color: taskCategory === 'HOMEWORK' ? '#FFF' : theme.text }}>{t('kids.homework', 'Homework')}</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={{ marginBottom: 12 }}>
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginBottom: 8 }]} 
-                  placeholder={taskCategory === 'CHORE' ? "Add a chore..." : t('kids.addHomework')} 
+                  placeholder={taskCategory === 'CHORE' ? t('kids.addChore', 'Add a chore...') : t('kids.addHomework')} 
                   placeholderTextColor={theme.textSecondary}
                   value={newTask}
                   onChangeText={setNewTask}

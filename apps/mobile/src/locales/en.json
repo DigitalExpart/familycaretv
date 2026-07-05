@@ -217,7 +217,7 @@
   "kids": {
     "title": "Kids Hub",
     "schoolInfo": "School Info",
-    "homework": "Homework & Chores",
+    "homework": "Homework",
     "calendar": "Kids Calendar",
     "addProfile": "Add Child",
     "addHomework": "Add Homework",
@@ -232,7 +232,13 @@
       "phone": "Phone",
       "subject": "Subject",
       "dueDate": "Due Date"
-    }
+    },
+    "addChore": "Add a chore...",
+    "chores": "CHORES",
+    "noChores": "No chores added.",
+    "homeworkTab": "HOMEWORK",
+    "noHomework": "No homework added.",
+    "chore": "Chore"
   },
   "pets": {
     "title": "Pets Hub",
@@ -252,8 +258,19 @@
       "phone": "PHONE",
       "dateGiven": "DATE GIVEN",
       "nextDue": "NEXT DUE",
-      "dosage": "DOSAGE"
-    }
+      "dosage": "DOSAGE",
+      "time": "TIME",
+      "drName": "Dr. Name",
+      "emergencyVet": "Emergency Vet"
+    },
+    "tasks": "Pet Tasks",
+    "taskName": "Task Name",
+    "addTask": "Add Task",
+    "selectDate": "Select Date",
+    "addVaccine": "Add Vaccine",
+    "addMedication": "Add Medication",
+    "setTime": "Set Time",
+    "repeatEveryday": "Repeat Everyday?"
   },
   "music": {
     "title": "Music Library",

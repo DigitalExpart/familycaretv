@@ -34,9 +34,9 @@ export default function CreateNoteScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: t('notes.form.createTitle') }} />
+      <Stack.Screen options={{ title: t('notes.add', 'Add Note') }} />
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Add Note" />
+      <GradientHeader title={t('notes.add', 'Add Note')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <NoteForm 
           onSubmit={handleSubmit} 

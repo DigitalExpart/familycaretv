@@ -5,12 +5,14 @@ import { useEvent, useUpdateEvent, useDeleteEvent } from '../../../../../feature
 import { EventForm } from '../../../../../components/EventForm';
 import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../../components/EmptyState';
+import { useTranslation } from 'react-i18next';
 import { GradientHeader } from '../../../../../components/ui/GradientHeader';
 import { useTheme } from '../../../../../hooks/useTheme';
 import { Colors } from '../../../../../constants/theme';
 import { Trash2 } from 'lucide-react-native';
 
 export default function EditEventScreen() {
+  const { t } = useTranslation();
   const { id: patientId, eventId } = useLocalSearchParams<{ id: string; eventId: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -68,7 +70,7 @@ export default function EditEventScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Edit Event" />
+      <GradientHeader title={t('events.edit', 'Edit Event')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <EventForm 
           initialData={event} 

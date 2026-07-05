@@ -1,5 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Event } from 'shared-types';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
+import { useTranslation } from 'react-i18next';
 
 interface EventCardProps {
   event: Event;
@@ -13,16 +16,22 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 export function EventCard({ event, onPress }: EventCardProps) {
-  const color = TYPE_COLORS[event.type] || '#333';
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
+  const color = TYPE_COLORS[event.type] || theme.text;
+  const translatedType = t(`events.types.${event.type}`, event.type);
+  const statusLabel = t(`events.status.${event.status}`, event.status);
 
   return (
-    <TouchableOpacity style={[styles.card, { borderLeftColor: color }]} onPress={onPress}>
-      <Text style={styles.title}>{event.title}</Text>
-      <Text style={[styles.type, { color }]}>{event.type}</Text>
-      <Text style={styles.date}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: theme.backgroundElement, borderLeftColor: color }]} onPress={onPress}>
+      <Text style={[styles.title, { color: theme.text }]}>{event.title}</Text>
+      <Text style={[styles.type, { color }]}>{translatedType}</Text>
+      <Text style={[styles.date, { color: theme.textSecondary }]}>
         {new Date(event.startDateTime).toLocaleString()}
       </Text>
-      <Text style={styles.status}>Status: {new Date(event.startDateTime).getTime() < Date.now() ? 'INACTIVE' : event.status}</Text>
+      <Text style={[styles.status, { color: theme.textSecondary }]}>{t('events.statusLabel', 'Status')}: {new Date(event.startDateTime).getTime() < Date.now() ? t('events.status.INACTIVE', 'INACTIVE') : statusLabel}</Text>
     </TouchableOpacity>
   );
 }

@@ -1,5 +1,6 @@
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { GradientHeader } from '../../../../../components/ui/GradientHeader';
 import { useTheme } from '../../../../../hooks/useTheme';
 import { Colors } from '../../../../../constants/theme';
@@ -10,6 +11,7 @@ import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../../components/EmptyState';
 
 export default function EditContactScreen() {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -35,7 +37,7 @@ export default function EditContactScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Edit Contact" />
+      <GradientHeader title={t('contacts.edit', 'Edit Contact')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
       <ContactForm 
         initialData={contact}

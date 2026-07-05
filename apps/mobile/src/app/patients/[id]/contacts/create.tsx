@@ -1,5 +1,6 @@
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { GradientHeader } from '../../../../components/ui/GradientHeader';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Colors } from '../../../../constants/theme';
@@ -8,6 +9,7 @@ import { useCreateContact } from '../../../../features/emergency-contacts/contac
 import { ContactForm } from '../../../../components/ContactForm';
 
 export default function CreateContactScreen() {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -28,7 +30,7 @@ export default function CreateContactScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Add Contact" />
+      <GradientHeader title={t('contacts.add', 'Add Contact')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
       <ContactForm onSubmit={handleSubmit} isLoading={createMutation.isPending} />
           </ScrollView>

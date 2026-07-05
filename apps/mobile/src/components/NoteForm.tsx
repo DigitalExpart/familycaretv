@@ -7,6 +7,7 @@ import { Colors } from '../constants/theme';
 import { z } from 'zod';
 import { PatientNote } from 'shared-types';
 import { useTranslation } from 'react-i18next';
+import { AnimatedButton } from './ui/AnimatedButton';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -36,7 +37,7 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.backgroundElement }]}>
       <Text style={[styles.label, { color: theme.text }]}>{t('notes.form.titleLabel')}</Text>
       <Controller
         control={control}
@@ -80,15 +81,13 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
       />
       {!!errors.content && <Text style={styles.errorText}>{errors.content.message}</Text>}
 
-      <TouchableOpacity 
-        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+      <AnimatedButton 
+        title={isLoading ? t('common.loading') : t('notes.actions.save')}
+        variant="primary"
         onPress={handleSubmit(onSubmit)}
         disabled={isLoading}
-      >
-        <Text style={styles.submitButtonText}>
-          {isLoading ? 'Saving...' : t('notes.actions.save')}
-        </Text>
-      </TouchableOpacity>
+        style={{ marginTop: 8 }}
+      />
     </View>
   );
 }
@@ -113,7 +112,6 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
-    backgroundColor: '#fff',
     borderRadius: 8,
     margin: 16,
   },

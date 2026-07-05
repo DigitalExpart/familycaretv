@@ -4,12 +4,14 @@ import { useMedications } from '../../../../features/medications/medications-api
 import { MedicationCard } from '../../../../components/MedicationCard';
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../components/EmptyState';
+import { useTranslation } from 'react-i18next';
 import { GradientHeader } from '../../../../components/ui/GradientHeader';
 import { useTheme } from '../../../../hooks/useTheme';
 import { Colors } from '../../../../constants/theme';
 import { Plus } from 'lucide-react-native';
 
 export default function MedicationsListScreen() {
+  const { t } = useTranslation();
   const { id: patientId } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { data: medications, isLoading, error } = useMedications(patientId as string);
@@ -19,7 +21,7 @@ export default function MedicationsListScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Medications" />
+      <GradientHeader title={t('medications.title', 'Medications')} />
 
       {isLoading ? (
         <LoadingSpinner />

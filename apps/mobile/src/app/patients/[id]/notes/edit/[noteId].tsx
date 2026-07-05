@@ -44,7 +44,7 @@ export default function EditNoteScreen() {
     <>
       <Stack.Screen options={{ title: t('notes.form.editTitle') }} />
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Edit Note" />
+      <GradientHeader title={t('notes.edit', 'Edit Note')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <NoteForm 
           initialValues={note}

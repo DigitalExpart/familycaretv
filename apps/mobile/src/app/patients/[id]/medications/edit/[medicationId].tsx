@@ -1,5 +1,6 @@
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { GradientHeader } from '../../../../../components/ui/GradientHeader';
 import { useTheme } from '../../../../../hooks/useTheme';
 import { Colors } from '../../../../../constants/theme';
@@ -11,6 +12,7 @@ import { EmptyState } from '../../../../../components/EmptyState';
 import { requestNotificationPermissions, scheduleMedicationNotifications } from '../../../../../utils/notifications';
 
 export default function EditMedicationScreen() {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -44,7 +46,7 @@ export default function EditMedicationScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title="Edit Medication" />
+      <GradientHeader title={t('medications.edit', 'Edit Medication')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
       <MedicationForm 
         initialData={medication}

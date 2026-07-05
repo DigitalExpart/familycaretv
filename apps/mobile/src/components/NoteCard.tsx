@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { PatientNote } from 'shared-types';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 
 interface NoteCardProps {
   note: PatientNote;
@@ -8,6 +10,9 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, onPress }: NoteCardProps) {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   const preview = note.content.length > 100 
     ? `${note.content.substring(0, 100)}...` 
     : note.content;
@@ -17,12 +22,12 @@ export function NoteCard({ note, onPress }: NoteCardProps) {
     : '';
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: theme.backgroundElement }]} onPress={onPress}>
       <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>{note.title}</Text>
-        <Text style={styles.date}>{dateStr}</Text>
+        <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>{note.title}</Text>
+        <Text style={[styles.date, { color: theme.textSecondary }]}>{dateStr}</Text>
       </View>
-      <Text style={styles.preview} numberOfLines={3}>{preview}</Text>
+      <Text style={[styles.preview, { color: theme.textSecondary }]} numberOfLines={3}>{preview}</Text>
     </TouchableOpacity>
   );
 }

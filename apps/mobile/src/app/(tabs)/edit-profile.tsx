@@ -7,11 +7,13 @@ import { GradientHeader } from '../../components/ui/GradientHeader';
 import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../constants/theme';
 import { Camera, Save, ArrowLeft } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function EditProfileScreen() {
   const { user, accessToken, updateUser } = useAuthStore();
   const router = useRouter();
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -53,7 +55,7 @@ export default function EditProfileScreen() {
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+      alert(t('profile.cameraPermission', 'Sorry, we need camera roll permissions to make this work!'));
       return;
     }
 
@@ -93,11 +95,11 @@ export default function EditProfileScreen() {
         avatarUrl: data.data.avatarUrl,
         timezone: data.data.timezone,
       });
-      alert('Profile updated successfully!');
+      alert(t('profile.updateSuccess', 'Profile updated successfully!'));
       router.back();
     } catch (e: any) {
       console.error(e);
-      alert(e.response?.data?.message || 'Error updating profile. Check your connection.');
+      alert(e.response?.data?.message || t('profile.updateError', 'Error updating profile. Check your connection.'));
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +108,7 @@ export default function EditProfileScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <GradientHeader 
-        title="Edit Profile" 
+        title={t('profile.editProfile', 'Edit Profile')} 
         showBack={true}
       />
 
@@ -126,62 +128,62 @@ export default function EditProfileScreen() {
               <Camera size={16} color="#FFF" />
             </View>
           </TouchableOpacity>
-          <Text style={[styles.changePhotoText, { color: theme.primary }]}>Tap to change photo</Text>
+          <Text style={[styles.changePhotoText, { color: theme.primary }]}>{t('profile.changePhoto', 'Tap to change photo')}</Text>
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>First Name</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('profile.firstName', 'First Name')}</Text>
           <TextInput
             style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }]}
             value={firstName}
             onChangeText={setFirstName}
-            placeholder="First Name"
+            placeholder={t('profile.firstName', 'First Name')}
             placeholderTextColor={theme.textSecondary}
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Last Name</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('profile.lastName', 'Last Name')}</Text>
           <TextInput
             style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }]}
             value={lastName}
             onChangeText={setLastName}
-            placeholder="Last Name"
+            placeholder={t('profile.lastName', 'Last Name')}
             placeholderTextColor={theme.textSecondary}
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Phone Number</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('profile.phone', 'Phone Number')}</Text>
           <TextInput
             style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }]}
             value={phone}
             onChangeText={setPhone}
-            placeholder="Phone Number"
+            placeholder={t('profile.phone', 'Phone Number')}
             placeholderTextColor={theme.textSecondary}
             keyboardType="phone-pad"
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Gender</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('profile.gender', 'Gender')}</Text>
           <TextInput
             style={[styles.input, { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }]}
             value={gender}
             onChangeText={setGender}
-            placeholder="Male / Female / Other"
+            placeholder={t('profile.genderPlaceholder', 'Male / Female / Other')}
             placeholderTextColor={theme.textSecondary}
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>Timezone</Text>
+          <Text style={[styles.label, { color: theme.textSecondary }]}>{t('profile.timezone', 'Timezone')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <TextInput
               style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }]}
               value={timezone}
               onChangeText={setTimezone}
-              placeholder="e.g. America/New_York"
+              placeholder={t('profile.timezonePlaceholder', 'e.g. America/New_York')}
               placeholderTextColor={theme.textSecondary}
             />
             <TouchableOpacity 
@@ -193,7 +195,7 @@ export default function EditProfileScreen() {
                 });
               }}
             >
-              <Text style={{ color: theme.primary, fontWeight: '600' }}>Auto</Text>
+              <Text style={{ color: theme.primary, fontWeight: '600' }}>{t('profile.auto', 'Auto')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -208,7 +210,7 @@ export default function EditProfileScreen() {
           ) : (
             <>
               <Save size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.saveButtonText}>Save Changes</Text>
+              <Text style={styles.saveButtonText}>{t('common.saveChanges', 'Save Changes')}</Text>
             </>
           )}
         </TouchableOpacity>

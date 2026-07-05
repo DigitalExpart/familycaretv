@@ -15,7 +15,8 @@
     "back": "Atrás",
     "next": "Siguiente",
     "submit": "Enviar",
-    "search": "Buscar..."
+    "search": "Buscar...",
+    "saveChanges": "Guardar Cambios"
   },
   "nav": {
     "dashboard": "Inicio",
@@ -163,7 +164,19 @@
     "familyPlanBadge": "PLAN FAMILIAR",
     "active": "Activo",
     "darkMode": "Modo Oscuro",
-    "lightMode": "Modo Claro"
+    "lightMode": "Modo Claro",
+    "cameraPermission": "¡Lo sentimos, necesitamos permisos de la cámara para que esto funcione!",
+    "updateSuccess": "¡Perfil actualizado con éxito!",
+    "updateError": "Error al actualizar el perfil. Verifica tu conexión.",
+    "changePhoto": "Toca para cambiar la foto",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Número de Teléfono",
+    "gender": "Género",
+    "genderPlaceholder": "Hombre / Mujer / Otro",
+    "timezone": "Zona Horaria",
+    "timezonePlaceholder": "ej. America/New_York",
+    "auto": "Automático"
   },
   "settings": {
     "title": "Configuración",

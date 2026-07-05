@@ -15,7 +15,8 @@
     "back": "Back",
     "next": "Next",
     "submit": "Submit",
-    "search": "Search..."
+    "search": "Search...",
+    "saveChanges": "Save Changes"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -185,7 +186,19 @@
     "familyPlanBadge": "FAMILY PLAN",
     "active": "Active",
     "darkMode": "Dark Mode",
-    "lightMode": "Light Mode"
+    "lightMode": "Light Mode",
+    "cameraPermission": "Sorry, we need camera roll permissions to make this work!",
+    "updateSuccess": "Profile updated successfully!",
+    "updateError": "Error updating profile. Check your connection.",
+    "changePhoto": "Tap to change photo",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number",
+    "gender": "Gender",
+    "genderPlaceholder": "Male / Female / Other",
+    "timezone": "Timezone",
+    "timezonePlaceholder": "e.g. America/New_York",
+    "auto": "Auto"
   },
   "settings": {
     "title": "Settings",

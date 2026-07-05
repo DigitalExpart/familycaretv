@@ -629,7 +629,7 @@ export default function PetsScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
                 <TextInput 
                   style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text, flex: 1, marginRight: 8 }]} 
-                  placeholder=t('pets.taskName', 'Task Name')
+                  placeholder={t('pets.taskName', 'Task Name')}
                   placeholderTextColor={theme.textSecondary}
                   value={newTask}
                   onChangeText={setNewTask}

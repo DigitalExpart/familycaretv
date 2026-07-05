@@ -1,37 +1,23 @@
-# FamilyCare TV Security Audit
+# Security Audit
 
-## Objective
-Verify that **User A** cannot access, modify, or delete resources belonging to **User B**. Because the system relies heavily on `patientId` as the parent relation for most entities, row-level ownership must be guaranteed in the backend endpoints.
+## Verifications
 
-## 1. Authentication Layer
-- **Token**: Bearer JWT (Access Token).
-- **Strategy**: `JwtAuthGuard` ensures `req.user` is populated with the authenticated User's `id`.
+### 1. Authentication & JWT
+- ✅ All protected routes enforce `JwtAuthGuard`.
+- ✅ Password hashing relies on standard libraries (`bcrypt`) during registration.
 
-## 2. Patient Ownership
-**Rule:** All Patients belong directly to a `User`.
-- `GET /patients`: Queries `where: { userId: req.user.id }`.
-- `GET /patients/:id`: Queries `where: { id: patientId, userId: req.user.id }`. Returns `404 Not Found` if User B tries to fetch User A's patient.
-- `PATCH / DELETE /patients/:id`: Fails if `userId` doesn't match `req.user.id`.
+### 2. Environment Variables & Secrets
+- ✅ `.env` file successfully loads sensitive variables (Stripe, Supabase, JWT Secret, Anthropic, Firebase).
+- ✅ Secrets are strictly excluded from git via `.gitignore`.
+- ⚠️ **WARNING**: Ensure `eas.json` does not contain hardcoded plaintext API keys for production environments. Prefer Expo Secrets during EAS builds.
 
-## 3. Sub-resource Ownership (Doctors, Contacts, Medications, Events, Notes)
-**Rule:** Sub-resources belong to a `Patient`.
-To ensure User B cannot interact with a sub-resource belonging to User A's patient, the backend enforces a "Patient Verification" check before any CRUD operations on sub-resources.
+### 3. Rate Limiting & Authorization
+- ✅ Subscriptions enforce rate limits implicitly (e.g., Free Trial duration, AI usage limits per day).
+- ✅ Ownership: Every domain entity (Patient, Pet, Task, Medication) validates ownership by `userId` during fetch/update/delete operations. A user cannot access another user's data.
 
-### Verification Flow (Used in all sub-controllers):
-Before creating, updating, or deleting a Doctor/Medication/Event:
-1. The backend extracts `patientId` from the payload (or URL).
-2. It calls `PatientsService.findOne(patientId, req.user.id)`.
-3. If the patient does not belong to `req.user.id`, the query returns `null` and throws a `NotFoundException` (or `ForbiddenException`).
-
-### Expected Results Matrix
-| Action | User A (Owner) | User B (Attacker) | Expected HTTP Code |
-|---|---|---|---|
-| Read `Patient` | ✅ Success | ❌ Denied | `404 Not Found` |
-| Edit `Patient` | ✅ Success | ❌ Denied | `404 Not Found` |
-| Delete `Patient` | ✅ Success | ❌ Denied | `404 Not Found` |
-| Create `Doctor` for A's Patient | ✅ Success | ❌ Denied | `404 Not Found` |
-| Read `Medication` of A's Patient | ✅ Success | ❌ Denied | `404 Not Found` |
-| Delete `Event` of A's Patient | ✅ Success | ❌ Denied | `404 Not Found` |
+### 4. Code Security
+- ✅ No exposed hardcoded API keys detected in frontend or backend source code. 
+- ✅ DTOs use `class-validator` to sanitize input, preventing basic injection attacks.
 
 ## Conclusion
-The NestJS backend successfully isolates multi-tenant data. `req.user.id` is fundamentally required for all queries, ensuring that horizontal privilege escalation (BDOA / IDOR) vulnerabilities are mitigated across the API.
+✅ **PASS (with warnings)**. Standard security practices are in place. The system securely handles PII and prevents cross-user contamination. Review EAS secrets setup before production builds.

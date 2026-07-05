@@ -149,6 +149,16 @@ export class AuthService {
       });
     }
 
+    // Send Welcome Notification
+    await this.prisma.notification.create({
+      data: {
+        userId: user.id,
+        type: 'SYSTEM',
+        title: 'Welcome to FamilyCare TV!',
+        message: 'Welcome to the platform! Enjoy your 14-day free personal plan to experience all our features. Upgrade later to keep full access.',
+      }
+    });
+
     const tokens = await this.generateTokens(user);
 
     await this.prisma.user.update({

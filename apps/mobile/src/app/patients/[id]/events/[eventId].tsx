@@ -4,6 +4,9 @@ import { useEvent, useDeleteEvent } from '../../../../features/events/events-api
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../components/EmptyState';
 import { AnimatedButton } from '../../../../components/ui/AnimatedButton';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Colors } from '../../../../constants/theme';
 
 const TYPE_COLORS: Record<string, string> = {
   APPOINTMENT: '#0066cc',
@@ -14,21 +17,24 @@ const TYPE_COLORS: Record<string, string> = {
 export default function EventDetailsScreen() {
   const { id: patientId, eventId } = useLocalSearchParams<{ id: string; eventId: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
   
   const { data: event, isLoading, error } = useEvent(eventId as string);
   const deleteMutation = useDeleteEvent();
 
   if (isLoading) return <LoadingSpinner />;
-  if (error || !event) return <EmptyState message="Event not found." />;
+  if (error || !event) return <EmptyState message={t('events.listEmpty', 'Event not found.')} />;
 
   const handleDelete = () => {
     Alert.alert(
-      "Delete Event",
-      "Are you sure you want to delete this event?",
+      t('common.delete', 'Delete Event'),
+      t('common.confirmDelete', 'Are you sure you want to delete this event?'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel', 'Cancel'), style: "cancel" },
         { 
-          text: "Delete", 
+          text: t('common.delete', 'Delete'), 
           style: "destructive", 
           onPress: () => {
             deleteMutation.mutate({ id: event.id, patientId: patientId as string }, {
@@ -45,42 +51,43 @@ export default function EventDetailsScreen() {
   const color = TYPE_COLORS[event.type] || '#333';
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={[styles.header, { borderTopWidth: 6, borderTopColor: color }]}>
-        <Text style={styles.title}>{event.title}</Text>
-        <Text style={[styles.type, { color }]}>{event.type}</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.header, { borderTopWidth: 6, borderTopColor: color, backgroundColor: theme.backgroundElement, borderBottomColor: theme.border }]}>
+        <Text style={[styles.title, { color: theme.text }]}>{event.title}</Text>
+        <Text style={[styles.type, { color }]}>{t(`events.types.${event.type}`, event.type)}</Text>
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.label}>Start Date & Time</Text>
-        <Text style={styles.value}>{new Date(event.startDateTime).toLocaleString()}</Text>
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>{t('events.form.date', 'Start Date & Time')}</Text>
+        <Text style={[styles.value, { color: theme.text }]}>{new Date(event.startDateTime).toLocaleString()}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Description</Text>
-        <Text style={styles.value}>{event.description || 'No description provided.'}</Text>
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>{t('events.form.description', 'Description')}</Text>
+        <Text style={[styles.value, { color: theme.text }]}>{event.description || t('common.notProvided', 'No description provided.')}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Reminder</Text>
-        <Text style={styles.value}>
-          {event.reminderMinutes ? `${event.reminderMinutes} minutes before` : 'No reminder'}
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>{t('events.form.reminder', 'Reminder')}</Text>
+        <Text style={[styles.value, { color: theme.text }]}>
+          {event.reminderMinutes ? `${event.reminderMinutes} ${t('common.minutesBefore', 'minutes before')}` : t('common.noReminder', 'No reminder')}
         </Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Status</Text>
-        <Text style={styles.value}>{new Date(event.startDateTime).getTime() < Date.now() ? 'INACTIVE' : event.status}</Text>
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <Text style={[styles.label, { color: theme.textSecondary }]}>{t('common.status', 'Status')}</Text>
+        <Text style={[styles.value, { color: theme.text }]}>{new Date(event.startDateTime).getTime() < Date.now() ? 'INACTIVE' : event.status}</Text>
       </View>
 
       <View style={styles.actions}>
         <AnimatedButton 
-          title="Edit Event" 
+          title={t('events.edit', 'Edit Event')} 
+          variant="primary"
           onPress={() => router.push(`/patients/${patientId}/events/edit/${event.id}`)} 
         />
         <View style={{ height: 16 }} />
         <AnimatedButton 
-          title="Delete Event" 
+          title={t('common.delete', 'Delete Event')} 
           variant="danger" 
           onPress={handleDelete} 
         />

@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/theme';
 import { Doctor } from 'shared-types';
+import { useTranslation } from 'react-i18next';
+import { AnimatedButton } from './ui/AnimatedButton';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -23,6 +25,7 @@ interface DoctorFormProps {
 }
 
 export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -38,7 +41,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
 
   return (
     <View style={[styles.form, { backgroundColor: theme.background }]}>
-      <Text style={[styles.label, { color: theme.text }]}>Doctor Name *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('doctors.form.name', 'Doctor Name')} *</Text>
       <Controller
         control={control}
         name="name"
@@ -58,7 +61,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
       />
       {!!errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
-      <Text style={[styles.label, { color: theme.text }]}>Specialty</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('doctors.form.specialty', 'Specialty')}</Text>
       <Controller
         control={control}
         name="specialty"
@@ -77,7 +80,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
         )}
       />
 
-      <Text style={[styles.label, { color: theme.text }]}>Phone</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('doctors.form.phone', 'Phone Number')}</Text>
       <Controller
         control={control}
         name="phone"
@@ -96,8 +99,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
           />
         )}
       />
-
-      <Text style={[styles.label, { color: theme.text }]}>Email</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('doctors.form.email', 'Email')}</Text>
       <Controller
         control={control}
         name="email"
@@ -119,15 +121,13 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
       />
       {!!errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
 
-      <TouchableOpacity 
-        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+      <AnimatedButton 
+        title={isLoading ? t('common.loading', 'Saving...') : t('doctors.actions.save', 'Save Doctor')}
+        variant="primary"
         onPress={handleSubmit(onSubmit)}
         disabled={isLoading}
-      >
-        <Text style={styles.submitButtonText}>
-          {isLoading ? 'Saving...' : 'Save Doctor'}
-        </Text>
-      </TouchableOpacity>
+        style={{ marginTop: 8 }}
+      />
     </View>
   );
 }

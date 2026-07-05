@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/theme';
 import { EmergencyContact } from 'shared-types';
+import { useTranslation } from 'react-i18next';
+import { AnimatedButton } from './ui/AnimatedButton';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -22,6 +24,7 @@ interface ContactFormProps {
 }
 
 export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
@@ -36,7 +39,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
 
   return (
     <View style={[styles.form, { backgroundColor: theme.background }]}>
-      <Text style={[styles.label, { color: theme.text }]}>Contact Name *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('contacts.form.name', 'Contact Name')} *</Text>
       <Controller
         control={control}
         name="name"
@@ -56,7 +59,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
       />
       {!!errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
-      <Text style={[styles.label, { color: theme.text }]}>Relationship *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('contacts.form.relationship', 'Relationship')} *</Text>
       <Controller
         control={control}
         name="relationship"
@@ -76,7 +79,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
       />
       {!!errors.relationship && <Text style={styles.errorText}>{errors.relationship.message}</Text>}
 
-      <Text style={[styles.label, { color: theme.text }]}>Phone *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('contacts.form.phone', 'Phone Number')} *</Text>
       <Controller
         control={control}
         name="phone"
@@ -97,15 +100,13 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
       />
       {!!errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
 
-      <TouchableOpacity 
-        style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}
+      <AnimatedButton 
+        title={isLoading ? t('common.loading', 'Saving...') : t('contacts.actions.save', 'Save Contact')}
+        variant="primary"
         onPress={handleSubmit(onSubmit)}
         disabled={isLoading}
-      >
-        <Text style={styles.submitButtonText}>
-          {isLoading ? 'Saving...' : 'Save Contact'}
-        </Text>
-      </TouchableOpacity>
+        style={{ marginTop: 8 }}
+      />
     </View>
   );
 }

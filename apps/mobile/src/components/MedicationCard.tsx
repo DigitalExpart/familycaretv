@@ -1,5 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Medication } from 'shared-types';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 
 interface MedicationCardProps {
   medication: Medication;
@@ -7,11 +10,15 @@ interface MedicationCardProps {
 }
 
 export function MedicationCard({ medication, onPress }: MedicationCardProps) {
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <Text style={styles.name}>{medication.name}</Text>
-      {medication.dosage && <Text style={styles.detail}>Dosage: {medication.dosage}</Text>}
-      {medication.frequency && <Text style={styles.detail}>Frequency: {medication.frequency}</Text>}
+    <TouchableOpacity style={[styles.card, { backgroundColor: theme.backgroundElement }]} onPress={onPress}>
+      <Text style={[styles.name, { color: theme.text }]}>{medication.name}</Text>
+      {medication.dosage && <Text style={[styles.detail, { color: theme.textSecondary }]}>{t('medications.form.dosage', 'Dosage')}: {medication.dosage}</Text>}
+      {medication.frequency && <Text style={[styles.detail, { color: theme.textSecondary }]}>{t('medications.form.frequency', 'Frequency')}: {medication.frequency}</Text>}
     </TouchableOpacity>
   );
 }

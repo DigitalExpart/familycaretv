@@ -76,8 +76,14 @@
       "name": "Nombre del Medicamento",
       "dosage": "Dosis",
       "frequency": "Frecuencia",
+      "scheduleDays": "Horario - Días de la Semana",
+      "scheduleTimes": "Horario - Horas del Día",
+      "duration": "Duración (Semanas)",
       "purpose": "Propósito",
       "sideEffects": "Efectos Secundarios"
+    },
+    "actions": {
+      "save": "Guardar Medicamento"
     }
   },
   "events": {
@@ -263,6 +269,9 @@
       "email": "Correo Electrónico",
       "address": "Dirección",
       "notes": "Notas"
+    },
+    "actions": {
+      "save": "Guardar Doctor"
     }
   },
   "contacts": {
@@ -277,6 +286,9 @@
       "email": "Correo Electrónico",
       "address": "Dirección",
       "isPrimary": "Contacto Principal"
+    },
+    "actions": {
+      "save": "Guardar Contacto"
     }
   },
   "family": {

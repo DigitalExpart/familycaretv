@@ -8,7 +8,8 @@ import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/theme';
 import { Medication } from 'shared-types';
 import { useLookupMedication } from '../features/medications/medications-api';
-
+import { useTranslation } from 'react-i18next';
+import { AnimatedButton } from './ui/AnimatedButton';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const schema = z.object({
@@ -30,6 +31,7 @@ interface MedicationFormProps {
 }
 
 export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationFormProps) {
+  const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
   const router = useRouter();
@@ -122,7 +124,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
 
   return (
     <View style={[styles.form, { backgroundColor: theme.background }]}>
-      <Text style={[styles.label, { color: theme.text }]}>Medication Name *</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.name', 'Medication Name')} *</Text>
       <View style={styles.row}>
         <Controller
           control={control}
@@ -146,13 +148,13 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
           {lookupMutation.isPending ? (
             <ActivityIndicator color="#0066cc" />
           ) : (
-            <Button title="AI Lookup" onPress={handleAiLookup} />
+            <Button title={t('medications.aiLookup', 'AI Lookup')} onPress={handleAiLookup} />
           )}
         </View>
       </View>
       {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
-      <Text style={[styles.label, { color: theme.text }]}>Dosage</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.dosage', 'Dosage')}</Text>
       <Controller
         control={control}
         name="dosage"
@@ -171,7 +173,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
         )}
       />
 
-      <Text style={[styles.label, { color: theme.text }]}>Schedule - Days of Week</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.scheduleDays', 'Schedule - Days of Week')}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
         {['Everyday', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
           <TouchableOpacity
@@ -193,7 +195,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
         ))}
       </View>
 
-      <Text style={[styles.label, { color: theme.text }]}>Schedule - Times of Day</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.scheduleTimes', 'Schedule - Times of Day')}</Text>
       <View style={{ marginBottom: 16 }}>
         {timesOfDay.map((time, index) => (
           <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8, backgroundColor: theme.backgroundElement, padding: 12, borderRadius: 8 }}>
@@ -215,7 +217,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
         )}
       </View>
 
-      <Text style={[styles.label, { color: theme.text }]}>Purpose</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.purpose', 'Purpose')}</Text>
       <Controller
         control={control}
         name="purpose"
@@ -236,7 +238,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
         )}
       />
 
-      <Text style={[styles.label, { color: theme.text }]}>Side Effects</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.sideEffects', 'Side Effects')}</Text>
       <Controller
         control={control}
         name="sideEffects"
@@ -257,7 +259,7 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
         )}
       />
 
-      <Text style={[styles.label, { color: theme.text }]}>Duration (Weeks)</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('medications.form.duration', 'Duration (Weeks)')}</Text>
       <Controller
         control={control}
         name="durationWeeks"
@@ -276,15 +278,13 @@ export function MedicationForm({ initialData, onSubmit, isLoading }: MedicationF
         )}
       />
 
-      <TouchableOpacity 
-        style={[styles.submitButton, { backgroundColor: theme.primary }, (isLoading || lookupMutation.isPending) ? { opacity: 0.7 } : {}]}
+      <AnimatedButton 
+        title={isLoading ? t('common.loading', 'Saving...') : t('medications.actions.save', 'Save Medication')}
+        variant="primary"
         onPress={handleSubmit(handleFormSubmit)}
         disabled={isLoading || lookupMutation.isPending}
-      >
-        <Text style={styles.submitButtonText}>
-          {isLoading ? 'Saving...' : 'Save Medication'}
-        </Text>
-      </TouchableOpacity>
+        style={{ marginTop: 8 }}
+      />
 
       <Modal
         visible={showLimitModal}

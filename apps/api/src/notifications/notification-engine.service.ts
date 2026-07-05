@@ -21,7 +21,7 @@ export class NotificationEngineService {
 
       // Idempotency check: Do we already have this notification?
       const timeThreshold = new Date();
-      timeThreshold.setHours(timeThreshold.getHours() - 12); // Prevent duplicates within 12 hours for same title
+      timeThreshold.setMinutes(timeThreshold.getMinutes() - 1); // Prevent duplicates within 1 minute for same title and scheduled time
       
       const existing = await this.prisma.notification.findFirst({
         where: {

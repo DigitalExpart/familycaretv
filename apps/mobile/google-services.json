@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1093058749452",
+    "project_id": "familycare-tv-app",
+    "storage_bucket": "familycare-tv-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1093058749452:android:cd162f39c0714a5aef3a29",
+        "android_client_info": {
+          "package_name": "com.familycaretv.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtRSkSNMSx69q29_2cQbtORW8GGMLWACs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

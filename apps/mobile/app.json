@@ -10,10 +10,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/logo.png",
-      "bundleIdentifier": "com.shykhy.familycaretv"
+      "bundleIdentifier": "com.familycaretv.app"
     },
     "android": {
-      "package": "com.shykhy.familycaretv",
+      "package": "com.familycaretv.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/logo.png",

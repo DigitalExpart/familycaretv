@@ -7,7 +7,7 @@ interface CardProps extends ViewProps {
 }
 
 export function Card({ children, style, ...props }: CardProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = (useColorScheme() === 'dark') ? 'dark' : 'light';
   const colors = Colors[colorScheme];
 
   return (

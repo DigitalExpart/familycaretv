@@ -6,11 +6,13 @@ import { Colors } from '../../constants/theme';
 import { Copy, Share2, Users, CheckCircle, Gift } from 'lucide-react-native';
 import * as Clipboard from 'expo-clipboard';
 import { GradientHeader } from '../../components/ui/GradientHeader';
+import { useTranslation } from 'react-i18next';
 
 export default function ReferralsScreen() {
   const token = useAuthStore((state) => state.accessToken);
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
+  const { t } = useTranslation();
 
   const [referralCode, setReferralCode] = useState('');
   const [stats, setStats] = useState<any>(null);
@@ -51,7 +53,7 @@ export default function ReferralsScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Join FamilyCare TV using my referral code: ${referralCode}`,
+        message: `${t('referrals.shareMessage')} ${referralCode}`,
         url: 'https://familycare.tv/register', // Optional
       });
     } catch (error) {
@@ -147,21 +149,21 @@ export default function ReferralsScreen() {
 
   return (
     <View style={styles.container}>
-      <GradientHeader title="Referrals & Commission" showBack={false} />
+      <GradientHeader title={t('referrals.title')} showBack={false} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.subtitle}>Invite your friends to FamilyCare TV and earn rewards when they subscribe.</Text>
+        <Text style={styles.subtitle}>{t('referrals.subtitle')}</Text>
 
       <View style={styles.codeCard}>
-        <Text style={styles.codeTitle}>YOUR REFERRAL CODE</Text>
+        <Text style={styles.codeTitle}>{t('referrals.yourCode')}</Text>
         <Text style={styles.codeText}>{referralCode || '...'}</Text>
         <View style={styles.actionRow}>
           <TouchableOpacity style={styles.actionBtn} onPress={handleCopy}>
             <Copy size={20} color="#FFF" />
-            <Text style={styles.actionBtnText}>Copy</Text>
+            <Text style={styles.actionBtnText}>{t('referrals.copy')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn} onPress={handleShare}>
             <Share2 size={20} color="#FFF" />
-            <Text style={styles.actionBtnText}>Share</Text>
+            <Text style={styles.actionBtnText}>{t('referrals.share')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -170,19 +172,19 @@ export default function ReferralsScreen() {
         <View style={styles.statBox}>
           <Users size={24} color={theme.primary} />
           <Text style={styles.statValue}>{registeredCount}</Text>
-          <Text style={styles.statLabel}>Registered</Text>
+          <Text style={styles.statLabel}>{t('referrals.registered')}</Text>
         </View>
         <View style={styles.statBox}>
           <CheckCircle size={24} color={theme.accent} />
           <Text style={styles.statValue}>{subscribedCount}</Text>
-          <Text style={styles.statLabel}>Subscribed</Text>
+          <Text style={styles.statLabel}>{t('referrals.subscribed')}</Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Referral History</Text>
+      <Text style={styles.sectionTitle}>{t('referrals.history')}</Text>
       
       {referrals.length === 0 ? (
-        <Text style={styles.listEmpty}>You haven't referred anyone yet.</Text>
+        <Text style={styles.listEmpty}>{t('referrals.noHistory')}</Text>
       ) : (
         referrals.map(r => {
           const st = getStatusColor(r.status);

@@ -36,7 +36,7 @@ export default function MusicScreen() {
 
   const categories = [...musicCategories];
 
-  const uploadedMusic = audioTracks.filter(t => t.type === 'MUSIC');
+  const uploadedMusic = audioTracks.filter((t: any) => t.type === 'MUSIC');
   if (uploadedMusic.length > 0) {
     categories.push({
       id: 'uploaded-music',
@@ -99,8 +99,8 @@ export default function MusicScreen() {
                         style={[styles.actionBtn, { backgroundColor: theme.surface }]}
                         onPress={() => handlePlay(song.youtubeUrl)}
                       >
-                        <Play color={theme.error} size={16} />
-                        <Text style={{ color: theme.error, fontSize: 12, fontWeight: '600', marginLeft: 6 }}>
+                        <Play color="#ef4444" size={16} />
+                        <Text style={{ color: '#ef4444', fontSize: 12, fontWeight: '600', marginLeft: 6 }}>
                           {t('music.listenYoutube') || 'Listen on YouTube'}
                         </Text>
                       </TouchableOpacity>

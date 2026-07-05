@@ -26,7 +26,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
   const theme = isDark ? Colors.dark : Colors.light;
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
     defaultValues: {
       name: initialData?.name || '',
       relationship: initialData?.relationship || '',
@@ -54,7 +54,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
           />
         )}
       />
-      {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+      {!!errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
       <Text style={[styles.label, { color: theme.text }]}>Relationship *</Text>
       <Controller
@@ -74,7 +74,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
           />
         )}
       />
-      {errors.relationship && <Text style={styles.errorText}>{errors.relationship.message}</Text>}
+      {!!errors.relationship && <Text style={styles.errorText}>{errors.relationship.message}</Text>}
 
       <Text style={[styles.label, { color: theme.text }]}>Phone *</Text>
       <Controller
@@ -95,7 +95,7 @@ export function ContactForm({ initialData, onSubmit, isLoading }: ContactFormPro
           />
         )}
       />
-      {errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
+      {!!errors.phone && <Text style={styles.errorText}>{errors.phone.message}</Text>}
 
       <TouchableOpacity 
         style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}

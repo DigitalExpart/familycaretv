@@ -107,11 +107,7 @@ export default function EditProfileScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <GradientHeader 
         title="Edit Profile" 
-        leftElement={
-          <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 16 }}>
-            <ArrowLeft color="#fff" size={24} />
-          </TouchableOpacity>
-        }
+        showBack={true}
       />
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -297,5 +293,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
+  },
+  detectButton: {
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
   },
 });

@@ -18,10 +18,10 @@ export function Typography({
   children,
   ...props
 }: TypographyProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = (useColorScheme() === 'dark') ? 'dark' : 'light';
   const colors = Colors[colorScheme];
 
-  let fontColor = colors.text;
+  let fontColor: string = colors.text;
   if (color === 'secondary') fontColor = colors.textSecondary;
   if (color === 'primary') fontColor = colors.primary;
   if (color === 'success') fontColor = colors.success;

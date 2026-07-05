@@ -61,7 +61,7 @@ export default function NoteDetailScreen() {
         <View style={{ height: 16 }} />
         <Button 
           title={t('notes.actions.delete')} 
-          variant="danger" 
+          variant="secondary" 
           onPress={handleDelete} 
           disabled={deleteMutation.isPending}
         />

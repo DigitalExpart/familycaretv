@@ -697,8 +697,8 @@ export default function PetsScreen() {
         {/* Emergency Clinic */}
         <PremiumCard style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-            <AlertTriangle color={theme.error} size={20} />
-            <Text style={[styles.sectionTitle, { color: theme.error, marginLeft: 8, marginBottom: 0 }]}>{t('pets.emergencyClinic')}</Text>
+            <AlertTriangle color="#ef4444" size={20} />
+            <Text style={[styles.sectionTitle, { color: '#ef4444', marginLeft: 8, marginBottom: 0 }]}>{t('pets.emergencyClinic')}</Text>
           </View>
           
           <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -754,7 +754,7 @@ export default function PetsScreen() {
                     style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
                     onPress={() => setVaccines(vaccines.filter((_, i) => i !== idx))}
                   >
-                    <X color={theme.error} size={16} />
+                    <X color="#ef4444" size={16} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -831,7 +831,7 @@ export default function PetsScreen() {
                     style={[styles.deleteBtn, { backgroundColor: theme.surface }]}
                     onPress={() => setMedications(medications.filter((_, i) => i !== idx))}
                   >
-                    <X color={theme.error} size={16} />
+                    <X color="#ef4444" size={16} />
                   </TouchableOpacity>
                 )}
               </View>

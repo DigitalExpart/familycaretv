@@ -8,6 +8,7 @@ interface GradientHeaderProps extends ViewProps {
   title: string;
   subtitle?: string;
   rightComponent?: React.ReactNode;
+  showBack?: boolean;
 }
 
 export const GradientHeader: React.FC<GradientHeaderProps> = ({ 

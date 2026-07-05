@@ -3,12 +3,18 @@ import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Activi
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { useMyFamily, useInviteFamilyMember, useRemoveFamilyMember } from '../../features/family/family-api';
 import { Mail, Trash2, Users, UserPlus } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../hooks/useTheme';
+import { Colors } from '../../constants/theme';
 
 export default function FamilyScreen() {
   const { data, isLoading } = useMyFamily();
   const inviteMutation = useInviteFamilyMember();
   const removeMutation = useRemoveFamilyMember();
   const [email, setEmail] = useState('');
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
 
   const handleInvite = async () => {
     if (!email || !email.includes('@')) {
@@ -27,12 +33,12 @@ export default function FamilyScreen() {
 
   const handleRemove = (id: string) => {
     Alert.alert(
-      "Remove Member",
-      "Are you sure you want to remove this family member?",
+      t('family.remove.title'),
+      t('family.remove.message'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel'), style: "cancel" },
         { 
-          text: "Remove", 
+          text: t('family.remove.confirm'), 
           style: "destructive",
           onPress: async () => {
             try {
@@ -57,37 +63,38 @@ export default function FamilyScreen() {
   const { isOwner, isMember, members, familyOwner } = data || { isOwner: false, isMember: false, members: [] };
 
   return (
-    <View style={styles.container}>
-      <GradientHeader title="Family Members" />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <GradientHeader title={t('family.title')} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
         {/* If the user is a member of someone else's family */}
         {isMember && familyOwner && (
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
             <View style={styles.cardHeader}>
               <Users color="#0a7ea4" size={24} />
-              <Text style={styles.cardTitle}>Your Family Plan</Text>
+              <Text style={[styles.cardTitle, { color: theme.text }]}>{t('family.yourPlan')}</Text>
             </View>
-            <Text style={styles.text}>You are currently part of a Family Plan managed by:</Text>
+            <Text style={[styles.text, { color: theme.textSecondary }]}>{t('family.managedBy')}</Text>
             <Text style={styles.ownerText}>{familyOwner.firstName} {familyOwner.lastName} ({familyOwner.email})</Text>
-            <Text style={styles.subtext}>Only the family owner can invite or remove members.</Text>
+            <Text style={[styles.subtext, { color: theme.textSecondary }]}>{t('family.ownerOnly')}</Text>
           </View>
         )}
 
         {/* If the user is the owner, or neither (allow inviting to become owner) */}
         {!isMember && (
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
             <View style={styles.cardHeader}>
               <UserPlus color="#0a7ea4" size={24} />
-              <Text style={styles.cardTitle}>Invite Member</Text>
+              <Text style={[styles.cardTitle, { color: theme.text }]}>{t('family.inviteMember')}</Text>
             </View>
-            <Text style={styles.text}>Invite a family member to share your premium features.</Text>
+            <Text style={[styles.text, { color: theme.textSecondary }]}>{t('family.inviteDesc')}</Text>
             
-            <View style={styles.inputContainer}>
-              <Mail color="#666" size={20} style={styles.inputIcon} />
+            <View style={[styles.inputContainer, { backgroundColor: theme.surfaceSecondary, borderColor: theme.border }]}>
+              <Mail color={theme.textSecondary} size={20} style={styles.inputIcon} />
               <TextInput
-                style={styles.input}
-                placeholder="Email address"
+                style={[styles.input, { color: theme.text }]}
+                placeholder={t('family.emailPlaceholder')}
+                placeholderTextColor={theme.textSecondary}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -103,7 +110,7 @@ export default function FamilyScreen() {
               {inviteMutation.isPending ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Send Invitation</Text>
+                <Text style={styles.buttonText}>{t('family.sendInvite')}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -112,26 +119,26 @@ export default function FamilyScreen() {
         {/* Member List */}
         {!isMember && members.length > 0 && (
           <View style={styles.listContainer}>
-            <Text style={styles.listTitle}>Current Members ({members.length}/5)</Text>
+            <Text style={[styles.listTitle, { color: theme.text }]}>{t('family.currentMembers')} ({members.length}/5)</Text>
             
             {members.map((m) => (
-              <View key={m.id} style={styles.memberItem}>
+              <View key={m.id} style={[styles.memberItem, { backgroundColor: theme.backgroundElement }]}>
                 <View style={styles.memberInfo}>
                   {m.status === 'PENDING' ? (
                     <>
-                      <Text style={styles.memberEmail}>{m.email}</Text>
-                      <Text style={styles.statusPending}>Pending Invitation</Text>
+                      <Text style={[styles.memberEmail, { color: theme.textSecondary }]}>{m.email}</Text>
+                      <Text style={styles.statusPending}>{t('family.status.pending')}</Text>
                     </>
                   ) : m.status === 'DECLINED' ? (
                     <>
-                      <Text style={styles.memberEmail}>{m.email}</Text>
-                      <Text style={styles.statusDeclined}>Declined</Text>
+                      <Text style={[styles.memberEmail, { color: theme.textSecondary }]}>{m.email}</Text>
+                      <Text style={styles.statusDeclined}>{t('family.status.declined')}</Text>
                     </>
                   ) : (
                     <>
-                      <Text style={styles.memberName}>{m.member?.firstName} {m.member?.lastName}</Text>
-                      <Text style={styles.memberEmail}>{m.member?.email}</Text>
-                      <Text style={styles.statusActive}>Active</Text>
+                      <Text style={[styles.memberName, { color: theme.text }]}>{m.member?.firstName} {m.member?.lastName}</Text>
+                      <Text style={[styles.memberEmail, { color: theme.textSecondary }]}>{m.member?.email}</Text>
+                      <Text style={styles.statusActive}>{t('family.status.active')}</Text>
                     </>
                   )}
                 </View>

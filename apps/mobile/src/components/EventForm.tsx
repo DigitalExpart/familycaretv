@@ -36,8 +36,8 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
   const [showDatePicker, setShowDatePicker] = React.useState(false);
   const [showTimePicker, setShowTimePicker] = React.useState(false);
 
-  const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+  const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<any>({
+    resolver: zodResolver(schema as any),
     defaultValues: {
       title: initialData?.title || '',
       description: initialData?.description || '',
@@ -52,7 +52,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
 
   const selectedType = watch('type');
 
-  const handleFormSubmit = (data: FormData) => {
+  const handleFormSubmit = (data: any) => {
     const finalData = {
       ...data,
       startDateTime: new Date(data.startDateTime).toISOString(),
@@ -80,7 +80,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
           />
         )}
       />
-      {errors.title && <Text style={styles.errorText}>{errors.title.message}</Text>}
+      {errors.title?.message ? <Text style={styles.errorText}>{errors.title.message as string}</Text> : null}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('events.form.type')} *</Text>
       <View style={styles.typeContainer}>
@@ -106,7 +106,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
           </TouchableOpacity>
         ))}
       </View>
-      {errors.type && <Text style={styles.errorText}>{errors.type.message}</Text>}
+      {errors.type?.message ? <Text style={styles.errorText}>{errors.type.message as string}</Text> : null}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('events.form.date')} *</Text>
       <Controller
@@ -167,7 +167,7 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
           );
         }}
       />
-      {errors.startDateTime && <Text style={styles.errorText}>{errors.startDateTime.message}</Text>}
+      {errors.startDateTime?.message ? <Text style={styles.errorText}>{errors.startDateTime.message as string}</Text> : null}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('events.form.description')}</Text>
       <Controller

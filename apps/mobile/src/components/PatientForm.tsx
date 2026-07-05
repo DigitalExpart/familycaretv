@@ -58,7 +58,7 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
   const initialDate = initialData?.dateOfBirth ? new Date(initialData.dateOfBirth) : null;
 
   const { control, handleSubmit, formState: { errors } } = useForm<PatientFormData>({
-    resolver: zodResolver(patientSchema),
+    resolver: zodResolver(patientSchema as any),
     defaultValues: {
       fullName: initialData?.fullName || '',
       dobMonth: initialDate ? String(initialDate.getMonth() + 1) : '',
@@ -104,7 +104,8 @@ export function PatientForm({ initialData, onSubmit, isLoading }: PatientFormPro
           />
         )}
       />
-      {errors.fullName && <Text style={styles.errorText}>{errors.fullName.message}</Text>}
+      {!!errors.fullName && <Text style={styles.errorText}>{errors.fullName.message}</Text>}
+      {!!errors.notes && <Text style={styles.errorText}>{errors.notes.message}</Text>}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('patients.form.dateOfBirth')}</Text>
       <View style={styles.dobRow}>

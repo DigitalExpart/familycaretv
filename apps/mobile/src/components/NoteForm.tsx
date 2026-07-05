@@ -28,7 +28,7 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
   const { t } = useTranslation();
   
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
     defaultValues: {
       title: initialValues?.title || '',
       content: initialValues?.content || '',
@@ -55,7 +55,7 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
           />
         )}
       />
-      {errors.title && <Text style={styles.errorText}>{errors.title.message}</Text>}
+      {!!errors.title && <Text style={styles.errorText}>{errors.title.message}</Text>}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('notes.form.contentLabel')}</Text>
       <Controller
@@ -78,7 +78,7 @@ export function NoteForm({ initialValues, onSubmit, isLoading }: NoteFormProps) 
           />
         )}
       />
-      {errors.content && <Text style={styles.errorText}>{errors.content.message}</Text>}
+      {!!errors.content && <Text style={styles.errorText}>{errors.content.message}</Text>}
 
       <TouchableOpacity 
         style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}

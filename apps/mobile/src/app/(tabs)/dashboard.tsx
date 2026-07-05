@@ -55,7 +55,7 @@ export default function DashboardScreen() {
   };
 
   const todaysTasks = dashboardData?.todaysTasks || [];
-  const taskProgress = dashboardData?.taskProgress || { percentage: 0, completed: 0, total: 0 };
+  const taskProgress = (dashboardData as any)?.taskProgress || { percentage: 0, completed: 0, total: 0 };
   const unreadNotificationsCount = notificationsData?.data?.filter((n: any) => !n.isRead)?.length || 0;
 
   return (

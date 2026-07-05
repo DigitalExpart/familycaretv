@@ -23,7 +23,7 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = (useColorScheme() === 'dark') ? 'dark' : 'light';
   const colors = Colors[colorScheme];
 
   const getContainerStyle = () => {

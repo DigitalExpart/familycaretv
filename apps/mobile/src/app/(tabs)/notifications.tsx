@@ -69,15 +69,15 @@ export default function NotificationsScreen() {
                             acceptInvite.mutate(inviteCode, {
                               onSuccess: () => {
                                 deleteNotification.mutate(item.id);
-                                Alert.alert("Success", "You have joined the Family Plan.");
+                                Alert.alert(t('common.success', 'Success'), t('notifications.successJoin', 'You have joined the Family Plan.'));
                               },
                               onError: (error: any) => {
-                                Alert.alert("Error", error.response?.data?.message || "Failed to accept invite.");
+                                Alert.alert(t('common.error', 'Error'), error.response?.data?.message || t('notifications.errorAccept', 'Failed to accept invite.'));
                               }
                             });
                           }}
                         >
-                          <Text style={styles.inviteBtnText}>Accept</Text>
+                          <Text style={styles.inviteBtnText}>{t('notifications.accept', 'Accept')}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity 
                           style={[styles.inviteBtn, { backgroundColor: theme.surfaceSecondary, borderWidth: 1, borderColor: theme.border }]}
@@ -89,7 +89,7 @@ export default function NotificationsScreen() {
                             });
                           }}
                         >
-                          <Text style={[styles.inviteBtnText, { color: theme.text }]}>Decline</Text>
+                          <Text style={[styles.inviteBtnText, { color: theme.text }]}>{t('notifications.decline', 'Decline')}</Text>
                         </TouchableOpacity>
                       </View>
                     )}
@@ -109,7 +109,7 @@ export default function NotificationsScreen() {
                       onPress={() => item.isRead ? markUnread.mutate(item.id) : markRead.mutate(item.id)}
                     >
                       <Text style={{ color: item.isRead ? theme.textSecondary : '#FFF', fontSize: 12, fontWeight: '600' }}>
-                        {item.isRead ? 'Mark Unread' : 'Mark Read'}
+                        {item.isRead ? t('notifications.markUnread', 'Mark Unread') : t('notifications.markRead', 'Mark Read')}
                       </Text>
                     </TouchableOpacity>
                   )}

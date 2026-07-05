@@ -1,27 +1,35 @@
-import { View, Text, StyleSheet, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useContact, useDeleteContact } from '../../../../features/emergency-contacts/contacts-api';
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../components/EmptyState';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Colors } from '../../../../constants/theme';
+import { AnimatedButton } from '../../../../components/ui/AnimatedButton';
+import { Edit2, Trash2, Phone, Mail } from 'lucide-react-native';
 
 export default function ContactDetailsScreen() {
   const { id: patientId, contactId } = useLocalSearchParams<{ id: string; contactId: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
   
   const { data: contact, isLoading, error } = useContact(contactId as string);
   const deleteMutation = useDeleteContact();
 
   if (isLoading) return <LoadingSpinner />;
-  if (error || !contact) return <EmptyState message="Contact not found." />;
+  if (error || !contact) return <EmptyState message={t('contacts.listEmpty', 'Contact not found.')} />;
 
   const handleDelete = () => {
     Alert.alert(
-      "Remove Contact",
-      "Are you sure you want to remove this contact?",
+      t('contacts.actions.confirmDelete', 'Remove Contact'),
+      t('contacts.actions.confirmDeleteDesc', 'Are you sure you want to remove this contact?'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel', 'Cancel'), style: "cancel" },
         { 
-          text: "Remove", 
+          text: t('common.delete', 'Remove'), 
           style: "destructive", 
           onPress: () => {
             deleteMutation.mutate({ id: contact.id, patientId: patientId as string }, {
@@ -36,21 +44,32 @@ export default function ContactDetailsScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.name}>{contact.name}</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.header, { backgroundColor: theme.backgroundElement, borderBottomColor: theme.border }]}>
+        <Text style={[styles.name, { color: theme.text }]}>{contact.name}</Text>
         <Text style={styles.relationship}>{contact.relationship}</Text>
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.label}>Phone</Text>
-        <Text style={styles.value}>{contact.phone}</Text>
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+          <Phone size={14} color={theme.textSecondary} style={{ marginRight: 6 }} />
+          <Text style={[styles.label, { color: theme.textSecondary, marginBottom: 0 }]}>{t('contacts.form.phone', 'Phone')}</Text>
+        </View>
+        <Text style={[styles.value, { color: theme.text }]}>{contact.phone}</Text>
       </View>
 
       <View style={styles.actions}>
-        <Button title="Edit Contact" onPress={() => router.push(`/patients/${patientId}/contacts/edit/${contact.id}`)} />
-        <View style={{ height: 16 }} />
-        <Button title="Remove Contact" color="red" onPress={handleDelete} />
+        <AnimatedButton 
+          title={t('contacts.edit', 'Edit Contact')} 
+          variant="primary" 
+          onPress={() => router.push(`/patients/${patientId}/contacts/edit/${contact.id}`)} 
+          style={{ marginBottom: 12 }}
+        />
+        <AnimatedButton 
+          title={t('contacts.actions.delete', 'Remove Contact')} 
+          variant="danger" 
+          onPress={handleDelete} 
+        />
       </View>
     </ScrollView>
   );

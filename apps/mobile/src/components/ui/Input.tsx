@@ -19,7 +19,7 @@ interface InputProps extends TextInputProps {
 
 export const Input = forwardRef<TextInput, InputProps>(
   ({ label, error, style, isPassword, onFocus, onBlur, ...props }, ref) => {
-    const colorScheme = useColorScheme() ?? 'light';
+    const colorScheme = (useColorScheme() === 'dark') ? 'dark' : 'light';
     const colors = Colors[colorScheme];
     const [isFocused, setIsFocused] = useState(false);
     const [isSecure, setIsSecure] = useState(isPassword ?? false);

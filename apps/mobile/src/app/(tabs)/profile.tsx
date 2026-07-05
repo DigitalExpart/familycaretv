@@ -27,8 +27,8 @@ export default function ProfileScreen() {
         if (data?.success) {
           updateUser(data.data);
           // Sync language with backend if different
-          if (data.data.language && data.data.language !== i18n.language) {
-            i18n.changeLanguage(data.data.language);
+          if ((data.data as any).language && (data.data as any).language !== i18n.language) {
+            i18n.changeLanguage((data.data as any).language);
           }
         }
       } catch (e: any) {
@@ -50,7 +50,7 @@ export default function ProfileScreen() {
     i18n.changeLanguage(newLang);
     if (user) {
       api.put('/users/me', { language: newLang }).catch(console.error);
-      updateUser({ language: newLang });
+      updateUser({ language: newLang } as any);
     }
   };
 
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
             </Text>
             <View style={styles.planBadge}>
               <Text style={styles.planBadgeText}>
-                {user?.planTier === 'FAMILY' ? 'FAMILY PLAN' : (user?.planTier === 'PERSONAL' ? 'PERSONAL PLAN' : 'FREE PLAN')}
+                {user?.planTier === 'FAMILY' ? t('profile.familyPlanBadge', 'FAMILY PLAN') : (user?.planTier === 'PERSONAL' ? 'PERSONAL PLAN' : 'FREE PLAN')}
               </Text>
             </View>
           </View>
@@ -113,7 +113,7 @@ export default function ProfileScreen() {
             <View style={styles.settingTextContainer}>
               <Text style={[styles.settingLabel, { color: theme.text }]}>{t('settings.theme')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
-                {isDark ? 'Dark Mode' : 'Light Mode'}
+                {isDark ? t('profile.darkMode', 'Dark Mode') : t('profile.lightMode', 'Light Mode')}
               </Text>
             </View>
             <Switch 
@@ -133,7 +133,7 @@ export default function ProfileScreen() {
             <View style={styles.settingTextContainer}>
               <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.subscription')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
-                {user?.subscriptionStatus === 'active' ? 'Active' : 'Free Plan'}
+                {user?.subscriptionStatus === 'active' ? t('profile.active', 'Active') : 'Free Plan'}
               </Text>
             </View>
           </TouchableOpacity>
@@ -161,9 +161,9 @@ export default function ProfileScreen() {
               <Users color={theme.primary} size={24} />
             </View>
             <View style={styles.settingTextContainer}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>Family Members</Text>
+              <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.familyMembers', 'Family Members')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
-                Manage your family plan members
+                {t('profile.familyMembersDesc', 'Manage your family plan members')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -175,15 +175,14 @@ export default function ProfileScreen() {
               <Settings color={theme.warning} size={24} />
             </View>
             <View style={styles.settingTextContainer}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>Referrals & Commission</Text>
+              <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.referrals', 'Referrals & Commission')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
-                Share your code and view stats
+                {t('profile.referralsDesc', 'Share your code and view stats')}
               </Text>
             </View>
           </TouchableOpacity>
         </PremiumCard>
-
-        <Text style={[styles.sectionTitle, { color: theme.text }]}>Account</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('profile.account', 'Account')}</Text>
 
         <AnimatedButton 
           title={t('profile.logout')} 

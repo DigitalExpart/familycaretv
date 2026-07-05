@@ -98,6 +98,17 @@
       "TASK": "Task"
     }
   },
+  "calendar": {
+    "appointment": "Appointment",
+    "medication": "Medication",
+    "petMedication": "Pet Medication",
+    "petVaccination": "Pet Vaccination",
+    "kidsTask": "Kid's Task",
+    "event": "Event",
+    "task": "Task",
+    "noEventsForDay": "No events scheduled for this day.",
+    "selectDay": "Select a day to see events."
+  },
   "notes": {
     "title": "Patient Notes",
     "add": "Add Note",
@@ -149,7 +160,13 @@
   "notifications": {
     "title": "Notifications",
     "empty": "You have no new notifications.",
-    "markAllRead": "Mark all as read"
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark Read",
+    "markUnread": "Mark Unread",
+    "accept": "Accept",
+    "decline": "Decline",
+    "successJoin": "You have joined the Family Plan.",
+    "errorAccept": "Failed to accept invite."
   },
   "profile": {
     "title": "Profile",
@@ -159,7 +176,16 @@
     "subscription": "Subscription Status",
     "editProfile": "Edit Profile",
     "manageSubscription": "Manage Subscription",
-    "logout": "Logout"
+    "logout": "Logout",
+    "familyMembers": "Family Members",
+    "familyMembersDesc": "Manage your family plan members",
+    "referrals": "Referrals & Commission",
+    "referralsDesc": "Share your code and view stats",
+    "account": "Account",
+    "familyPlanBadge": "FAMILY PLAN",
+    "active": "Active",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
   },
   "settings": {
     "title": "Settings",
@@ -183,7 +209,10 @@
     "completed": "Completed",
     "colorEmotions": "Color your Emotions",
     "verseByDay": "Verse by Day",
-    "taskCalendar": "Task Calendar"
+    "taskCalendar": "Task Calendar",
+    "scheduleSettings": "Task Schedule Settings",
+    "scheduleSettingsDesc": "Set the date, time, and recurrence below, then add your task to the specific category.",
+    "daily": "Daily"
   },
   "kids": {
     "title": "Kids Hub",
@@ -249,5 +278,70 @@
     "title": "Coloring Pages",
     "gallery": "Gallery",
     "noPages": "No coloring pages yet."
+  },
+  "family": {
+    "title": "Family Members",
+    "yourPlan": "Your Family Plan",
+    "managedBy": "You are currently part of a Family Plan managed by:",
+    "ownerOnly": "Only the family owner can invite or remove members.",
+    "inviteMember": "Invite Member",
+    "inviteDesc": "Invite a family member to share your premium features.",
+    "emailPlaceholder": "Email address",
+    "sendInvite": "Send Invitation",
+    "currentMembers": "Current Members",
+    "status": {
+      "pending": "Pending Invitation",
+      "declined": "Declined",
+      "active": "Active"
+    },
+    "remove": {
+      "title": "Remove Member",
+      "message": "Are you sure you want to remove this family member?",
+      "confirm": "Remove"
+    }
+  },
+  "subscription": {
+    "title": "Choose Your Plan",
+    "activeTitle": "Active Plan",
+    "activeText": "Your subscription is active and unlocking premium features.",
+    "renewsOn": "Renews on: ",
+    "upgradeToFamily": "Upgrade to Family Plan ($9.99/mo)",
+    "freeTrial": "Free Trial Active",
+    "trialRemaining": "You have {{days}} days remaining. Upgrade now to avoid interruption.",
+    "expired": "Subscription Expired",
+    "expiredDesc": "Your access is currently read-only. Please select a plan to unlock features.",
+    "personal": "Personal Plan",
+    "family": "Family Plan",
+    "bestValue": "BEST VALUE",
+    "subscribePersonal": "Subscribe to Personal",
+    "subscribeFamily": "Subscribe to Family",
+    "currentPlan": "Current Plan",
+    "features": {
+      "personal1": "2 patients & 3 kids",
+      "personal2": "2 pets",
+      "personal3": "3 medications & appointments",
+      "personal4": "4 notes & 3 tasks",
+      "personal5": "1 Roku device",
+      "personal6": "3 AI lookups per day",
+      "family1": "Everything in Personal",
+      "family2": "Add up to 3 family members",
+      "family3": "3 Roku devices",
+      "family4": "Unlimited patients, kids & pets",
+      "family5": "Unlimited medications & appointments",
+      "family6": "Unlimited notes & tasks",
+      "family7": "Unlimited AI lookups"
+    }
+  },
+  "referrals": {
+    "title": "Referrals & Commission",
+    "subtitle": "Invite your friends to FamilyCare TV and earn rewards when they subscribe.",
+    "yourCode": "YOUR REFERRAL CODE",
+    "copy": "Copy",
+    "share": "Share",
+    "registered": "Registered",
+    "subscribed": "Subscribed",
+    "history": "Referral History",
+    "noHistory": "You haven't referred anyone yet.",
+    "shareMessage": "Join FamilyCare TV using my referral code:"
   }
 }

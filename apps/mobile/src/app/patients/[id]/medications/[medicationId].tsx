@@ -137,7 +137,7 @@ export default function MedicationDetailsScreen() {
     },
     deleteBtn: {
       flex: 1,
-      backgroundColor: theme.error + '15',
+      backgroundColor: '#ef444415',
       paddingVertical: 16,
       borderRadius: 12,
       flexDirection: 'row',
@@ -145,7 +145,7 @@ export default function MedicationDetailsScreen() {
       alignItems: 'center',
       gap: 8,
       borderWidth: 1,
-      borderColor: theme.error + '30',
+      borderColor: '#ef444430',
     },
     editBtnText: {
       color: '#FFF',
@@ -153,7 +153,7 @@ export default function MedicationDetailsScreen() {
       fontSize: 16,
     },
     deleteBtnText: {
-      color: theme.error,
+      color: '#ef4444',
       fontWeight: '700',
       fontSize: 16,
     },
@@ -234,7 +234,7 @@ export default function MedicationDetailsScreen() {
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
-            <Trash2 size={20} color={theme.error} />
+            <Trash2 size={20} color="#ef4444" />
             <Text style={styles.deleteBtnText}>Remove</Text>
           </TouchableOpacity>
         </View>

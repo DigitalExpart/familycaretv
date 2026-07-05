@@ -7,7 +7,7 @@ import { GradientHeader } from '../../../components/ui/GradientHeader';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../hooks/useTheme';
 import { Colors } from '../../../constants/theme';
-import { Edit, Trash2 } from 'lucide-react-native';
+import { AnimatedButton } from '../../../components/ui/AnimatedButton';
 
 export default function PatientDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -107,21 +107,17 @@ export default function PatientDetailsScreen() {
         </TouchableOpacity>
 
         <View style={styles.actions}>
-          <TouchableOpacity 
-            style={[styles.actionButton, { backgroundColor: theme.primary }]}
-            onPress={() => router.push(`/patients/edit/${patient.id}`)}
-          >
-            <Edit color="#FFF" size={20} style={{ marginRight: 8 }} />
-            <Text style={styles.actionButtonText}>Edit Patient</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.deleteButton]}
-            onPress={handleDelete}
-          >
-            <Trash2 color="#FFF" size={20} style={{ marginRight: 8 }} />
-            <Text style={styles.actionButtonText}>Delete Patient</Text>
-          </TouchableOpacity>
+          <AnimatedButton 
+            title={t('patients.edit', 'Edit Patient')} 
+            variant="primary" 
+            onPress={() => router.push(`/patients/edit/${patient.id}`)} 
+            style={{ marginBottom: 12 }}
+          />
+          <AnimatedButton 
+            title={t('patients.actions.delete', 'Delete Patient')} 
+            variant="danger" 
+            onPress={handleDelete} 
+          />
         </View>
       </ScrollView>
     </View>

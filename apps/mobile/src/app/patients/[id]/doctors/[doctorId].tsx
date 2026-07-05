@@ -1,27 +1,35 @@
-import { View, Text, StyleSheet, ScrollView, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDoctor, useDeleteDoctor } from '../../../../features/doctors/doctors-api';
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 import { EmptyState } from '../../../../components/EmptyState';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../../hooks/useTheme';
+import { Colors } from '../../../../constants/theme';
+import { AnimatedButton } from '../../../../components/ui/AnimatedButton';
+import { Phone, Mail } from 'lucide-react-native';
 
 export default function DoctorDetailsScreen() {
   const { id: patientId, doctorId } = useLocalSearchParams<{ id: string; doctorId: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
   
   const { data: doctor, isLoading, error } = useDoctor(doctorId as string);
   const deleteMutation = useDeleteDoctor();
 
   if (isLoading) return <LoadingSpinner />;
-  if (error || !doctor) return <EmptyState message="Doctor not found." />;
+  if (error || !doctor) return <EmptyState message={t('doctors.listEmpty', 'Doctor not found.')} />;
 
   const handleDelete = () => {
     Alert.alert(
-      "Remove Doctor",
-      "Are you sure you want to remove this doctor?",
+      t('doctors.actions.confirmDelete', 'Remove Doctor'),
+      t('doctors.actions.confirmDeleteDesc', 'Are you sure you want to remove this doctor?'),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t('common.cancel', 'Cancel'), style: "cancel" },
         { 
-          text: "Remove", 
+          text: t('common.delete', 'Remove'), 
           style: "destructive", 
           onPress: () => {
             deleteMutation.mutate({ id: doctor.id, patientId: patientId as string }, {
@@ -36,26 +44,40 @@ export default function DoctorDetailsScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.name}>{doctor.name}</Text>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.header, { backgroundColor: theme.backgroundElement, borderBottomColor: theme.border }]}>
+        <Text style={[styles.name, { color: theme.text }]}>{doctor.name}</Text>
         {doctor.specialty && <Text style={styles.specialty}>{doctor.specialty}</Text>}
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.label}>Phone</Text>
-        <Text style={styles.value}>{doctor.phone || 'Not provided'}</Text>
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+          <Phone size={14} color={theme.textSecondary} style={{ marginRight: 6 }} />
+          <Text style={[styles.label, { color: theme.textSecondary, marginBottom: 0 }]}>{t('doctors.form.phone', 'Phone')}</Text>
+        </View>
+        <Text style={[styles.value, { color: theme.text }]}>{doctor.phone || t('common.notProvided', 'Not provided')}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.value}>{doctor.email || 'Not provided'}</Text>
+      <View style={[styles.card, { backgroundColor: theme.backgroundElement }]}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+          <Mail size={14} color={theme.textSecondary} style={{ marginRight: 6 }} />
+          <Text style={[styles.label, { color: theme.textSecondary, marginBottom: 0 }]}>{t('doctors.form.email', 'Email')}</Text>
+        </View>
+        <Text style={[styles.value, { color: theme.text }]}>{doctor.email || t('common.notProvided', 'Not provided')}</Text>
       </View>
 
       <View style={styles.actions}>
-        <Button title="Edit Doctor" onPress={() => router.push(`/patients/${patientId}/doctors/edit/${doctor.id}`)} />
-        <View style={{ height: 16 }} />
-        <Button title="Remove Doctor" color="red" onPress={handleDelete} />
+        <AnimatedButton 
+          title={t('doctors.edit', 'Edit Doctor')} 
+          variant="primary" 
+          onPress={() => router.push(`/patients/${patientId}/doctors/edit/${doctor.id}`)} 
+          style={{ marginBottom: 12 }}
+        />
+        <AnimatedButton 
+          title={t('doctors.actions.delete', 'Remove Doctor')} 
+          variant="danger" 
+          onPress={handleDelete} 
+        />
       </View>
     </ScrollView>
   );

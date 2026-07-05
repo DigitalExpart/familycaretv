@@ -27,7 +27,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
   const theme = isDark ? Colors.dark : Colors.light;
 
   const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
     defaultValues: {
       name: initialData?.name || '',
       specialty: initialData?.specialty || '',
@@ -56,7 +56,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
           />
         )}
       />
-      {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+      {!!errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
 
       <Text style={[styles.label, { color: theme.text }]}>Specialty</Text>
       <Controller
@@ -117,7 +117,7 @@ export function DoctorForm({ initialData, onSubmit, isLoading }: DoctorFormProps
           />
         )}
       />
-      {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+      {!!errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
 
       <TouchableOpacity 
         style={[styles.submitButton, { backgroundColor: theme.primary }, isLoading && { opacity: 0.7 }]}

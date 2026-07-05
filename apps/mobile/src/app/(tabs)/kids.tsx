@@ -386,7 +386,7 @@ export default function KidsScreen() {
               <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder={t('kids.form.teacher')} placeholderTextColor={theme.textSecondary} value={teacher} onChangeText={setTeacher} editable={isFormEditable} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>HOURS</Text>
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('kids.form.hours', 'HOURS').toUpperCase()}</Text>
               <TouchableOpacity 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, justifyContent: 'center' }]}
                 disabled={!isFormEditable}
@@ -428,8 +428,8 @@ export default function KidsScreen() {
               )}
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.textSecondary }]}>BUS</Text>
-              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder="Bus #" placeholderTextColor={theme.textSecondary} value={bus} onChangeText={setBus} editable={isFormEditable} />
+              <Text style={[styles.label, { color: theme.textSecondary }]}>{t('kids.form.bus', 'BUS').toUpperCase()}</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} placeholder={t('kids.form.busPlaceholder', 'Bus #')} placeholderTextColor={theme.textSecondary} value={bus} onChangeText={setBus} editable={isFormEditable} />
             </View>
           </View>
         </PremiumCard>
@@ -559,6 +559,7 @@ export default function KidsScreen() {
             <PremiumCard style={{ marginBottom: 20 }}>
               <Text style={[styles.sectionTitle, { color: theme.warning, marginBottom: 12 }]}>{t('kids.calendar')}</Text>
               <Calendar
+                key={isDark ? 'dark' : 'light'}
                 current={selectedCalendarDate}
                 onDayPress={(day: any) => setSelectedCalendarDate(day.dateString)}
                 markedDates={markedDates}
@@ -585,12 +586,12 @@ export default function KidsScreen() {
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
             <FileText color={theme.secondary} size={20} />
             <Text style={[styles.sectionTitle, { color: theme.secondary, marginLeft: 8, marginBottom: 0 }]}>
-              Notes
+              {t('kids.form.notes', 'Notes')}
             </Text>
           </View>
           <TextInput
             style={[styles.input, styles.textArea, { backgroundColor: theme.surfaceSecondary, color: theme.text, height: 120 }]}
-            placeholder="Add a note..."
+            placeholder={t('kids.form.addNote', 'Add a note...')}
             placeholderTextColor={theme.textSecondary}
             value={notes}
             onChangeText={setNotes}

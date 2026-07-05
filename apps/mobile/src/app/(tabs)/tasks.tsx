@@ -103,13 +103,13 @@ export default function TasksScreen() {
           {(task.time || task.isDaily || (task.daysOfWeek && task.daysOfWeek.length > 0)) && (
             <Text style={[styles.taskSubtext, { color: theme.textSecondary }]}>
               {task.time ? task.time : ''}
-              {task.isDaily ? ' • Daily' : (task.daysOfWeek && task.daysOfWeek.length > 0 ? ` • ${task.daysOfWeek.join(', ')}` : '')}
+              {task.isDaily ? ` • ${t('tasks.daily', 'Daily')}` : (task.daysOfWeek && task.daysOfWeek.length > 0 ? ` • ${task.daysOfWeek.join(', ')}` : '')}
             </Text>
           )}
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={styles.deleteBtn} onPress={() => deleteTaskMutation.mutate(task.id)}>
-        <Trash2 color={theme.error || '#ef4444'} size={20} />
+        <Trash2 color="#ef4444" size={20} />
       </TouchableOpacity>
     </View>
   );
@@ -164,6 +164,7 @@ export default function TasksScreen() {
         <PremiumCard style={{ marginBottom: 20 }}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('tasks.taskCalendar')}</Text>
           <Calendar
+            key={isDark ? 'dark' : 'light'}
             current={selectedCalendarDate}
             onDayPress={(day: any) => setSelectedCalendarDate(day.dateString)}
             markedDates={markedDates}
@@ -187,9 +188,9 @@ export default function TasksScreen() {
 
         {/* Global Task Settings */}
         <PremiumCard style={{ marginBottom: 20 }}>
-          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>Task Schedule Settings</Text>
+          <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: 12 }]}>{t('tasks.scheduleSettings', 'Task Schedule Settings')}</Text>
           <Text style={{ color: theme.textSecondary, marginBottom: 12, fontSize: 12 }}>
-            Set the date, time, and recurrence below, then add your task to the specific category.
+            {t('tasks.scheduleSettingsDesc', 'Set the date, time, and recurrence below, then add your task to the specific category.')}
           </Text>
           <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', marginBottom: 12 }}>
             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={[styles.input, { flex: 1, backgroundColor: theme.surfaceSecondary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 }]}>

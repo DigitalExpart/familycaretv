@@ -4,10 +4,16 @@ import { useSubscriptionStatus, useCheckoutSession } from '../../features/subscr
 import * as WebBrowser from 'expo-web-browser';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { Check, Star } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../hooks/useTheme';
+import { Colors } from '../../constants/theme';
 
 export default function SubscriptionScreen() {
   const { data, isLoading, refetch } = useSubscriptionStatus();
   const checkoutMutation = useCheckoutSession();
+  const { t } = useTranslation();
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
 
   const handleSubscribe = async (plan: 'PERSONAL' | 'FAMILY') => {
     try {
@@ -35,18 +41,18 @@ export default function SubscriptionScreen() {
 
   const renderActive = () => {
     return (
-      <View style={styles.activeCard}>
+      <View style={[styles.activeCard, isDark && { backgroundColor: theme.surfaceSecondary, borderColor: theme.border }]}>
         <View style={styles.activeHeader}>
           <Star color="#F59E0B" size={28} />
-          <Text style={styles.activeTitle}>Active {isFamily ? 'Family' : 'Personal'} Plan</Text>
+          <Text style={[styles.activeTitle, isDark && { color: theme.text }]}>{t('subscription.activeTitle')}</Text>
         </View>
-        <Text style={styles.activeText}>Your subscription is active and unlocking premium features.</Text>
+        <Text style={[styles.activeText, isDark && { color: theme.textSecondary }]}>{t('subscription.activeText')}</Text>
         {currentPeriodEnd && (
-          <Text style={styles.activeSubtext}>Renews on: {new Date(currentPeriodEnd).toLocaleDateString()}</Text>
+          <Text style={[styles.activeSubtext, isDark && { color: theme.primary }]}>{t('subscription.renewsOn')}{new Date(currentPeriodEnd).toLocaleDateString()}</Text>
         )}
         {isPersonal && (
           <TouchableOpacity style={[styles.button, styles.upgradeBtn]} onPress={() => handleSubscribe('FAMILY')}>
-            <Text style={styles.buttonText}>Upgrade to Family Plan ($9.99/mo)</Text>
+            <Text style={styles.buttonText}>{t('subscription.upgradeToFamily')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -54,75 +60,75 @@ export default function SubscriptionScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <GradientHeader title="Choose Your Plan" />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <GradientHeader title={t('subscription.title')} />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         
         {status === 'active' && renderActive()}
 
         {status === 'trialing' && trialEndsAt && (
-          <View style={styles.trialBanner}>
-            <Text style={styles.trialTitle}>Free Trial Active</Text>
-            <Text style={styles.trialText}>
-              You have {Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days remaining. Upgrade now to avoid interruption.
+          <View style={[styles.trialBanner, isDark && { backgroundColor: theme.surfaceSecondary, borderColor: theme.border }]}>
+            <Text style={[styles.trialTitle, isDark && { color: theme.text }]}>{t('subscription.freeTrial')}</Text>
+            <Text style={[styles.trialText, isDark && { color: theme.textSecondary }]}>
+              {t('subscription.trialRemaining', { days: Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) })}
             </Text>
           </View>
         )}
 
         {['inactive', 'expired', 'canceled'].includes(status) && (
-          <View style={styles.expiredBanner}>
-            <Text style={styles.expiredTitle}>Subscription Expired</Text>
-            <Text style={styles.expiredText}>Your access is currently read-only. Please select a plan to unlock features.</Text>
+          <View style={[styles.expiredBanner, isDark && { backgroundColor: theme.surfaceSecondary, borderColor: theme.border }]}>
+            <Text style={[styles.expiredTitle, isDark && { color: theme.text }]}>{t('subscription.expired')}</Text>
+            <Text style={[styles.expiredText, isDark && { color: theme.textSecondary }]}>{t('subscription.expiredDesc')}</Text>
           </View>
         )}
 
         {/* PERSONAL PLAN CARD */}
-        <View style={[styles.planCard, isPersonal ? styles.planCardActive : null]}>
-          <View style={styles.planHeader}>
-            <Text style={styles.planName}>Personal Plan</Text>
-            <Text style={styles.planPrice}>$4.99<Text style={styles.planPriceMonth}>/mo</Text></Text>
+        <View style={[styles.planCard, { backgroundColor: theme.backgroundElement }, isPersonal ? { borderColor: theme.primary } : null]}>
+          <View style={[styles.planHeader, { borderBottomColor: theme.border }]}>
+            <Text style={[styles.planName, { color: theme.text }]}>{t('subscription.personal')}</Text>
+            <Text style={styles.planPrice}>$4.99<Text style={[styles.planPriceMonth, { color: theme.textSecondary }]}>/mo</Text></Text>
           </View>
           <View style={styles.planFeatures}>
-            <FeatureRow text="2 patients & 3 kids" />
-            <FeatureRow text="2 pets" />
-            <FeatureRow text="3 medications & appointments" />
-            <FeatureRow text="4 notes & 3 tasks" />
-            <FeatureRow text="1 Roku device" />
-            <FeatureRow text="3 AI lookups per day" />
+            <FeatureRow text={t('subscription.features.personal1')} theme={theme} />
+            <FeatureRow text={t('subscription.features.personal2')} theme={theme} />
+            <FeatureRow text={t('subscription.features.personal3')} theme={theme} />
+            <FeatureRow text={t('subscription.features.personal4')} theme={theme} />
+            <FeatureRow text={t('subscription.features.personal5')} theme={theme} />
+            <FeatureRow text={t('subscription.features.personal6')} theme={theme} />
           </View>
           <TouchableOpacity 
             style={[styles.button, isPersonal ? styles.buttonDisabled : null]} 
             onPress={() => handleSubscribe('PERSONAL')}
             disabled={isPersonal}
           >
-            <Text style={styles.buttonText}>{isPersonal ? 'Current Plan' : 'Subscribe to Personal'}</Text>
+            <Text style={styles.buttonText}>{isPersonal ? t('subscription.currentPlan') : t('subscription.subscribePersonal')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* FAMILY PLAN CARD */}
-        <View style={[styles.planCard, styles.familyCard, isFamily ? styles.planCardActive : null]}>
+        <View style={[styles.planCard, styles.familyCard, { backgroundColor: theme.backgroundElement }, isFamily ? { borderColor: theme.primary } : null]}>
           <View style={styles.badgeContainer}>
-            <Text style={styles.badgeText}>BEST VALUE</Text>
+            <Text style={styles.badgeText}>{t('subscription.bestValue')}</Text>
           </View>
-          <View style={styles.planHeader}>
-            <Text style={styles.planName}>Family Plan</Text>
-            <Text style={styles.planPrice}>$9.99<Text style={styles.planPriceMonth}>/mo</Text></Text>
+          <View style={[styles.planHeader, { borderBottomColor: theme.border }]}>
+            <Text style={[styles.planName, { color: theme.text }]}>{t('subscription.family')}</Text>
+            <Text style={styles.planPrice}>$9.99<Text style={[styles.planPriceMonth, { color: theme.textSecondary }]}>/mo</Text></Text>
           </View>
           <View style={styles.planFeatures}>
-            <FeatureRow text="Everything in Personal" />
-            <FeatureRow text="Add up to 3 family members" />
-            <FeatureRow text="3 Roku devices" />
-            <FeatureRow text="Unlimited patients, kids & pets" />
-            <FeatureRow text="Unlimited medications & appointments" />
-            <FeatureRow text="Unlimited notes & tasks" />
-            <FeatureRow text="Unlimited AI lookups" />
+            <FeatureRow text={t('subscription.features.family1')} theme={theme} />
+            <FeatureRow text={t('subscription.features.family2')} theme={theme} />
+            <FeatureRow text={t('subscription.features.family3')} theme={theme} />
+            <FeatureRow text={t('subscription.features.family4')} theme={theme} />
+            <FeatureRow text={t('subscription.features.family5')} theme={theme} />
+            <FeatureRow text={t('subscription.features.family6')} theme={theme} />
+            <FeatureRow text={t('subscription.features.family7')} theme={theme} />
           </View>
           <TouchableOpacity 
             style={[styles.button, styles.familyButton, isFamily ? styles.buttonDisabled : null]} 
             onPress={() => handleSubscribe('FAMILY')}
             disabled={isFamily}
           >
-            <Text style={styles.buttonText}>{isFamily ? 'Current Plan' : 'Subscribe to Family'}</Text>
+            <Text style={styles.buttonText}>{isFamily ? t('subscription.currentPlan') : t('subscription.subscribeFamily')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -132,11 +138,11 @@ export default function SubscriptionScreen() {
   );
 }
 
-function FeatureRow({ text }: { text: string }) {
+function FeatureRow({ text, theme }: { text: string, theme: any }) {
   return (
     <View style={styles.featureRow}>
-      <Check color="#0a7ea4" size={20} />
-      <Text style={styles.featureText}>{text}</Text>
+      <Check color={theme.primary} size={20} />
+      <Text style={[styles.featureText, { color: theme.textSecondary }]}>{text}</Text>
     </View>
   );
 }

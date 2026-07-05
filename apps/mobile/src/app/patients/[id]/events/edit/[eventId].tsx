@@ -1,5 +1,6 @@
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEvent, useUpdateEvent, useDeleteEvent } from '../../../../../features/events/events-api';
 import { EventForm } from '../../../../../components/EventForm';
 import { LoadingSpinner } from '../../../../../components/LoadingSpinner';
@@ -12,6 +13,7 @@ import { Trash2 } from 'lucide-react-native';
 export default function EditEventScreen() {
   const { id: patientId, eventId } = useLocalSearchParams<{ id: string; eventId: string }>();
   const router = useRouter();
+  const queryClient = useQueryClient();
   
   const { data: eventResponse, isLoading, error } = useEvent(eventId as string);
   const updateMutation = useUpdateEvent();
@@ -20,16 +22,22 @@ export default function EditEventScreen() {
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
-  const event = eventResponse?.data;
+  const event = eventResponse;
 
   if (isLoading) return <LoadingSpinner />;
   if (error || !event) return <EmptyState message="Event not found." />;
 
   const handleSubmit = (data: any) => {
     updateMutation.mutate(
-      { id: event.id, data },
+      { id: event.id, updates: data },
       {
-        onSuccess: () => {
+        onSuccess: (updates: any) => {
+          queryClient.setQueryData(['events', patientId], (old: any) => {
+            if (!old) return old;
+            return { ...old, data: (old as any).data?.map((event: any) => 
+              event.id === eventId ? { ...event, ...updates } : event
+            )};
+          });
           router.back();
         },
       }
@@ -46,7 +54,7 @@ export default function EditEventScreen() {
           text: "Delete", 
           style: "destructive", 
           onPress: () => {
-            deleteMutation.mutate(event.id, {
+            deleteMutation.mutate({ id: event.id, patientId: patientId as string }, {
               onSuccess: () => {
                 router.back();
                 // Also back out of the event details screen if necessary

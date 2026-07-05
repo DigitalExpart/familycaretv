@@ -47,7 +47,7 @@ export default function RootLayout() {
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/login');
     } else if (user) {
-      const isRoot = segments.length === 0 || (segments.length === 1 && segments[0] === 'index');
+      const isRoot = (segments.length as number) === 0 || ((segments.length as number) === 1 && segments[0] === 'index');
       if (inAuthGroup || isRoot) {
         router.replace('/(tabs)/dashboard');
       }

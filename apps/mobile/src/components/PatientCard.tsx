@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Patient } from 'shared-types';
+import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 
 interface PatientCardProps {
   patient: Patient;
@@ -7,17 +9,20 @@ interface PatientCardProps {
 }
 
 export function PatientCard({ patient, onPress }: PatientCardProps) {
+  const { isDark } = useTheme();
+  const theme = isDark ? Colors.dark : Colors.light;
+
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(patient.id)}>
+    <TouchableOpacity style={[styles.card, { backgroundColor: theme.backgroundElement, borderColor: theme.border, borderWidth: isDark ? 1 : 0 }]} onPress={() => onPress(patient.id)}>
       <View style={styles.header}>
-        <Text style={styles.name}>{patient.fullName}</Text>
-        {patient.gender && <Text style={styles.gender}>{patient.gender}</Text>}
+        <Text style={[styles.name, { color: theme.text }]}>{patient.fullName}</Text>
+        {patient.gender && <Text style={[styles.gender, { color: theme.textSecondary, backgroundColor: theme.surfaceSecondary }]}>{patient.gender}</Text>}
       </View>
-      <Text style={styles.details}>
+      <Text style={[styles.details, { color: theme.textSecondary }]}>
         DOB: {new Date(patient.dateOfBirth).toLocaleDateString()}
       </Text>
       {patient.notes && (
-        <Text style={styles.notes} numberOfLines={2}>
+        <Text style={[styles.notes, { color: theme.textSecondary }]} numberOfLines={2}>
           {patient.notes}
         </Text>
       )}

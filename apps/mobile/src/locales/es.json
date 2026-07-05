@@ -98,6 +98,17 @@
       "TASK": "Tarea"
     }
   },
+  "calendar": {
+    "appointment": "Cita",
+    "medication": "Medicamento",
+    "petMedication": "Meds. de Mascota",
+    "petVaccination": "Vacuna de Mascota",
+    "kidsTask": "Tarea de Niño",
+    "event": "Evento",
+    "task": "Tarea",
+    "noEventsForDay": "No hay eventos programados para este día.",
+    "selectDay": "Selecciona un día para ver eventos."
+  },
   "notes": {
     "title": "Notas de Pacientes",
     "add": "Añadir Nota",
@@ -121,7 +132,13 @@
   "notifications": {
     "title": "Notificaciones",
     "empty": "No tienes nuevas notificaciones.",
-    "markAllRead": "Marcar todas como leídas"
+    "markAllRead": "Marcar todas como leídas",
+    "markRead": "Marcar como Leído",
+    "markUnread": "Marcar como No Leído",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "successJoin": "Te has unido al Plan Familiar.",
+    "errorAccept": "Error al aceptar la invitación."
   },
   "profile": {
     "title": "Perfil",
@@ -131,7 +148,16 @@
     "subscription": "Estado de Suscripción",
     "editProfile": "Editar Perfil",
     "manageSubscription": "Gestionar Suscripción",
-    "logout": "Cerrar Sesión"
+    "logout": "Cerrar Sesión",
+    "familyMembers": "Miembros de la Familia",
+    "familyMembersDesc": "Gestiona los miembros de tu plan familiar",
+    "referrals": "Referencias y Comisiones",
+    "referralsDesc": "Comparte tu código y ve estadísticas",
+    "account": "Cuenta",
+    "familyPlanBadge": "PLAN FAMILIAR",
+    "active": "Activo",
+    "darkMode": "Modo Oscuro",
+    "lightMode": "Modo Claro"
   },
   "settings": {
     "title": "Configuración",
@@ -155,7 +181,10 @@
     "completed": "Completado",
     "colorEmotions": "Colorea tus Emociones",
     "verseByDay": "Versículo por Día",
-    "taskCalendar": "Calendario de Tareas"
+    "taskCalendar": "Calendario de Tareas",
+    "scheduleSettings": "Configuración de Horario",
+    "scheduleSettingsDesc": "Establece la fecha, hora y recurrencia a continuación, luego añade tu tarea a la categoría específica.",
+    "daily": "Diario"
   },
   "kids": {
     "title": "Centro Infantil",
@@ -249,5 +278,70 @@
       "address": "Dirección",
       "isPrimary": "Contacto Principal"
     }
+  },
+  "family": {
+    "title": "Miembros de la Familia",
+    "yourPlan": "Tu Plan Familiar",
+    "managedBy": "Actualmente eres parte de un Plan Familiar gestionado por:",
+    "ownerOnly": "Solo el propietario puede invitar o eliminar miembros.",
+    "inviteMember": "Invitar Miembro",
+    "inviteDesc": "Invita a un familiar para compartir tus funciones premium.",
+    "emailPlaceholder": "Correo electrónico",
+    "sendInvite": "Enviar Invitación",
+    "currentMembers": "Miembros Actuales",
+    "status": {
+      "pending": "Invitación Pendiente",
+      "declined": "Rechazada",
+      "active": "Activo"
+    },
+    "remove": {
+      "title": "Eliminar Miembro",
+      "message": "¿Estás seguro de que deseas eliminar a este familiar?",
+      "confirm": "Eliminar"
+    }
+  },
+  "subscription": {
+    "title": "Elige tu Plan",
+    "activeTitle": "Plan Activo",
+    "activeText": "Tu suscripción está activa y desbloquea las funciones premium.",
+    "renewsOn": "Se renueva el: ",
+    "upgradeToFamily": "Mejorar a Plan Familiar ($9.99/mes)",
+    "freeTrial": "Prueba Gratuita Activa",
+    "trialRemaining": "Te quedan {{days}} días. Mejora ahora para evitar interrupciones.",
+    "expired": "Suscripción Expirada",
+    "expiredDesc": "Tu acceso es solo de lectura. Por favor, selecciona un plan.",
+    "personal": "Plan Personal",
+    "family": "Plan Familiar",
+    "bestValue": "MEJOR VALOR",
+    "subscribePersonal": "Suscribirse a Personal",
+    "subscribeFamily": "Suscribirse a Familiar",
+    "currentPlan": "Plan Actual",
+    "features": {
+      "personal1": "2 pacientes y 3 niños",
+      "personal2": "2 mascotas",
+      "personal3": "3 medicamentos y citas",
+      "personal4": "4 notas y 3 tareas",
+      "personal5": "1 dispositivo Roku",
+      "personal6": "3 búsquedas IA por día",
+      "family1": "Todo lo de Personal",
+      "family2": "Hasta 3 miembros familiares",
+      "family3": "3 dispositivos Roku",
+      "family4": "Pacientes, niños y mascotas ilimitados",
+      "family5": "Medicamentos y citas ilimitadas",
+      "family6": "Notas y tareas ilimitadas",
+      "family7": "Búsquedas IA ilimitadas"
+    }
+  },
+  "referrals": {
+    "title": "Referencias y Comisiones",
+    "subtitle": "Invita a tus amigos a FamilyCare TV y gana recompensas cuando se suscriban.",
+    "yourCode": "TU CÓDIGO DE REFERENCIA",
+    "copy": "Copiar",
+    "share": "Compartir",
+    "registered": "Registrados",
+    "subscribed": "Suscritos",
+    "history": "Historial de Referencias",
+    "noHistory": "Aún no has referido a nadie.",
+    "shareMessage": "Únete a FamilyCare TV usando mi código de referencia:"
   }
 }

@@ -16,6 +16,8 @@ try {
         shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
       }),
     });
   }
@@ -29,8 +31,8 @@ export function usePushNotifications(userId?: string) {
   const [notification, setNotification] = useState<NotificationsType.Notification | undefined>(
     undefined
   );
-  const notificationListener = useRef<NotificationsType.Subscription>();
-  const responseListener = useRef<NotificationsType.Subscription>();
+  const notificationListener = useRef<any>(null);
+  const responseListener = useRef<any>(null);
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -135,10 +137,10 @@ export function usePushNotifications(userId?: string) {
       try {
         if (Notifications) {
           if (notificationListener.current) {
-            Notifications.removeNotificationSubscription(notificationListener.current);
+            notificationListener.current.remove();
           }
           if (responseListener.current) {
-            Notifications.removeNotificationSubscription(responseListener.current);
+            responseListener.current.remove();
           }
         }
       } catch (e) {

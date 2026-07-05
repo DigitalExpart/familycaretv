@@ -66,3 +66,33 @@ export function useRemoveFamilyMember() {
     },
   });
 }
+
+export function useAcceptFamilyInvite() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (inviteCode: string) => {
+      const { data } = await api.post('/family/accept', { inviteCode });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['family'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['auth'] }); // To update user planTier
+    },
+  });
+}
+
+export function useDeclineFamilyInvite() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (inviteCode: string) => {
+      const { data } = await api.post('/family/decline', { inviteCode });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}

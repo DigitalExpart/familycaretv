@@ -14,7 +14,7 @@ export class FamilyService {
   async invite(ownerId: string, email: string) {
     const owner = await this.prisma.user.findUnique({
       where: { id: ownerId },
-      select: { planTier: true, email: true },
+      select: { planTier: true, email: true, firstName: true },
     });
 
     if (!owner) throw new NotFoundException('User not found');
@@ -53,6 +53,20 @@ export class FamilyService {
         email: email.toLowerCase(),
       },
     });
+
+    // Check if the invited user exists and send notification
+    const invitedUser = await this.prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (invitedUser) {
+      await this.prisma.notification.create({
+        data: {
+          userId: invitedUser.id,
+          type: 'SYSTEM',
+          title: 'Family Plan Invitation',
+          message: `${owner.firstName || 'Someone'} invited you to join their Family Plan.`,
+          actionUrl: `family-invite:${invitation.inviteCode}`,
+        }
+      });
+    }
 
     this.logger.log(`Family invitation created: ${ownerId} invited ${email}`);
 

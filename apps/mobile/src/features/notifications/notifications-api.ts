@@ -7,6 +7,7 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
+  actionUrl?: string;
   createdAt: string;
 }
 
@@ -41,6 +42,20 @@ export function useMarkNotificationUnread() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { data } = await api.patch(`/notifications/${encodeURIComponent(id)}/unread`);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}
+
+export function useDeleteNotification() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await api.delete(`/notifications/${encodeURIComponent(id)}`);
       return data;
     },
     onSuccess: () => {

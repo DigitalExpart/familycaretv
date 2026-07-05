@@ -119,7 +119,7 @@ export default function FamilyScreen() {
         {/* Member List */}
         {!isMember && members.length > 0 && (
           <View style={styles.listContainer}>
-            <Text style={[styles.listTitle, { color: theme.text }]}>{t('family.currentMembers')} ({members.length}/5)</Text>
+            <Text style={[styles.listTitle, { color: theme.text }]}>{t('family.currentMembers')} ({members.length}/3)</Text>
             
             {members.map((m) => (
               <View key={m.id} style={[styles.memberItem, { backgroundColor: theme.backgroundElement }]}>

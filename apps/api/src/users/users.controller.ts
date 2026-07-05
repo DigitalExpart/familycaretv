@@ -137,6 +137,24 @@ export class UsersController {
     };
   }
 
+  private parseTimeString(timeStr: string | null, fallbackDate: Date) {
+    const taskTime = new Date(fallbackDate);
+    if (timeStr) {
+      const timeParts = timeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+      if (timeParts) {
+        let hours = parseInt(timeParts[1], 10);
+        const minutes = parseInt(timeParts[2], 10);
+        const period = timeParts[3]?.toUpperCase();
+        if (period === 'PM' && hours < 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+        taskTime.setHours(hours, minutes, 0, 0);
+        return taskTime;
+      }
+    }
+    taskTime.setHours(12, 0, 0, 0);
+    return taskTime;
+  }
+
   @Get('me/dashboard')
   @ApiOperation({ summary: 'Get dashboard stats for current user' })
   async getDashboardStats(@CurrentUser() user: any, @Query('date') dateParam?: string) {
@@ -232,8 +250,6 @@ export class UsersController {
       type: event.type
     }));
 
-    const allTasks = [...eventTasks, ...medicationTasks].sort((a, b) => a.time.getTime() - b.time.getTime());
-
     const verseOfTheDay = await this.prisma.bibleVerse.findFirst({
       where: { scheduledDate: { gte: today, lt: tomorrow } },
     }) || await this.prisma.bibleVerse.findFirst({
@@ -256,9 +272,55 @@ export class UsersController {
     const dailyTasks = await this.prisma.task.findMany({
       where: {
         userId,
-        date: { gte: today, lt: tomorrow }
+        OR: [
+          { date: { gte: today, lt: tomorrow } },
+          { isDaily: true },
+          { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }
+        ]
       }
     });
+
+    const userTasksFormatted = dailyTasks.map(task => ({
+      id: task.id,
+      title: task.title,
+      patientName: 'Personal',
+      time: this.parseTimeString(task.time, today),
+      type: 'DAILY_TASK'
+    }));
+
+    const childTasks = await this.prisma.childTask.findMany({
+      where: { child: { userId }, OR: [{ date: { gte: today, lt: tomorrow } }, { isDaily: true }, { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }] },
+      include: { child: { select: { name: true } } }
+    });
+    const childTasksFormatted = childTasks.map(task => ({
+      id: task.id, title: task.title, patientName: task.child.name, time: this.parseTimeString(task.time, today), type: 'KIDS_TASK'
+    }));
+
+    const petTasks = await this.prisma.petTask.findMany({
+      where: { pet: { userId }, OR: [{ date: { gte: today, lt: tomorrow } }, { isDaily: true }, { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }] },
+      include: { pet: { select: { name: true } } }
+    });
+    const petTasksFormatted = petTasks.map(task => ({
+      id: task.id, title: task.title, patientName: task.pet.name, time: this.parseTimeString(task.time, today), type: 'PET_TASK'
+    }));
+
+    const petMedications = await this.prisma.petMedication.findMany({
+      where: { pet: { userId }, OR: [{ isDaily: true }, { daysOfWeek: { hasSome: [todayName, 'Everyday', 'everyday', 'Daily', 'daily'] } }] },
+      include: { pet: { select: { name: true } } }
+    });
+    const petMedicationTasks: any[] = petMedications.map(med => ({
+      id: med.id, title: `Take ${med.name}`, patientName: med.pet.name, time: this.parseTimeString(med.time, today), type: 'PET_MEDICATION'
+    }));
+
+    const allTasks = [
+      ...eventTasks, 
+      ...medicationTasks, 
+      ...userTasksFormatted, 
+      ...childTasksFormatted, 
+      ...petTasksFormatted, 
+      ...petMedicationTasks
+    ].sort((a, b) => a.time.getTime() - b.time.getTime());
+
     const completedTasks = dailyTasks.filter(t => t.completed).length;
     const totalTasks = dailyTasks.length;
     const taskProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;

@@ -39,12 +39,12 @@ export class AuthService {
 
     let referrer: any = null;
     let usedReferralCodeRecord: any = null;
-    const codeToSearch = dto.referralCode ? dto.referralCode.toUpperCase() : null;
+    const codeToSearch = dto.referralCode || null;
 
     if (codeToSearch) {
       // 1. First check if it's a custom admin ReferralCode
-      usedReferralCodeRecord = await this.prisma.referralCode.findUnique({
-        where: { code: codeToSearch },
+      usedReferralCodeRecord = await this.prisma.referralCode.findFirst({
+        where: { code: { equals: codeToSearch, mode: 'insensitive' } },
         include: { owner: true }
       });
 
@@ -73,8 +73,8 @@ export class AuthService {
         referrer = usedReferralCodeRecord.owner;
       } else {
         // 2. Fallback to checking if it's a user's personal referral code
-        referrer = await this.prisma.user.findUnique({
-          where: { referralCode: codeToSearch },
+        referrer = await this.prisma.user.findFirst({
+          where: { referralCode: { equals: codeToSearch, mode: 'insensitive' } },
         });
       }
 

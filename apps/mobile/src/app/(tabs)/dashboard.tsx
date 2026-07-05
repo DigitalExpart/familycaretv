@@ -193,9 +193,21 @@ export default function DashboardScreen() {
               todaysTasks.map((task, index) => (
                 <View key={task.id}>
                   <View style={styles.taskRow}>
-                    <View style={[styles.taskIconBg, { backgroundColor: task.type === 'MEDICATION' ? `${theme.accent}20` : `${theme.secondary}20` }]}>
-                      {task.type === 'MEDICATION' ? (
+                    <View style={[styles.taskIconBg, { 
+                      backgroundColor: task.type === 'MEDICATION' || task.type === 'PET_MEDICATION' ? `${theme.accent}20` :
+                                       task.type === 'KIDS_TASK' ? '#14B8A620' :
+                                       task.type === 'PET_TASK' ? '#F59E0B20' :
+                                       task.type === 'DAILY_TASK' ? `${theme.success}20` :
+                                       `${theme.secondary}20` 
+                    }]}>
+                      {task.type === 'MEDICATION' || task.type === 'PET_MEDICATION' ? (
                         <Pill color={theme.accent} size={20} />
+                      ) : task.type === 'KIDS_TASK' ? (
+                        <Baby color="#14B8A6" size={20} />
+                      ) : task.type === 'PET_TASK' ? (
+                        <Dog color="#F59E0B" size={20} />
+                      ) : task.type === 'DAILY_TASK' ? (
+                        <CheckCircle color={theme.success} size={20} />
                       ) : (
                         <CalendarDays color={theme.secondary} size={20} />
                       )}

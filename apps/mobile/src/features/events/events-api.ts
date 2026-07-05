@@ -56,6 +56,8 @@ export function useCreateEvent() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['events', { patientId: variables.patientId }] });
       queryClient.invalidateQueries({ queryKey: ['patients', variables.patientId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
     },
   });
 }
@@ -72,6 +74,8 @@ export function useUpdateEvent() {
       queryClient.invalidateQueries({ queryKey: ['events', { patientId: data.patientId }] });
       queryClient.invalidateQueries({ queryKey: ['event', data.id] });
       queryClient.invalidateQueries({ queryKey: ['patients', data.patientId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
     },
   });
 }
@@ -87,6 +91,8 @@ export function useDeleteEvent() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['events', { patientId: variables.patientId }] });
       queryClient.invalidateQueries({ queryKey: ['patients', variables.patientId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
     },
   });
 }

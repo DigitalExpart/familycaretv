@@ -130,9 +130,26 @@ export class PetsService {
   }
 
   async updatePet(id: string, userId: string, data: any) {
-    await this.getPet(id, userId); // verify ownership
+    const oldPet = await this.getPet(id, userId); // verify ownership
     const { veterinarians, clinics, vaccinations, medications, notes, tasks, ...rest } = data;
     
+    // Clear old reminders before replacing
+    if (vaccinations !== undefined) {
+      for (const v of oldPet.vaccinations) {
+        await this.remindersService.cancelReminderBySource('PET_VACCINATION', v.id);
+      }
+    }
+    if (medications !== undefined) {
+      for (const m of oldPet.medications) {
+        await this.remindersService.cancelReminderBySource('PET_MEDICATION', m.id);
+      }
+    }
+    if (tasks !== undefined) {
+      for (const t of oldPet.tasks) {
+        await this.remindersService.cancelReminderBySource('PET_TASK', t.id);
+      }
+    }
+
     const petData: any = {};
     if (rest.name !== undefined) petData.name = rest.name;
     if (rest.breed !== undefined) petData.breed = rest.breed;
@@ -140,7 +157,7 @@ export class PetsService {
     if (rest.weight !== undefined) petData.weight = rest.weight !== null ? Number(rest.weight) || null : null;
 
     try {
-      return await this.prisma.pet.update({ 
+      const updatedPet = await this.prisma.pet.update({ 
         where: { id }, 
         data: {
           ...petData,
@@ -160,6 +177,49 @@ export class PetsService {
           tasks: true,
         },
       });
+
+      // Create new reminders
+      const user = await this.prisma.user.findUnique({ where: { id: userId }, select: { timezone: true } });
+      const tz = user?.timezone || 'UTC';
+
+      if (vaccinations !== undefined && updatedPet.vaccinations) {
+        for (const vax of updatedPet.vaccinations) {
+          if (vax.nextDue) {
+            await this.remindersService.createReminder({
+              userId, type: 'PET_VACCINATION', title: `Pet Vaccination: ${vax.vaccineName}`, message: `${updatedPet.name} is due for ${vax.vaccineName}`,
+              scheduledAt: vax.nextDue, sourceType: 'PET_VACCINATION', sourceId: vax.id
+            });
+          }
+        }
+      }
+
+      if (medications !== undefined && updatedPet.medications) {
+        for (const med of updatedPet.medications) {
+          if (med.time) {
+            const days = med.isDaily ? ['Everyday'] : (med.daysOfWeek && med.daysOfWeek.length > 0 ? med.daysOfWeek : ['Everyday']);
+            await this.remindersService.syncRecurringReminders(
+              userId, 'PET_MEDICATION', med.id, 'PET_MEDICATION',
+              `Pet Medication: ${med.name}`, `Time to give ${updatedPet.name} their medication: ${med.name}`,
+              days, [med.time], tz
+            );
+          }
+        }
+      }
+
+      if (tasks !== undefined && updatedPet.tasks) {
+        for (const task of updatedPet.tasks) {
+          if (task.time) {
+            const days = task.isDaily ? ['Everyday'] : (task.daysOfWeek && task.daysOfWeek.length > 0 ? task.daysOfWeek : ['Everyday']);
+            await this.remindersService.syncRecurringReminders(
+              userId, 'PET_TASK', task.id, 'PET_TASK',
+              `Pet Task: ${task.title}`, `Time for ${updatedPet.name}'s task: ${task.title}`,
+              days, [task.time], tz
+            );
+          }
+        }
+      }
+
+      return updatedPet;
     } catch (error: any) {
       this.logger.error(`Failed to update pet ${id}: ${error.message}`, error.stack);
       throw error;

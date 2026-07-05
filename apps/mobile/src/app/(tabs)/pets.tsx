@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, ActivityIndicator, TextInput, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, ActivityIndicator, TextInput, Platform, Alert } from 'react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { AnimatedButton } from '../../components/ui/AnimatedButton';
@@ -161,10 +161,14 @@ export default function PetsScreen() {
   };
 
   const createPetMutation = useMutation({
-    mutationFn: async (newPet: any) => api.post('/pets', newPet),
-    onSuccess: () => {
+    mutationFn: async (data: any) => api.post('/pets', data),
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
-      setActiveTab(name);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      setActiveTab(variables.name || 'New Pet');
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to create pet');
     }
   });
 
@@ -172,7 +176,13 @@ export default function PetsScreen() {
     mutationFn: async ({ id, data }: { id: string, data: any }) => api.patch(`/pets/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
       setIsEditing(false);
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update pet');
     }
   });
 
@@ -180,15 +190,13 @@ export default function PetsScreen() {
     mutationFn: async (id: string) => api.delete(`/pets/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
-      setActiveTab('+ Add');
-    }
-  });
-
-  const toggleTaskMutation = useMutation({
-    mutationFn: async ({ petId, taskId, completed }: { petId: string, taskId: string, completed: boolean }) => api.patch(`/pets/${petId}/tasks/${taskId}`, { completed }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pets'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+      setActiveTab('+ Add');
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete pet');
     }
   });
 
@@ -197,6 +205,11 @@ export default function PetsScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete task');
     }
   });
 
@@ -205,6 +218,11 @@ export default function PetsScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete medication');
     }
   });
 
@@ -213,6 +231,24 @@ export default function PetsScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pets'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to add task');
+    }
+  });
+
+  const toggleTaskMutation = useMutation({
+    mutationFn: async ({ petId, taskId, completed }: { petId: string, taskId: string, completed: boolean }) => api.patch(`/pets/${petId}/tasks/${taskId}`, { completed }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pets'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update task');
     }
   });
 
@@ -231,7 +267,7 @@ export default function PetsScreen() {
         nextDue: v.nextDue ? v.nextDue.toISOString() : undefined
       })),
       medications: medications.filter(m => m.name).map(m => {
-        const timeStr = m.time ? m.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined;
+        const timeStr = m.time ? `${m.time.getHours().toString().padStart(2, '0')}:${m.time.getMinutes().toString().padStart(2, '0')}` : undefined;
         return {
           name: m.name,
           dosage: m.dosage,
@@ -273,7 +309,7 @@ export default function PetsScreen() {
           nextDue: v.nextDue ? v.nextDue.toISOString() : undefined
         })),
         medications: medications.filter(m => m.name).map(m => {
-          const timeStr = m.time ? m.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined;
+          const timeStr = m.time ? `${m.time.getHours().toString().padStart(2, '0')}:${m.time.getMinutes().toString().padStart(2, '0')}` : undefined;
           return {
             name: m.name,
             dosage: m.dosage,
@@ -304,7 +340,7 @@ export default function PetsScreen() {
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
-    const timeStr = taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeStr = `${taskTime.getHours().toString().padStart(2, '0')}:${taskTime.getMinutes().toString().padStart(2, '0')}`;
 
     if (activeTab === '+ Add') {
       setLocalTasks([...localTasks, {
@@ -321,6 +357,10 @@ export default function PetsScreen() {
     } else {
       const pet = profiles.find((p: any) => p.name === activeTab);
       if (pet) {
+        if (!isDailyTask && taskDaysOfWeek.length === 0) {
+           const dStr = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
+           setSelectedCalendarDate(dStr);
+        }
         addTaskMutation.mutate({
           id: pet.id,
           data: {

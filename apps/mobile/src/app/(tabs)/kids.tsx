@@ -118,9 +118,13 @@ export default function KidsScreen() {
   // Mutations
   const createProfileMutation = useMutation({
     mutationFn: async (data: any) => api.post('/kids', data),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['kids'] });
-      setActiveTab(name);
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      setActiveTab(variables.name || 'New Kid');
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to create kid profile');
     }
   });
 
@@ -128,7 +132,13 @@ export default function KidsScreen() {
     mutationFn: async ({ id, data }: { id: string, data: any }) => api.patch(`/kids/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kids'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
       setIsEditing(false);
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update kid profile');
     }
   });
 
@@ -136,7 +146,13 @@ export default function KidsScreen() {
     mutationFn: async (id: string) => api.delete(`/kids/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kids'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
       setActiveTab('+ Add');
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete kid profile');
     }
   });
 
@@ -144,20 +160,41 @@ export default function KidsScreen() {
     mutationFn: async ({ id, data }: { id: string, data: any }) => api.post(`/kids/${id}/tasks`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kids'] });
-      setNewTask('');
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to add task');
     }
   });
 
   const toggleTaskMutation = useMutation({
     mutationFn: async ({ kidId, taskId, completed }: { kidId: string, taskId: string, completed: boolean }) => 
       api.patch(`/kids/${kidId}/tasks/${taskId}`, { completed }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['kids'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kids'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update task');
+    }
   });
 
   const deleteTaskMutation = useMutation({
     mutationFn: async ({ kidId, taskId }: { kidId: string, taskId: string }) => 
       api.delete(`/kids/${kidId}/tasks/${taskId}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['kids'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kids'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to delete task');
+    }
   });
 
   const handleSave = () => {
@@ -188,7 +225,7 @@ export default function KidsScreen() {
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
-    const timeStr = taskTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeStr = `${taskTime.getHours().toString().padStart(2, '0')}:${taskTime.getMinutes().toString().padStart(2, '0')}`;
     if (activeTab === '+ Add') {
       setLocalTasks([...localTasks, { 
         id: Date.now().toString(), 
@@ -203,6 +240,10 @@ export default function KidsScreen() {
       setNewTask('');
       setTaskDaysOfWeek([]);
     } else if (activeProfile) {
+      if (!isDailyTask && taskDaysOfWeek.length === 0) {
+         const dStr = `${taskDate.getFullYear()}-${String(taskDate.getMonth() + 1).padStart(2, '0')}-${String(taskDate.getDate()).padStart(2, '0')}`;
+         setSelectedCalendarDate(dStr);
+      }
       addTaskMutation.mutate({
         id: activeProfile.id,
         data: { 
@@ -214,6 +255,7 @@ export default function KidsScreen() {
           daysOfWeek: taskDaysOfWeek
         }
       });
+      setNewTask('');
       setTaskDaysOfWeek([]);
     }
   };

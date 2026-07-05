@@ -35,6 +35,8 @@ export function useCreateMedication() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['medications', { patientId: variables.patientId }] });
       queryClient.invalidateQueries({ queryKey: ['patients', variables.patientId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
     },
   });
 }
@@ -51,6 +53,8 @@ export function useUpdateMedication() {
       queryClient.invalidateQueries({ queryKey: ['medications', { patientId: data.patientId }] });
       queryClient.invalidateQueries({ queryKey: ['medication', data.id] });
       queryClient.invalidateQueries({ queryKey: ['patients', data.patientId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
     },
   });
 }
@@ -66,6 +70,8 @@ export function useDeleteMedication() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['medications', { patientId: variables.patientId }] });
       queryClient.invalidateQueries({ queryKey: ['patients', variables.patientId] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['events', 'upcoming'] });
     },
   });
 }

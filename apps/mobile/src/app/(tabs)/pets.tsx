@@ -673,7 +673,7 @@ export default function PetsScreen() {
               <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder=t('pets.form.drName', 'Dr. Name') 
+                placeholder={t('pets.form.drName', 'Dr. Name')} 
                 placeholderTextColor={theme.textSecondary}
                 value={vetName}
                 onChangeText={setVetName}
@@ -706,7 +706,7 @@ export default function PetsScreen() {
               <Text style={[styles.label, { color: theme.textSecondary }]}>{t('pets.form.name')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: theme.surfaceSecondary, color: theme.text }]} 
-                placeholder=t('pets.form.emergencyVet', 'Emergency Vet') 
+                placeholder={t('pets.form.emergencyVet', 'Emergency Vet')} 
                 placeholderTextColor={theme.textSecondary}
                 value={emergencyName}
                 onChangeText={setEmergencyName}

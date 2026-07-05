@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, TextInput } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { PremiumCard } from '../../components/ui/PremiumCard';
 import { AnimatedButton } from '../../components/ui/AnimatedButton';
 import { useTranslation } from 'react-i18next';
 import { Colors, Radii } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { CheckCircle, Circle, Plus, Palette, Calendar as CalendarIcon, Clock, Repeat } from 'lucide-react-native';
+import { CheckCircle, Circle, Plus, Palette, Calendar as CalendarIcon, Clock, Repeat, Trash2 } from 'lucide-react-native';
 import { useDashboardStats } from '../../features/dashboard/dashboard-api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
@@ -53,6 +53,7 @@ export default function TasksScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
     }
   });
 
@@ -61,6 +62,16 @@ export default function TasksScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
+    }
+  });
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (id: string) => api.delete(`/tasks/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['calendar'] });
     }
   });
 
@@ -77,9 +88,31 @@ export default function TasksScreen() {
       daysOfWeek: taskDaysOfWeek
     });
     
+    Alert.alert("Task Scheduled", `You will be reminded at ${timeStr}${isDailyTask ? ' daily' : taskDaysOfWeek.length > 0 ? ' on ' + taskDaysOfWeek.join(', ') : ''}.`);
+    
     setter('');
     setTaskDaysOfWeek([]);
   };
+
+  const renderTask = (task: any) => (
+    <View key={task.id} style={styles.taskRow}>
+      <TouchableOpacity style={styles.taskContent} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
+        {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
+        <View style={styles.taskTextContainer}>
+          <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
+          {(task.time || task.isDaily || (task.daysOfWeek && task.daysOfWeek.length > 0)) && (
+            <Text style={[styles.taskSubtext, { color: theme.textSecondary }]}>
+              {task.time ? task.time : ''}
+              {task.isDaily ? ' • Daily' : (task.daysOfWeek && task.daysOfWeek.length > 0 ? ` • ${task.daysOfWeek.join(', ')}` : '')}
+            </Text>
+          )}
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => deleteTaskMutation.mutate(task.id)}>
+        <Trash2 color={theme.error || '#ef4444'} size={20} />
+      </TouchableOpacity>
+    </View>
+  );
 
   // Filter tasks based on selectedCalendarDate
   const visibleTasks = allTasks.filter((t: any) => {
@@ -211,12 +244,7 @@ export default function TasksScreen() {
             {morningTasks.length === 0 && (
               <Text style={{ color: theme.textSecondary }}>No morning tasks for this date.</Text>
             )}
-            {morningTasks.map((task: any) => (
-              <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
-                {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-              </TouchableOpacity>
-            ))}
+            {morningTasks.map(renderTask)}
             
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
               <TextInput 
@@ -238,12 +266,7 @@ export default function TasksScreen() {
             {daytimeTasks.length === 0 && (
               <Text style={{ color: theme.textSecondary }}>No daytime tasks for this date.</Text>
             )}
-            {daytimeTasks.map((task: any) => (
-              <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
-                {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-              </TouchableOpacity>
-            ))}
+            {daytimeTasks.map(renderTask)}
             
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
               <TextInput 
@@ -265,12 +288,7 @@ export default function TasksScreen() {
             {eveningTasks.length === 0 && (
               <Text style={{ color: theme.textSecondary }}>No evening tasks for this date.</Text>
             )}
-            {eveningTasks.map((task: any) => (
-              <TouchableOpacity key={task.id} style={styles.taskRow} onPress={() => toggleTaskMutation.mutate({ id: task.id, completed: !task.completed })}>
-                {task.completed ? <CheckCircle color={theme.success} size={20} /> : <Circle color={theme.textSecondary} size={20} />}
-                <Text style={[styles.taskTitle, { color: theme.text, textDecorationLine: task.completed ? 'line-through' : 'none' }]}>{task.title}</Text>
-              </TouchableOpacity>
-            ))}
+            {eveningTasks.map(renderTask)}
             
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 16 }}>
               <TextInput 
@@ -314,8 +332,12 @@ const styles = StyleSheet.create({
   content: { padding: 20, paddingBottom: 100 },
   sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
   subTitle: { fontSize: 12, fontWeight: '600', textTransform: 'uppercase', marginBottom: 8, marginTop: 4 },
-  taskRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10 },
-  taskTitle: { marginLeft: 12, fontSize: 16 },
+  taskRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#00000010' },
+  taskContent: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  taskTextContainer: { marginLeft: 12, flex: 1 },
+  taskTitle: { fontSize: 16 },
+  taskSubtext: { fontSize: 12, marginTop: 2 },
+  deleteBtn: { padding: 8 },
   input: { padding: 12, borderRadius: Radii.input, height: 48 },
   addBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderRadius: Radii.input, height: 48, justifyContent: 'center' },
   dayBadge: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },

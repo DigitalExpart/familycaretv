@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Delete, Patch, Param, Body, UseGuards, UnauthorizedException, Query } from '@nestjs/common';
+import { Controller, Get, Put, Delete, Patch, Param, Body, UseGuards, UnauthorizedException, Query, Logger } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { PrismaService } from '../database/prisma.service';
@@ -12,6 +12,8 @@ import { Role } from '@prisma/client';
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   @UseGuards(RolesGuard)
@@ -387,7 +389,11 @@ export class UsersController {
   @Patch('me/push-token')
   @ApiOperation({ summary: 'Register Expo Push Token' })
   async registerPushToken(@CurrentUser() user: any, @Body() body: { pushToken: string }) {
+    this.logger.log(`[PUSH_TOKEN] Received push token registration request from user ${user.id}`);
+    this.logger.log(`[PUSH_TOKEN] Token value: ${body.pushToken}`);
+
     if (!body.pushToken) {
+      this.logger.warn(`[PUSH_TOKEN] Missing pushToken in request body`);
       return { success: false, message: 'pushToken is required' };
     }
 
@@ -397,17 +403,23 @@ export class UsersController {
     });
 
     const tokens = dbUser?.expoPushTokens || [];
+    this.logger.log(`[PUSH_TOKEN] Current stored tokens for user ${user.id}: ${JSON.stringify(tokens)}`);
+
     if (!tokens.includes(body.pushToken)) {
       tokens.push(body.pushToken);
       await this.prisma.user.update({
         where: { id: user.id },
         data: { expoPushTokens: tokens }
       });
+      this.logger.log(`[PUSH_TOKEN] ✅ NEW token stored. Updated tokens: ${JSON.stringify(tokens)}`);
+    } else {
+      this.logger.log(`[PUSH_TOKEN] Token already exists, no update needed.`);
     }
 
     return {
       success: true,
       message: 'Push token registered',
+      storedTokens: tokens,
     };
   }
 }

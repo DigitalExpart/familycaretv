@@ -25,6 +25,40 @@ try {
   console.log('Failed to load expo-notifications (expected in Expo Go SDK 53+):', e);
 }
 
+export interface PushDiagnostics {
+  permissionStatus: string;
+  expoPushToken: string;
+  tokenUploaded: boolean;
+  lastSyncTime: string | null;
+  lastUploadResponse: string | null;
+  logs: string[];
+}
+
+// Module-level diagnostics store so it persists across renders
+let _diagnostics: PushDiagnostics = {
+  permissionStatus: 'unknown',
+  expoPushToken: '',
+  tokenUploaded: false,
+  lastSyncTime: null,
+  lastUploadResponse: null,
+  logs: [],
+};
+
+function diagLog(msg: string) {
+  const timestamp = new Date().toISOString();
+  const entry = `[${timestamp}] ${msg}`;
+  console.log(`[PUSH_DIAG] ${entry}`);
+  _diagnostics.logs.push(entry);
+  // Keep last 50 entries
+  if (_diagnostics.logs.length > 50) {
+    _diagnostics.logs = _diagnostics.logs.slice(-50);
+  }
+}
+
+export function getPushDiagnostics(): PushDiagnostics {
+  return { ..._diagnostics, logs: [..._diagnostics.logs] };
+}
+
 export function usePushNotifications(userId?: string) {
   const router = useRouter();
   const [expoPushToken, setExpoPushToken] = useState('');
@@ -37,9 +71,18 @@ export function usePushNotifications(userId?: string) {
   async function registerForPushNotificationsAsync() {
     let token;
 
-    if (!Notifications) return undefined;
+    diagLog('=== PUSH REGISTRATION START ===');
+    diagLog(`Platform: ${Platform.OS}`);
+    diagLog(`Is physical device: ${Device.isDevice}`);
+    diagLog(`Notifications module loaded: ${!!Notifications}`);
+
+    if (!Notifications) {
+      diagLog('ERROR: Notifications module is null - aborting registration');
+      return undefined;
+    }
 
     if (Platform.OS === 'android') {
+      diagLog('Setting up Android notification channels...');
       const channels = [
         { id: 'default', name: 'Default', importance: Notifications.AndroidImportance.DEFAULT },
         { id: 'medication', name: 'Medication', importance: Notifications.AndroidImportance.MAX, vibrationPattern: [0, 250, 250, 250] },
@@ -60,52 +103,100 @@ export function usePushNotifications(userId?: string) {
           lightColor: '#FF231F7C',
         });
       }
+      diagLog(`Android channels configured: ${channels.map(c => c.id).join(', ')}`);
     }
 
     if (Device.isDevice) {
       try {
+        // Step 1: Check permissions
+        diagLog('Checking notification permissions...');
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        diagLog(`Existing permission status: ${existingStatus}`);
         let finalStatus = existingStatus;
         if (existingStatus !== 'granted') {
+          diagLog('Requesting notification permissions...');
           const { status } = await Notifications.requestPermissionsAsync();
           finalStatus = status;
+          diagLog(`New permission status after request: ${finalStatus}`);
         }
+        _diagnostics.permissionStatus = finalStatus;
+
         if (finalStatus !== 'granted') {
+          diagLog(`ERROR: Permission NOT granted (status: ${finalStatus}) - aborting`);
           return;
         }
+        diagLog('✅ Permission GRANTED');
+
+        // Step 2: Get Expo Push Token
         const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? process.env.EXPO_PUBLIC_PROJECT_ID;
+        diagLog(`Project ID for token request: ${projectId || 'UNDEFINED/MISSING'}`);
+        
+        if (!projectId) {
+          diagLog('⚠️ WARNING: projectId is undefined! Token request may fail.');
+        }
+
+        diagLog('Requesting Expo Push Token...');
         token = await Notifications.getExpoPushTokenAsync({
           projectId, 
         });
-      } catch (e) {
-        console.log('Push notifications not available (expected in Expo Go SDK 53+):', e);
+        diagLog(`✅ Expo Push Token received: ${token?.data || 'EMPTY'}`);
+        _diagnostics.expoPushToken = token?.data || '';
+      } catch (e: any) {
+        diagLog(`❌ ERROR getting push token: ${e?.message || String(e)}`);
+        diagLog(`Error stack: ${e?.stack || 'no stack'}`);
+        _diagnostics.permissionStatus = 'error';
       }
     } else {
-      console.log('Must use physical device for Push Notifications');
+      diagLog('⚠️ Not a physical device - push notifications not available');
     }
 
     return token?.data;
   }
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      diagLog('No userId provided - skipping push registration');
+      return;
+    }
 
-    registerForPushNotificationsAsync().then((token) => {
+    diagLog(`Push registration triggered for userId: ${userId}`);
+
+    registerForPushNotificationsAsync().then(async (token) => {
       if (token) {
         setExpoPushToken(token);
-        // Send to backend
-        api.patch('/users/me/push-token', { pushToken: token }).catch(console.error);
+        diagLog(`Uploading token to backend: ${token}`);
+        
+        // Step 3: Send to backend
+        try {
+          const response = await api.patch('/users/me/push-token', { pushToken: token });
+          const responseData = JSON.stringify(response.data);
+          diagLog(`✅ Backend upload SUCCESS. Response: ${responseData}`);
+          _diagnostics.tokenUploaded = true;
+          _diagnostics.lastSyncTime = new Date().toISOString();
+          _diagnostics.lastUploadResponse = responseData;
+        } catch (uploadError: any) {
+          const errMsg = uploadError?.response?.data 
+            ? JSON.stringify(uploadError.response.data) 
+            : uploadError?.message || String(uploadError);
+          diagLog(`❌ Backend upload FAILED: ${errMsg}`);
+          diagLog(`Upload error status: ${uploadError?.response?.status || 'no status'}`);
+          _diagnostics.tokenUploaded = false;
+          _diagnostics.lastUploadResponse = `ERROR: ${errMsg}`;
+        }
+      } else {
+        diagLog('⚠️ No token generated - nothing to upload to backend');
       }
     });
 
     try {
       if (Notifications) {
         notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+          diagLog(`📩 PUSH RECEIVED: ${notification.request.content.title} - ${notification.request.content.body}`);
           setNotification(notification);
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-          console.log('Notification tapped:', response);
+          diagLog(`👆 PUSH TAPPED: ${response.notification.request.content.title}`);
           const data = response.notification.request.content.data;
           const type = data?.type || response.notification.request.content.title || '';
           
@@ -130,7 +221,7 @@ export function usePushNotifications(userId?: string) {
         });
       }
     } catch (e) {
-      console.log('Push notification listeners not available:', e);
+      diagLog(`Push notification listeners error: ${e}`);
     }
 
     return () => {

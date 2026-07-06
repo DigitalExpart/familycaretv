@@ -1,10 +1,11 @@
-import { Controller, Get, Patch, Delete, Param, UseGuards, Post } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Param, UseGuards, Post, Body } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NotificationEvent } from './events/notification.event';
+import { ExpoPushService } from './expo-push.service';
 
 @ApiTags('Notifications')
 @ApiBearerAuth()
@@ -13,7 +14,8 @@ import { NotificationEvent } from './events/notification.event';
 export class NotificationsController {
   constructor(
     private readonly notificationsService: NotificationsService,
-    private readonly eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
+    private readonly expoPushService: ExpoPushService,
   ) {}
 
   @Get()
@@ -65,7 +67,7 @@ export class NotificationsController {
       message: 'All notifications marked as read',
     };
   }
-
+  
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a notification' })
   async deleteNotification(@CurrentUser() user: any, @Param('id') id: string) {
@@ -107,4 +109,20 @@ export class NotificationsController {
       message: 'Test Matrix Triggered. 9 Notifications generated.',
     };
   }
+
+  @Post('test-device')
+  @ApiOperation({ summary: 'Direct push test - bypasses event/reminder pipeline' })
+  async testDevicePush(@CurrentUser() user: any, @Body() body: { userId?: string }) {
+    // Use the provided userId or fall back to the authenticated user
+    const targetUserId = body.userId || user.id;
+
+    const result = await this.expoPushService.sendDirectTestPush(targetUserId);
+
+    return {
+      success: result.errors.length === 0,
+      targetUserId,
+      ...result,
+    };
+  }
 }
+

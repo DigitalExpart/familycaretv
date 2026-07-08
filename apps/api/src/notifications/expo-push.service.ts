@@ -97,10 +97,9 @@ export class ExpoPushService {
       for (const chunk of chunks) {
         try {
           const ticketChunk = await this.expo.sendPushNotificationsAsync(chunk);
-          this.logger.log(`[PUSH_SEND] ✅ Expo API Response (Tickets): ${JSON.stringify(ticketChunk)}`);
+          this.logger.log(`[PUSH_SEND] Successfully sent chunk of ${chunk.length} notifications to Expo.`);
           allTickets.push(...ticketChunk);
 
-          // Log individual ticket results and fetch receipts immediately for debug
           const ticketIds: string[] = [];
           const ticketIdToTokenMap = new Map<string, string>();
 
@@ -110,46 +109,35 @@ export class ExpoPushService {
 
             if (ticket.status === 'ok') {
               const tid = (ticket as any).id;
-              this.logger.log(`[PUSH_SEND] Ticket ${idx}: OK - ID: ${tid}`);
               ticketIds.push(tid);
               ticketIdToTokenMap.set(tid, pushToken);
-              debug.lastExpoTicket = tid;
             } else {
-              this.logger.error(`[PUSH_SEND] Ticket ${idx}: ERROR - ${JSON.stringify(ticket)}`);
-              debug.lastError = JSON.stringify(ticket);
+              this.logger.error(`[PUSH_SEND] Ticket Error: ${ticket.details?.error || 'Unknown Error'}`);
               
               if (ticket.details?.error === 'DeviceNotRegistered') {
-                this.logger.warn(`[PUSH_SEND] ⚠️ Token ${pushToken} is no longer registered. Marking for removal.`);
                 staleTokens.push(pushToken);
               }
             }
           });
 
           if (ticketIds.length > 0) {
-            // STEP 6: Query Receipt immediately
-            this.logger.log(`[PUSH_SEND] Querying receipts for ticket IDs: ${ticketIds.join(', ')}`);
+            // STEP 6: Query Receipt
             try {
               // Wait 1 second before querying receipt so Expo has time to process it
               await new Promise(res => setTimeout(res, 1000));
               const receiptChunks = this.expo.chunkPushNotificationReceiptIds(ticketIds);
               for (const rc of receiptChunks) {
                 const receipts = await this.expo.getPushNotificationReceiptsAsync(rc);
-                this.logger.log(`[PUSH_SEND] 🧾 Receipts Result: ${JSON.stringify(receipts)}`);
-                debug.lastReceipt = JSON.stringify(receipts);
                 
                 // Detailed receipt error logging
                 for (let receiptId in receipts) {
                   let receipt = receipts[receiptId];
                   const associatedToken = ticketIdToTokenMap.get(receiptId);
 
-                  if (receipt.status === 'ok') {
-                    this.logger.log(`[PUSH_SEND] Receipt ${receiptId}: DELIVERED SUCCESSFULLY`);
-                  } else if (receipt.status === 'error') {
-                    this.logger.error(`[PUSH_SEND] Receipt ${receiptId}: DELIVERY ERROR - ${receipt.message} (${receipt.details?.error})`);
-                    debug.lastError = `Receipt Error: ${receipt.details?.error}`;
+                  if (receipt.status === 'error') {
+                    this.logger.error(`[PUSH_SEND] Receipt Error: ${receipt.message} (${receipt.details?.error})`);
                     
                     if (receipt.details?.error === 'DeviceNotRegistered' && associatedToken) {
-                       this.logger.warn(`[PUSH_SEND] ⚠️ Receipt indicates token ${associatedToken} is unregistered. Marking for removal.`);
                        staleTokens.push(associatedToken);
                     }
                   }
@@ -160,22 +148,20 @@ export class ExpoPushService {
             }
           }
         } catch (error: any) {
-          this.logger.error(`[PUSH_SEND] ❌ Expo API Error: ${error.message}`, error.stack);
-          debug.lastError = `Expo API Error: ${error.message}`;
+          this.logger.error(`[PUSH_SEND] Expo API Error: ${error.message}`, error.stack);
         }
       }
 
       // Cleanup stale tokens from DB
       if (staleTokens.length > 0 || invalidTokens.length > 0) {
         const tokensToRemove = [...new Set([...staleTokens, ...invalidTokens])];
-        this.logger.log(`[PUSH_SEND] Cleaning up ${tokensToRemove.length} stale/invalid tokens from user ${userId}`);
+        this.logger.log(`[PUSH_SEND] Cleaning up ${tokensToRemove.length} stale/invalid tokens for user.`);
         const updatedTokens = user.expoPushTokens.filter(t => !tokensToRemove.includes(t));
         
         await this.prisma.user.update({
           where: { id: userId },
           data: { expoPushTokens: updatedTokens }
         });
-        this.logger.log(`[PUSH_SEND] Database updated. Remaining tokens: ${updatedTokens.length}`);
       }
 
       await this.prisma.notification.update({

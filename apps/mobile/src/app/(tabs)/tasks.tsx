@@ -10,7 +10,7 @@ import { CheckCircle, Circle, Plus, Palette, Calendar as CalendarIcon, Clock, Re
 import { useDashboardStats } from '../../features/dashboard/dashboard-api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '../../components/ui/JSDateTimePicker';
 import { Calendar } from 'react-native-calendars';
 import { DaysOfWeekSelector } from '../../components/ui/DaysOfWeekSelector';
 

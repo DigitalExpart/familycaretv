@@ -7,7 +7,7 @@ import { Event, EventType, ReminderStatus } from 'shared-types';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../hooks/useTheme';
 import { Colors } from '../constants/theme';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from './ui/JSDateTimePicker';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),

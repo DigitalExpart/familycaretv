@@ -181,6 +181,7 @@ export default function ProfileScreen() {
               </Text>
             </View>
           </TouchableOpacity>
+
         </PremiumCard>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('profile.account', 'Account')}</Text>
 

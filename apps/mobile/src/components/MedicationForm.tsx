@@ -10,7 +10,7 @@ import { Medication } from 'shared-types';
 import { useLookupMedication } from '../features/medications/medications-api';
 import { useTranslation } from 'react-i18next';
 import { AnimatedButton } from './ui/AnimatedButton';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from './ui/JSDateTimePicker';
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),

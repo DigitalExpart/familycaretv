@@ -14,9 +14,5 @@ const dayMap: Record<string, number> = {
 };
 
 export async function scheduleMedicationNotifications(medicationId: string, name: string, daysOfWeek: string[], timesOfDay: string[]) {
-  console.log(`Mock scheduling for ${name} on ${daysOfWeek.join(', ')} at ${timesOfDay.join(', ')}`);
-  Alert.alert(
-    "Development Build Required", 
-    "Medication scheduling is saved! However, native push notifications require a custom Development Build (EAS) because Expo Go removed notification support in SDK 53."
-  );
+  console.log(`[FRONTEND] Medication saved. Backend will handle push notifications for ${name}`);
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="SidebarMenu" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/screens/SidebarMenu.brs" />
+    <children>
+        <Rectangle id="bg" width="300" height="1080" color="0x222222" />
+        
+        <Label id="title" text="FamilyCare" font="font:LargeBoldSystemFont" color="0xFFFFFF" translation="[20, 50]" />
+        
+        <LabelList id="menuList" translation="[0, 150]" itemSize="[300, 80]" color="0xAAAAAA" focusedColor="0xFFFFFF" textHorizAlign="left" textPadding="20" />
+    </children>
+</component>

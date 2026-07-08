@@ -42,7 +42,7 @@ function createRow(title as String, items as Object) as Object
         else if item.audioUrl <> invalid
             itemNode.HDPosterUrl = "pkg:/images/audio_icon.jpg"
         else
-            itemNode.HDPosterUrl = "pkg:/images/placeholder.jpg"
+            itemNode.HDPosterUrl = "pkg:/images/fallback_artwork.png"
         end if
         row.appendChild(itemNode)
     end for

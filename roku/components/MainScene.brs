@@ -20,6 +20,13 @@ sub init()
     m.notificationQueue = []
 end sub
 
+sub onNextScreenChange()
+    nextScreen = m.top.nextScreen
+    if nextScreen <> ""
+        m.navigationManager.callFunc("pushScreen", { screen: nextScreen })
+    end if
+end sub
+
 sub onNewNotifications()
     notifications = m.pollingTask.newNotifications
     if notifications <> invalid and notifications.count() > 0

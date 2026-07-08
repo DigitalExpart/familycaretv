@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { useSubscriptionStatus, useCheckoutSession } from '../../features/subscription/subscription-api';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Modal, Pressable, Image } from 'react-native';
+import { useSubscriptionStatus, useCheckoutSession, usePaypalCheckoutSession } from '../../features/subscription/subscription-api';
 import * as WebBrowser from 'expo-web-browser';
 import { GradientHeader } from '../../components/ui/GradientHeader';
 import { Check, Star } from 'lucide-react-native';
@@ -11,13 +11,28 @@ import { Colors } from '../../constants/theme';
 export default function SubscriptionScreen() {
   const { data, isLoading, refetch } = useSubscriptionStatus();
   const checkoutMutation = useCheckoutSession();
+  const paypalMutation = usePaypalCheckoutSession();
   const { t } = useTranslation();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
 
-  const handleSubscribe = async (plan: 'PERSONAL' | 'FAMILY') => {
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'PERSONAL' | 'FAMILY' | null>(null);
+
+  const handleSubscribe = (plan: 'PERSONAL' | 'FAMILY') => {
+    setSelectedPlan(plan);
+    setPaymentModalVisible(true);
+  };
+
+  const handlePaymentMethodSelected = async (method: 'STRIPE' | 'PAYPAL') => {
+    if (!selectedPlan) return;
+    setPaymentModalVisible(false);
+    
     try {
-      const res = await checkoutMutation.mutateAsync({ plan });
+      const res = method === 'STRIPE' 
+        ? await checkoutMutation.mutateAsync({ plan: selectedPlan })
+        : await paypalMutation.mutateAsync({ plan: selectedPlan });
+        
       if (res.url) {
         await WebBrowser.openBrowserAsync(res.url);
         refetch(); // Refetch status when browser is closed
@@ -134,6 +149,57 @@ export default function SubscriptionScreen() {
 
         <View style={styles.spacer} />
       </ScrollView>
+
+      <Modal
+        visible={paymentModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPaymentModalVisible(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setPaymentModalVisible(false)}>
+          <View style={[styles.modalContent, { backgroundColor: theme.backgroundElement }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>Choose Payment Method</Text>
+            
+            <TouchableOpacity 
+              style={[styles.paymentButton, { borderColor: theme.border }]} 
+              onPress={() => handlePaymentMethodSelected('STRIPE')}
+            >
+              <Image 
+                source={require('../../../assets/images/stripe-logo.png')} 
+                style={styles.paymentLogoStripe} 
+                resizeMode="contain" 
+              />
+              <View style={styles.paymentButtonTextContainer}>
+                <Text style={[styles.paymentButtonTitle, { color: theme.text }]}>Pay with Stripe</Text>
+                <Text style={[styles.paymentButtonSub, { color: theme.textSecondary }]}>Credit Cards, Apple Pay, Google Pay</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.paymentButton, { borderColor: theme.border }]} 
+              onPress={() => handlePaymentMethodSelected('PAYPAL')}
+            >
+              <Image 
+                source={require('../../../assets/images/paypal-logo.png')} 
+                style={styles.paymentLogoPaypal} 
+                resizeMode="contain" 
+              />
+              <View style={styles.paymentButtonTextContainer}>
+                <Text style={[styles.paymentButtonTitle, { color: theme.text }]}>PayPal</Text>
+                <Text style={[styles.paymentButtonSub, { color: theme.textSecondary }]}>Pay with your PayPal account</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.cancelButton} 
+              onPress={() => setPaymentModalVisible(false)}
+            >
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+
     </View>
   );
 }
@@ -187,5 +253,17 @@ const styles = StyleSheet.create({
   buttonDisabled: { backgroundColor: '#9CA3AF' },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   
-  spacer: { height: 40 }
+  spacer: { height: 40 },
+
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 20 },
+  modalContent: { borderRadius: 16, padding: 24, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 },
+  modalTitle: { fontSize: 20, fontWeight: '700', marginBottom: 20, textAlign: 'center' },
+  paymentButton: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, padding: 16, borderRadius: 12, marginBottom: 12 },
+  paymentLogoStripe: { width: 40, height: 24, marginRight: 16 },
+  paymentLogoPaypal: { width: 32, height: 32, marginRight: 20, marginLeft: 4 },
+  paymentButtonTextContainer: { flex: 1 },
+  paymentButtonTitle: { fontSize: 18, fontWeight: '600', marginBottom: 2 },
+  paymentButtonSub: { fontSize: 13 },
+  cancelButton: { marginTop: 12, paddingVertical: 12, alignItems: 'center' },
+  cancelButtonText: { fontSize: 16, color: '#6B7280', fontWeight: '600' }
 });

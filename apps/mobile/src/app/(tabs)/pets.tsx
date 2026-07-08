@@ -9,7 +9,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { Dog, Stethoscope, Syringe, Pill, Plus, Calendar as CalendarIcon, X, AlertTriangle, FileText, CheckCircle, Circle, Clock, Repeat, Trash2 } from 'lucide-react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from '../../components/ui/JSDateTimePicker';
 import { Calendar } from 'react-native-calendars';
 import { DaysOfWeekSelector } from '../../components/ui/DaysOfWeekSelector';
 import { scheduleMedicationNotifications } from '../../utils/notifications';

@@ -25,38 +25,13 @@ try {
   console.log('Failed to load expo-notifications (expected in Expo Go SDK 53+):', e);
 }
 
-export interface PushDiagnostics {
-  permissionStatus: string;
-  expoPushToken: string;
-  tokenUploaded: boolean;
-  lastSyncTime: string | null;
-  lastUploadResponse: string | null;
-  logs: string[];
-}
-
-// Module-level diagnostics store so it persists across renders
-let _diagnostics: PushDiagnostics = {
-  permissionStatus: 'unknown',
-  expoPushToken: '',
-  tokenUploaded: false,
-  lastSyncTime: null,
-  lastUploadResponse: null,
-  logs: [],
-};
+// Stub for diagnostics to prevent errors from existing assignments
+const _diagnostics: any = {};
 
 function diagLog(msg: string) {
-  const timestamp = new Date().toISOString();
-  const entry = `[${timestamp}] ${msg}`;
-  console.log(`[PUSH_DIAG] ${entry}`);
-  _diagnostics.logs.push(entry);
-  // Keep last 50 entries
-  if (_diagnostics.logs.length > 50) {
-    _diagnostics.logs = _diagnostics.logs.slice(-50);
+  if (__DEV__) {
+    console.log(`[PUSH] ${msg}`);
   }
-}
-
-export function getPushDiagnostics(): PushDiagnostics {
-  return { ..._diagnostics, logs: [..._diagnostics.logs] };
 }
 
 export function usePushNotifications(userId?: string) {

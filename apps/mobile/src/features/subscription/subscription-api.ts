@@ -19,3 +19,12 @@ export function useCheckoutSession() {
     },
   });
 }
+
+export function usePaypalCheckoutSession() {
+  return useMutation({
+    mutationFn: async ({ plan }: { plan: 'PERSONAL' | 'FAMILY' }) => {
+      const { data } = await api.post('/paypal/create-subscription', { plan });
+      return data as { url: string };
+    },
+  });
+}

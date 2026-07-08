@@ -10,23 +10,14 @@
             <Label id="welcomeText" translation="[0, 0]" font="font:LargeBoldSystemFont" color="0xFFFFFF" text="Good Morning" />
             <Label id="dateText" translation="[0, 60]" font="font:MediumSystemFont" color="0xAAAAAA" />
             
-            <!-- Quick Navigation (Buttons) -->
-            <LayoutGroup translation="[0, 110]" layoutDirection="horiz" itemSpacings="[20]">
-                <Button id="btnPatients" text="Patients" />
-                <Button id="btnTasks" text="Tasks" />
-                <Button id="btnKids" text="Kids" />
-                <Button id="btnPets" text="Pets" />
-            </LayoutGroup>
-
-            <!-- Verse & Drawing of the Day -->
-            <Rectangle id="verseCard" width="1500" height="200" translation="[0, 180]" color="0x222222">
-                <Poster id="drawingPoster" width="300" height="200" loadDisplayMode="scaleToFit" />
-                <Label id="verseText" translation="[320, 30]" width="1150" font="font:MediumSystemFont" color="0xFFFFFF" wrap="true" />
-                <Label id="verseRef" translation="[320, 140]" width="1150" font="font:SmallBoldSystemFont" color="0xCCCCCC" />
+            <!-- Verse of the Day -->
+            <Rectangle id="verseCard" width="1500" height="150" translation="[0, 110]" color="0x222222">
+                <Label id="verseText" translation="[30, 20]" width="1440" font="font:MediumSystemFont" color="0xFFFFFF" wrap="true" />
+                <Label id="verseRef" translation="[30, 100]" width="1440" font="font:SmallBoldSystemFont" color="0xCCCCCC" />
             </Rectangle>
             
-            <!-- Dashboard List for Today's Tasks, Appts, Medications, Kids, Pets, Notifications -->
-            <RowList id="dashboardList" translation="[0, 400]" itemComponentName="PremiumCard" numRows="6" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFF" />
+            <!-- Dashboard List for Summary and Featured Book -->
+            <RowList id="dashboardList" translation="[0, 280]" itemComponentName="PremiumCard" numRows="4" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFF" />
         </Group>
         
         <ApiTask id="fetchDashboardTask" />

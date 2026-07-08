@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Req, UseGuards, Headers, HttpCode } from '@nestjs/common';
 import { PaypalService } from './paypal.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('PayPal')

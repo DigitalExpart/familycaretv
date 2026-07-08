@@ -35,6 +35,7 @@ import { FamilyModule } from './family/family.module';
 import { APP_GUARD } from '@nestjs/core';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
 import { ResourceLimitGuard } from './common/guards/resource-limit.guard';
+import { PaypalModule } from './paypal/paypal.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { ResourceLimitGuard } from './common/guards/resource-limit.guard';
     CalendarModule,
     SubscriptionsModule,
     FamilyModule,
+    PaypalModule,
   ],
   controllers: [AppController],
   providers: [

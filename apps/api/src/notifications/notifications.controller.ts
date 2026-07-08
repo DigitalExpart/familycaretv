@@ -78,6 +78,12 @@ export class NotificationsController {
     };
   }
 
+  @Get('debug/push')
+  @ApiOperation({ summary: 'Get recent push debug info for current user' })
+  async getDebugPush(@CurrentUser() user: any) {
+    return this.expoPushService.getDebugState(user.id);
+  }
+
   @Post('test-matrix')
   @ApiOperation({ summary: 'Trigger Test Matrix for Notifications' })
   async triggerTestMatrix(@CurrentUser() user: any) {

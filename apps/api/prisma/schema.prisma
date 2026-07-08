@@ -26,6 +26,12 @@ model User {
   subscriptionStatus String   @default("trialing")
   stripeCustomerId   String?  @unique
   stripeSubscriptionId String? @unique
+  
+  // PayPal fields
+  paypalCustomerId     String?  @unique
+  paypalSubscriptionId String?  @unique
+  paymentMethod        String?  @default("NONE")
+
   trialEndsAt        DateTime?
   currentPeriodEnd   DateTime?
 

@@ -12,33 +12,58 @@ export class ExpoPushService {
     this.expo = new Expo();
   }
 
+  private readonly debugState = new Map<string, any>();
+
+  getDebugState(userId: string) {
+    return this.debugState.get(userId) || {
+      userId,
+      storedToken: null,
+      hasToken: false,
+      lastPushSentAt: null,
+      lastExpoTicket: null,
+      lastReceipt: null,
+      lastError: null
+    };
+  }
+
   async sendPushNotification(notification: Notification) {
+    const userId = notification.userId;
+    const debug = this.getDebugState(userId);
+    debug.lastPushSentAt = new Date().toISOString();
+    this.debugState.set(userId, debug);
+
     this.logger.log(`[PUSH_SEND] === Sending push for notification ${notification.id} ===`);
-    this.logger.log(`[PUSH_SEND] User: ${notification.userId}`);
+    this.logger.log(`[PUSH_SEND] User: ${userId}`);
     this.logger.log(`[PUSH_SEND] Title: ${notification.title}`);
     this.logger.log(`[PUSH_SEND] Message: ${notification.message}`);
 
     try {
       const user = await this.prisma.user.findUnique({
-        where: { id: notification.userId },
+        where: { id: userId },
         select: { expoPushTokens: true }
       });
 
       this.logger.log(`[PUSH_SEND] User lookup result: ${user ? 'found' : 'NOT FOUND'}`);
       this.logger.log(`[PUSH_SEND] Stored tokens: ${JSON.stringify(user?.expoPushTokens || [])}`);
 
+      debug.storedToken = user?.expoPushTokens?.[0] || null;
+      debug.hasToken = !!debug.storedToken;
+
       if (!user || !user.expoPushTokens || user.expoPushTokens.length === 0) {
-        this.logger.warn(`[PUSH_SEND] ⚠️ No push tokens found for user ${notification.userId} - push NOT sent`);
+        this.logger.warn(`[PUSH_SEND] ⚠️ No push tokens found for user ${userId} - push NOT sent`);
+        debug.lastError = 'No push tokens found';
         return;
       }
 
       const messages: ExpoPushMessage[] = [];
+      const invalidTokens: string[] = [];
       for (const pushToken of user.expoPushTokens) {
         const isValid = Expo.isExpoPushToken(pushToken);
         this.logger.log(`[PUSH_SEND] Token: ${pushToken} | Valid: ${isValid}`);
 
         if (!isValid) {
           this.logger.error(`[PUSH_SEND] ❌ Invalid Expo push token: ${pushToken}`);
+          invalidTokens.push(pushToken);
           continue;
         }
 
@@ -50,11 +75,16 @@ export class ExpoPushService {
           data: { actionUrl: notification.actionUrl, notificationId: notification.id },
         };
         messages.push(msg);
-        this.logger.log(`[PUSH_SEND] Queued message: ${JSON.stringify(msg)}`);
+        this.logger.log(`[PUSH_SEND] Queued message payload: ${JSON.stringify(msg)}`);
+      }
+
+      if (invalidTokens.length > 0) {
+         this.logger.log(`[PUSH_SEND] Rejected tokens: ${JSON.stringify(invalidTokens)}`);
       }
 
       if (messages.length === 0) {
         this.logger.warn(`[PUSH_SEND] ⚠️ No valid messages to send after token validation`);
+        debug.lastError = 'No valid tokens';
         return;
       }
 
@@ -62,23 +92,90 @@ export class ExpoPushService {
       this.logger.log(`[PUSH_SEND] Sending ${messages.length} message(s) in ${chunks.length} chunk(s)`);
 
       const allTickets: ExpoPushTicket[] = [];
+      const staleTokens: string[] = [];
+
       for (const chunk of chunks) {
         try {
           const ticketChunk = await this.expo.sendPushNotificationsAsync(chunk);
-          this.logger.log(`[PUSH_SEND] ✅ Expo API Response: ${JSON.stringify(ticketChunk)}`);
+          this.logger.log(`[PUSH_SEND] ✅ Expo API Response (Tickets): ${JSON.stringify(ticketChunk)}`);
           allTickets.push(...ticketChunk);
 
-          // Log individual ticket results
+          // Log individual ticket results and fetch receipts immediately for debug
+          const ticketIds: string[] = [];
+          const ticketIdToTokenMap = new Map<string, string>();
+
           ticketChunk.forEach((ticket, idx) => {
+            const pushToken = chunk[idx].to;
+            if (typeof pushToken !== 'string') return;
+
             if (ticket.status === 'ok') {
-              this.logger.log(`[PUSH_SEND] Ticket ${idx}: OK - ID: ${(ticket as any).id}`);
+              const tid = (ticket as any).id;
+              this.logger.log(`[PUSH_SEND] Ticket ${idx}: OK - ID: ${tid}`);
+              ticketIds.push(tid);
+              ticketIdToTokenMap.set(tid, pushToken);
+              debug.lastExpoTicket = tid;
             } else {
               this.logger.error(`[PUSH_SEND] Ticket ${idx}: ERROR - ${JSON.stringify(ticket)}`);
+              debug.lastError = JSON.stringify(ticket);
+              
+              if (ticket.details?.error === 'DeviceNotRegistered') {
+                this.logger.warn(`[PUSH_SEND] ⚠️ Token ${pushToken} is no longer registered. Marking for removal.`);
+                staleTokens.push(pushToken);
+              }
             }
           });
+
+          if (ticketIds.length > 0) {
+            // STEP 6: Query Receipt immediately
+            this.logger.log(`[PUSH_SEND] Querying receipts for ticket IDs: ${ticketIds.join(', ')}`);
+            try {
+              // Wait 1 second before querying receipt so Expo has time to process it
+              await new Promise(res => setTimeout(res, 1000));
+              const receiptChunks = this.expo.chunkPushNotificationReceiptIds(ticketIds);
+              for (const rc of receiptChunks) {
+                const receipts = await this.expo.getPushNotificationReceiptsAsync(rc);
+                this.logger.log(`[PUSH_SEND] 🧾 Receipts Result: ${JSON.stringify(receipts)}`);
+                debug.lastReceipt = JSON.stringify(receipts);
+                
+                // Detailed receipt error logging
+                for (let receiptId in receipts) {
+                  let receipt = receipts[receiptId];
+                  const associatedToken = ticketIdToTokenMap.get(receiptId);
+
+                  if (receipt.status === 'ok') {
+                    this.logger.log(`[PUSH_SEND] Receipt ${receiptId}: DELIVERED SUCCESSFULLY`);
+                  } else if (receipt.status === 'error') {
+                    this.logger.error(`[PUSH_SEND] Receipt ${receiptId}: DELIVERY ERROR - ${receipt.message} (${receipt.details?.error})`);
+                    debug.lastError = `Receipt Error: ${receipt.details?.error}`;
+                    
+                    if (receipt.details?.error === 'DeviceNotRegistered' && associatedToken) {
+                       this.logger.warn(`[PUSH_SEND] ⚠️ Receipt indicates token ${associatedToken} is unregistered. Marking for removal.`);
+                       staleTokens.push(associatedToken);
+                    }
+                  }
+                }
+              }
+            } catch (receiptErr: any) {
+              this.logger.error(`[PUSH_SEND] Failed to fetch receipts: ${receiptErr.message}`);
+            }
+          }
         } catch (error: any) {
           this.logger.error(`[PUSH_SEND] ❌ Expo API Error: ${error.message}`, error.stack);
+          debug.lastError = `Expo API Error: ${error.message}`;
         }
+      }
+
+      // Cleanup stale tokens from DB
+      if (staleTokens.length > 0 || invalidTokens.length > 0) {
+        const tokensToRemove = [...new Set([...staleTokens, ...invalidTokens])];
+        this.logger.log(`[PUSH_SEND] Cleaning up ${tokensToRemove.length} stale/invalid tokens from user ${userId}`);
+        const updatedTokens = user.expoPushTokens.filter(t => !tokensToRemove.includes(t));
+        
+        await this.prisma.user.update({
+          where: { id: userId },
+          data: { expoPushTokens: updatedTokens }
+        });
+        this.logger.log(`[PUSH_SEND] Database updated. Remaining tokens: ${updatedTokens.length}`);
       }
 
       await this.prisma.notification.update({
@@ -89,6 +186,7 @@ export class ExpoPushService {
       
     } catch (error: any) {
       this.logger.error(`[PUSH_SEND] ❌ Failed to send push notification: ${error.message}`, error.stack);
+      debug.lastError = `Unexpected Error: ${error.message}`;
       await this.prisma.notification.update({
         where: { id: notification.id },
         data: { status: 'FAILED' }

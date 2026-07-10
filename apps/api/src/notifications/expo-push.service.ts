@@ -67,9 +67,42 @@ export class ExpoPushService {
           continue;
         }
 
+        let channelId = 'general_v2';
+        switch (notification.type) {
+          case 'MEDICATION_REMINDER':
+          case 'MEDICATION':
+            channelId = 'medication_v2';
+            break;
+          case 'APPOINTMENT_REMINDER':
+            channelId = 'appointments_v2';
+            break;
+          case 'TASK_REMINDER':
+          case 'TASK':
+          case 'DAILY_TASK':
+            channelId = 'tasks_v2';
+            break;
+          case 'HOMEWORK':
+          case 'KIDS_TASK':
+            channelId = 'kids_v2';
+            break;
+          case 'PET_MEDICATION':
+          case 'PET_VACCINATION':
+            channelId = 'pets_v2';
+            break;
+          case 'BIBLE_VERSE':
+            channelId = 'bible_v2';
+            break;
+          case 'EMERGENCY':
+            channelId = 'emergency_v2';
+            break;
+        }
+
         const msg: ExpoPushMessage = {
           to: pushToken,
           sound: 'default',
+          priority: 'high',
+          badge: 1,
+          channelId: channelId,
           body: notification.message,
           title: notification.title,
           data: { actionUrl: notification.actionUrl, notificationId: notification.id },
@@ -233,6 +266,9 @@ export class ExpoPushService {
           messages.push({
             to: token,
             sound: 'default',
+            priority: 'high',
+            channelId: 'general_v2',
+            badge: 1,
             title: '🔔 Push Test',
             body: `Hello ${user.firstName || 'User'}! This is a direct test push from FamilyCare.`,
             data: { type: 'TEST_PUSH', timestamp: new Date().toISOString() },

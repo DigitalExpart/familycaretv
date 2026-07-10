@@ -59,15 +59,15 @@ export function usePushNotifications(userId?: string) {
     if (Platform.OS === 'android') {
       diagLog('Setting up Android notification channels...');
       const channels = [
-        { id: 'default', name: 'Default', importance: Notifications.AndroidImportance.DEFAULT },
-        { id: 'medication', name: 'Medication', importance: Notifications.AndroidImportance.MAX, vibrationPattern: [0, 250, 250, 250] },
-        { id: 'appointments', name: 'Appointments', importance: Notifications.AndroidImportance.HIGH },
-        { id: 'tasks', name: 'Tasks', importance: Notifications.AndroidImportance.DEFAULT },
-        { id: 'kids', name: 'Kids', importance: Notifications.AndroidImportance.DEFAULT },
-        { id: 'pets', name: 'Pets', importance: Notifications.AndroidImportance.DEFAULT },
-        { id: 'bible', name: 'Bible', importance: Notifications.AndroidImportance.LOW },
-        { id: 'emergency', name: 'Emergency', importance: Notifications.AndroidImportance.MAX, vibrationPattern: [0, 500, 500, 500] },
-        { id: 'general', name: 'General', importance: Notifications.AndroidImportance.DEFAULT },
+        { id: 'default_v2', name: 'Default', importance: Notifications.AndroidImportance.HIGH },
+        { id: 'medication_v2', name: 'Medication', importance: Notifications.AndroidImportance.MAX, vibrationPattern: [0, 250, 250, 250] },
+        { id: 'appointments_v2', name: 'Appointments', importance: Notifications.AndroidImportance.HIGH },
+        { id: 'tasks_v2', name: 'Tasks', importance: Notifications.AndroidImportance.HIGH },
+        { id: 'kids_v2', name: 'Kids', importance: Notifications.AndroidImportance.HIGH },
+        { id: 'pets_v2', name: 'Pets', importance: Notifications.AndroidImportance.HIGH },
+        { id: 'bible_v2', name: 'Bible', importance: Notifications.AndroidImportance.HIGH },
+        { id: 'emergency_v2', name: 'Emergency', importance: Notifications.AndroidImportance.MAX, vibrationPattern: [0, 500, 500, 500] },
+        { id: 'general_v2', name: 'General', importance: Notifications.AndroidImportance.HIGH },
       ];
 
       for (const channel of channels) {

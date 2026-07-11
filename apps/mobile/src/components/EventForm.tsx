@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -60,6 +60,16 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
     onSubmit(finalData);
   };
 
+  const REMINDER_OPTIONS = [
+    { label: 'None', value: '' },
+    { label: '15 mins', value: '15' },
+    { label: '30 mins', value: '30' },
+    { label: '1 hour', value: '60' },
+    { label: '2 hours', value: '120' },
+    { label: '1 day', value: '1440' },
+    { label: '2 days', value: '2880' },
+  ];
+
   return (
     <View style={[styles.form, { backgroundColor: theme.background }]}>
       <Text style={[styles.label, { color: theme.text }]}>{t('events.form.title')} *</Text>
@@ -109,64 +119,66 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
       {errors.type?.message ? <Text style={styles.errorText}>{errors.type.message as string}</Text> : null}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('events.form.date')} *</Text>
-      <Controller
-        control={control}
-        name="startDateTime"
-        render={({ field: { onChange, value } }) => {
-          const dateVal = value ? new Date(value) : new Date();
-          return (
-            <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16 }}>
-              <TouchableOpacity
-                style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, borderColor: errors.startDateTime ? '#FF3B30' : theme.border, justifyContent: 'center' }]}
-                onPress={() => setShowDatePicker(true)}
-              >
-                <Text style={{ color: theme.text }}>{dateVal.toLocaleDateString()}</Text>
-              </TouchableOpacity>
+      <View style={styles.dateTimeRow}>
+        <Controller
+          control={control}
+          name="startDateTime"
+          render={({ field: { onChange, value } }) => {
+            const dateVal = value ? new Date(value) : new Date();
+            return (
+              <>
+                <TouchableOpacity
+                  style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, borderColor: errors.startDateTime ? '#FF3B30' : theme.border, justifyContent: 'center' }]}
+                  onPress={() => setShowDatePicker(true)}
+                >
+                  <Text style={{ color: theme.text }}>{dateVal.toLocaleDateString()}</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, borderColor: errors.startDateTime ? '#FF3B30' : theme.border, justifyContent: 'center' }]}
-                onPress={() => setShowTimePicker(true)}
-              >
-                <Text style={{ color: theme.text }}>{dateVal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.input, { flex: 1, backgroundColor: theme.backgroundElement, borderColor: errors.startDateTime ? '#FF3B30' : theme.border, justifyContent: 'center' }]}
+                  onPress={() => setShowTimePicker(true)}
+                >
+                  <Text style={{ color: theme.text }}>{dateVal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </TouchableOpacity>
 
-              {showDatePicker && (
-                <DateTimePicker
-                  value={dateVal}
-                  mode="date"
-                  display="default"
-                  onValueChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      const newDate = new Date(dateVal);
-                      newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-                      onChange(newDate.toISOString());
-                    }
-                  }}
-                  onDismiss={() => setShowDatePicker(false)}
-                />
-              )}
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={dateVal}
+                    mode="date"
+                    display="default"
+                    onValueChange={(event, selectedDate) => {
+                      setShowDatePicker(false);
+                      if (selectedDate) {
+                        const newDate = new Date(dateVal);
+                        newDate.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+                        onChange(newDate.toISOString());
+                      }
+                    }}
+                    onDismiss={() => setShowDatePicker(false)}
+                  />
+                )}
 
-              {showTimePicker && (
-                <DateTimePicker
-                  value={dateVal}
-                  mode="time"
-                  display="default"
-                  onValueChange={(event, selectedDate) => {
-                    setShowTimePicker(false);
-                    if (selectedDate) {
-                      const newDate = new Date(dateVal);
-                      newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes(), 0, 0);
-                      onChange(newDate.toISOString());
-                    }
-                  }}
-                  onDismiss={() => setShowTimePicker(false)}
-                />
-              )}
-            </View>
-          );
-        }}
-      />
+                {showTimePicker && (
+                  <DateTimePicker
+                    value={dateVal}
+                    mode="time"
+                    display="default"
+                    onValueChange={(event, selectedDate) => {
+                      setShowTimePicker(false);
+                      if (selectedDate) {
+                        const newDate = new Date(dateVal);
+                        newDate.setHours(selectedDate.getHours(), selectedDate.getMinutes(), 0, 0);
+                        onChange(newDate.toISOString());
+                      }
+                    }}
+                    onDismiss={() => setShowTimePicker(false)}
+                  />
+                )}
+              </>
+            );
+          }}
+        />
+      </View>
       {errors.startDateTime?.message ? <Text style={styles.errorText}>{errors.startDateTime.message as string}</Text> : null}
 
       <Text style={[styles.label, { color: theme.text }]}>{t('events.form.description')}</Text>
@@ -190,22 +202,34 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
         )}
       />
 
-      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.reminder')}</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{t('events.form.reminder', 'Reminder')}</Text>
       <Controller
         control={control}
         name="reminderMinutes"
         render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={[
-              styles.input,
-              { backgroundColor: theme.backgroundElement, color: theme.text, borderColor: theme.border }
-            ]}
-            onChangeText={onChange}
-            value={value?.toString()}
-            placeholder="e.g. 15"
-            placeholderTextColor={theme.textSecondary}
-            keyboardType="number-pad"
-          />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
+            {REMINDER_OPTIONS.map(option => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.typeButton,
+                  { borderColor: theme.primary, backgroundColor: theme.backgroundElement },
+                  (value || '') === option.value && { backgroundColor: theme.primary }
+                ]}
+                onPress={() => onChange(option.value)}
+              >
+                <Text
+                  style={[
+                    styles.typeButtonText,
+                    { color: theme.primary },
+                    (value || '') === option.value && styles.typeButtonTextSelected
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         )}
       />
 
@@ -225,6 +249,11 @@ export function EventForm({ initialData, onSubmit, isLoading }: EventFormProps) 
 const styles = StyleSheet.create({
   form: {
     padding: 16,
+  },
+  dateTimeRow: {
+    flexDirection: 'row', 
+    gap: 12, 
+    marginBottom: 16
   },
   label: {
     fontSize: 14,

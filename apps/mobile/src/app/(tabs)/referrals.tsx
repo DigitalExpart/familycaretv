@@ -78,7 +78,7 @@ export default function ReferralsScreen() {
       elevation: 10,
     },
     codeTitle: { color: 'rgba(255,255,255,0.8)', fontSize: 16, fontWeight: '600', marginBottom: 12 },
-    codeText: { color: '#FFF', fontSize: 36, fontWeight: '900', letterSpacing: 2, marginBottom: 20 },
+    codeText: { color: '#FFF', fontSize: 28, fontWeight: '900', letterSpacing: 1, marginBottom: 20, textAlign: 'center' },
     actionRow: { flexDirection: 'row', gap: 12 },
     actionBtn: { 
       backgroundColor: 'rgba(255,255,255,0.2)', 

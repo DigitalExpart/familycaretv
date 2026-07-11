@@ -9,6 +9,7 @@ interface JSDateTimePickerProps {
   is24Hour?: boolean;
   onChange?: (event: any, date?: Date) => void;
   onValueChange?: (event: any, date?: Date) => void;
+  onDismiss?: () => void;
   maximumDate?: Date;
   minimumDate?: Date;
 }
@@ -20,13 +21,20 @@ export default function JSDateTimePicker({
   is24Hour = false,
   onChange,
   onValueChange,
+  onDismiss,
   minimumDate,
   maximumDate,
 }: JSDateTimePickerProps) {
   
-  const handleChange = (event: any, date?: Date) => {
+  const handleValueChange = (event: any, date?: Date) => {
     if (onChange) onChange(event, date);
     if (onValueChange) onValueChange(event, date);
+  };
+
+  const handleDismiss = () => {
+    // If the legacy onChange was expecting a 'dismissed' event type
+    if (onChange) onChange({ type: 'dismissed' });
+    if (onDismiss) onDismiss();
   };
 
   const getDisplay = () => {
@@ -43,7 +51,8 @@ export default function JSDateTimePicker({
       mode={mode}
       display={getDisplay()}
       is24Hour={is24Hour}
-      onChange={handleChange}
+      onValueChange={handleValueChange}
+      onDismiss={handleDismiss}
       maximumDate={maximumDate}
       minimumDate={minimumDate}
     />

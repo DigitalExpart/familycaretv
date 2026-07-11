@@ -15,10 +15,16 @@ export class EventsService {
     const event = await this.prisma.event.create({ data: dto });
     const patient = await this.prisma.patient.findUnique({ where: { id: event.patientId } });
     const title = event.type === 'APPOINTMENT' ? 'Appointment' : 'Event';
+    
+    let scheduledAt = new Date(event.startDateTime);
+    if (event.reminderMinutes) {
+      scheduledAt = new Date(scheduledAt.getTime() - event.reminderMinutes * 60000);
+    }
+
     await this.remindersService.createReminder({
        userId, type: event.type === 'APPOINTMENT' ? 'APPOINTMENT_REMINDER' : 'EVENT',
        title: `${title}: ${event.title}`, message: `${patient?.fullName || 'Patient'} has ${event.title}`,
-       scheduledAt: event.startDateTime, sourceType: 'EVENT', sourceId: event.id
+       scheduledAt, sourceType: 'EVENT', sourceId: event.id
     });
     return event;
   }
@@ -43,10 +49,15 @@ export class EventsService {
     const patient = await this.prisma.patient.findUnique({ where: { id: event.patientId } });
     const title = event.type === 'APPOINTMENT' ? 'Appointment' : 'Event';
     
+    let scheduledAt = new Date(event.startDateTime);
+    if (event.reminderMinutes) {
+      scheduledAt = new Date(scheduledAt.getTime() - event.reminderMinutes * 60000);
+    }
+
     await this.remindersService.createReminder({
        userId, type: event.type === 'APPOINTMENT' ? 'APPOINTMENT_REMINDER' : 'EVENT',
        title: `${title}: ${event.title}`, message: `${patient?.fullName || 'Patient'} has ${event.title}`,
-       scheduledAt: event.startDateTime, sourceType: 'EVENT', sourceId: event.id
+       scheduledAt, sourceType: 'EVENT', sourceId: event.id
     });
 
     return event;

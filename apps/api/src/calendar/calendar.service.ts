@@ -6,23 +6,28 @@ export class CalendarAggregatorService {
   constructor(private prisma: PrismaService) {}
 
   async getCalendarEvents(userId: string, startDate: Date, endDate: Date) {
-    // 1. Fetch dynamic items from various tables to build calendar
-    // 2. Fetch specific Reminders
-    const reminders = await this.prisma.reminder.findMany({
+    // 1. Find all patients for this user
+    const patients = await this.prisma.patient.findMany({
+      where: { userId }
+    });
+    const patientIds = patients.map(p => p.id);
+
+    // 2. Fetch Events for these patients within the date range
+    const events = await this.prisma.event.findMany({
       where: {
-        userId,
-        scheduledAt: { gte: startDate, lte: endDate }
+        patientId: { in: patientIds },
+        startDateTime: { gte: startDate, lte: endDate }
       },
-      orderBy: { scheduledAt: 'asc' }
+      orderBy: { startDateTime: 'asc' }
     });
 
-    return reminders.map(r => ({
-      id: r.id,
-      type: r.type,
-      title: r.title,
-      startDateTime: r.scheduledAt.toISOString(),
-      sourceId: r.sourceId,
-      status: r.status,
+    return events.map(e => ({
+      id: e.id,
+      type: e.type, // APPOINTMENT, MEDICATION, TASK
+      title: e.title,
+      startDateTime: e.startDateTime.toISOString(),
+      sourceId: e.id,
+      status: e.status,
     }));
   }
 }

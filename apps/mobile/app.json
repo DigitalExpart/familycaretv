@@ -49,6 +49,14 @@
     },
     "plugins": [
       [
+        "expo-build-properties",
+        {
+          "android": {
+            "newArchEnabled": false
+          }
+        }
+      ],
+      [
         "expo-router",
         {
           "root": "./src/app"

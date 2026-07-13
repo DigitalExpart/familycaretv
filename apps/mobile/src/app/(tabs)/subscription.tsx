@@ -37,8 +37,8 @@ export default function SubscriptionScreen() {
         await WebBrowser.openBrowserAsync(res.url);
         refetch(); // Refetch status when browser is closed
       }
-    } catch (e) {
-      console.error('Checkout failed', e);
+    } catch (e: any) {
+      console.error('Checkout failed:', e.response?.data || e.message);
     }
   };
 

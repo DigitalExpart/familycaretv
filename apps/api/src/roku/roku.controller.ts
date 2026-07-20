@@ -21,7 +21,7 @@ export class RokuController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('link-device')
   async linkDevice(@Request() req: any, @Body() dto: LinkDeviceDto) {
-    return this.rokuService.linkDevice(req.user.userId, dto.code);
+    return this.rokuService.linkDevice(req.user.id, dto.code);
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
@@ -33,49 +33,49 @@ export class RokuController {
   @UseGuards(JwtAuthGuard)
   @Get('home')
   async getHome(@Request() req: any) {
-    return this.rokuService.getHome(req.user.userId);
+    return this.rokuService.getHome(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('updates')
   async getUpdates(@Request() req: any) {
     const since = req.query.since as string;
-    return this.rokuService.getUpdates(req.user.userId, since);
+    return this.rokuService.getUpdates(req.user.id, since);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('screensaver')
   async getScreensaver(@Request() req: any) {
-    return this.rokuService.getScreensaver(req.user.userId);
+    return this.rokuService.getScreensaver(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('subscription-status')
   async getSubscriptionStatus(@Request() req: any) {
-    return this.rokuService.getSubscriptionStatus(req.user.userId);
+    return this.rokuService.getSubscriptionStatus(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('patients')
   async getPatients(@Request() req: any) {
-    return this.rokuService.getPatients(req.user.userId);
+    return this.rokuService.getPatients(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('tasks')
   async getTasks(@Request() req: any) {
-    return this.rokuService.getTasks(req.user.userId);
+    return this.rokuService.getTasks(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('kids')
   async getKids(@Request() req: any) {
-    return this.rokuService.getKids(req.user.userId);
+    return this.rokuService.getKids(req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('pets')
   async getPets(@Request() req: any) {
-    return this.rokuService.getPets(req.user.userId);
+    return this.rokuService.getPets(req.user.id);
   }
 }

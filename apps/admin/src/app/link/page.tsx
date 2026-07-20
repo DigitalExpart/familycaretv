@@ -101,10 +101,10 @@ export default function LinkDevice() {
               <div className="relative">
                 <input 
                   type="text" 
-                  placeholder="e.g. ABCD" 
+                  placeholder="e.g. ABCDEFGH" 
                   value={code} 
                   onChange={e => setCode(e.target.value)}
-                  maxLength={6}
+                  maxLength={8}
                   required
                   className="w-full text-center tracking-[0.5em] text-2xl font-bold py-4 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none uppercase placeholder:font-normal placeholder:tracking-normal placeholder:text-base placeholder:text-slate-400"
                 />

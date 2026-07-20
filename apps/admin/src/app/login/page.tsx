@@ -26,7 +26,16 @@ export default function Login() {
       
       if (res.ok && data?.success) {
         localStorage.setItem('adminToken', data.data.accessToken);
-        router.push('/dashboard');
+        
+        // Check for redirect param
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectUrl = urlParams.get('redirect');
+        
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setErrorMsg(data?.message || 'Invalid email or password.');
       }

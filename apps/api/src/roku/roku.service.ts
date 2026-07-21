@@ -127,6 +127,7 @@ export class RokuService {
 
     return {
       pending: false,
+      token: tokens.accessToken, // Added for backward compatibility with Roku app
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     };

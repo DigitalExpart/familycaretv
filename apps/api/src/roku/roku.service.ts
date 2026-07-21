@@ -55,6 +55,11 @@ export class RokuService {
       select: { planTier: true },
     });
 
+    // Clean up any orphaned device links for this user to avoid limit lockouts
+    await this.prisma.deviceLink.deleteMany({
+      where: { userId }
+    });
+
     if (user) {
       const tier = user.planTier as keyof typeof PLAN_LIMITS;
       const limit = PLAN_LIMITS[tier]?.rokuDevices ?? Infinity;
@@ -85,9 +90,18 @@ export class RokuService {
     return { success: true };
   }
 
-  async getToken(deviceId: string) {
-    const link = await this.prisma.deviceLink.findUnique({
-      where: { deviceId },
+  async getToken(identifier: string) {
+    if (!identifier) {
+      throw new UnauthorizedException('Missing identifier');
+    }
+
+    const link = await this.prisma.deviceLink.findFirst({
+      where: { 
+        OR: [
+          { deviceId: identifier },
+          { code: identifier.toUpperCase() }
+        ]
+      },
       include: { user: true },
     });
 

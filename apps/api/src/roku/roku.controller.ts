@@ -27,7 +27,8 @@ export class RokuController {
   @Throttle({ default: { limit: 30, ttl: 60000 } })
   @Post('token')
   async getToken(@Body() dto: TokenDto) {
-    return this.rokuService.getToken(dto.deviceId);
+    const id = dto.deviceId || dto.code;
+    return this.rokuService.getToken(id);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
 import { RokuService } from './roku.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LinkDeviceDto } from './dto/link-device.dto';
@@ -29,7 +29,7 @@ export class RokuController {
   async getToken(@Body() dto: TokenDto) {
     const id = dto.deviceId || dto.code;
     if (!id) {
-      throw new import('@nestjs/common').BadRequestException('Either deviceId or code must be provided');
+      throw new BadRequestException('Either deviceId or code must be provided');
     }
     return this.rokuService.getToken(id);
   }

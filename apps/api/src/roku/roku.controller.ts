@@ -28,6 +28,9 @@ export class RokuController {
   @Post('token')
   async getToken(@Body() dto: TokenDto) {
     const id = dto.deviceId || dto.code;
+    if (!id) {
+      throw new import('@nestjs/common').BadRequestException('Either deviceId or code must be provided');
+    }
     return this.rokuService.getToken(id);
   }
 

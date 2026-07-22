@@ -1,6 +1,6 @@
 sub init()
     m.navBar = m.top.findNode("navBar")
-    m.navBar.title = tr("Nav_Kids")
+    m.navBar.title = "Kids"
     
     m.loadingLabel = m.top.findNode("loadingLabel")
     m.drawingsGrid = m.top.findNode("drawingsGrid")
@@ -37,7 +37,7 @@ sub OnDrawingsResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = tr("Kids_Empty")
+            m.loadingLabel.text = "No drawings found."
             m.loadingLabel.visible = true
             m.top.setFocus(true)
         else
@@ -46,7 +46,7 @@ sub OnDrawingsResponse(event as Object)
             m.drawingsGrid.setFocus(true)
         end if
     else
-        m.errorDialog.message = tr("Error_Network")
+        m.errorDialog.message = "Network error occurred. Please try again."
         m.errorDialog.show = true
         m.top.setFocus(true)
     end if

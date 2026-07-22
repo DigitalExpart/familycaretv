@@ -34,9 +34,33 @@ export class RokuController {
     return this.rokuService.getToken(id);
   }
 
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @Post('validate-token')
+  async validateToken(@Body() body: { token: string }) {
+    if (!body.token) {
+      throw new BadRequestException('token is required');
+    }
+    return this.rokuService.validateToken(body.token);
+  }
+
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('refresh')
+  async refreshToken(@Body() body: { refreshToken: string }) {
+    if (!body.refreshToken) {
+      throw new BadRequestException('refreshToken is required');
+    }
+    return this.rokuService.refreshToken(body.refreshToken);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('home')
   async getHome(@Request() req: any) {
+    return this.rokuService.getHome(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('dashboard')
+  async getDashboard(@Request() req: any) {
     return this.rokuService.getHome(req.user.id);
   }
 

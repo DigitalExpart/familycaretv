@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { AuthService } from '../auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PLAN_LIMITS } from '../common/config/plan-limits.config';
@@ -10,6 +11,7 @@ export class RokuService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly authService: AuthService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async generateDeviceCode() {
@@ -55,9 +57,13 @@ export class RokuService {
       select: { planTier: true },
     });
 
-    // Clean up any orphaned device links for this user to avoid limit lockouts
+    // Clean up only unlinked, expired device links for this user (not active paired devices)
     await this.prisma.deviceLink.deleteMany({
-      where: { userId }
+      where: {
+        userId,
+        linkedAt: null,
+        expiresAt: { lt: new Date() },
+      }
     });
 
     if (user) {
@@ -109,7 +115,8 @@ export class RokuService {
       throw new UnauthorizedException('Invalid deviceId');
     }
 
-    if (new Date() > link.expiresAt) {
+    if (!link.linkedAt && new Date() > link.expiresAt) {
+      // Only expire codes that haven't been linked yet
       await this.prisma.deviceLink.delete({ where: { id: link.id } });
       throw new UnauthorizedException('Code has expired');
     }
@@ -122,8 +129,12 @@ export class RokuService {
     // Linked! Generate JWT
     const tokens = await this.authService.generateTokens(link.user, 'roku');
 
-    // Clean up
-    await this.prisma.deviceLink.delete({ where: { id: link.id } });
+    // Mark the DeviceLink as token-issued but DO NOT delete it
+    // The DeviceLink row persists as the record that this device is paired
+    await this.prisma.deviceLink.update({
+      where: { id: link.id },
+      data: { tokenIssuedAt: new Date() },
+    });
 
     return {
       pending: false,
@@ -341,10 +352,65 @@ export class RokuService {
     });
   }
 
+  /**
+   * Validate a stored token on Roku startup.
+   * If the access token is still valid, return success.
+   * If not, the Roku app should try refreshing.
+   */
+  async validateToken(accessToken: string) {
+    try {
+      const payload = this.jwtService.verify(accessToken, {
+        secret: process.env.JWT_SECRET || 'replace_me',
+      });
+      // Token is valid — confirm user still exists
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+        select: { id: true, email: true, firstName: true },
+      });
+      if (!user) {
+        return { valid: false, reason: 'user_not_found' };
+      }
+      return { valid: true, userId: user.id };
+    } catch (err) {
+      if (err?.name === 'TokenExpiredError') {
+        return { valid: false, reason: 'expired' };
+      }
+      return { valid: false, reason: 'invalid' };
+    }
+  }
+
+  /**
+   * Exchange a refresh token for new access + refresh tokens.
+   */
+  async refreshToken(refreshTokenStr: string) {
+    try {
+      const payload = this.jwtService.verify(refreshTokenStr, {
+        secret: process.env.JWT_REFRESH_SECRET || 'replace_me',
+      });
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      const tokens = await this.authService.generateTokens(user, 'roku');
+      return {
+        success: true,
+        token: tokens.accessToken,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+  }
+
   @Cron(CronExpression.EVERY_HOUR)
   async handleCleanup() {
+    // Only clean up unlinked, expired device codes — never delete paired devices
     await this.prisma.deviceLink.deleteMany({
       where: {
+        linkedAt: null,
         expiresAt: {
           lt: new Date(),
         },

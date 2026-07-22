@@ -245,16 +245,17 @@ model AudioTrack {
 }
 
 model DeviceLink {
-  id         String    @id @default(uuid())
-  deviceId   String    @unique
-  code       String    @unique
-  userId     String?
-  deviceType String?
-  linkedAt   DateTime?
-  expiresAt  DateTime
-  createdAt  DateTime  @default(now())
+  id              String    @id @default(uuid())
+  deviceId        String    @unique
+  code            String    @unique
+  userId          String?
+  deviceType      String?
+  linkedAt        DateTime?
+  tokenIssuedAt   DateTime?
+  expiresAt       DateTime
+  createdAt       DateTime  @default(now())
 
-  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum NotificationType {

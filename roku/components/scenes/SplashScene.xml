@@ -24,5 +24,7 @@
             width="1920" />
             
         <Timer id="initTimer" repeat="false" duration="2.0" />
+        <ApiTask id="validateTask" />
+        <ApiTask id="refreshTask" />
     </children>
 </component>

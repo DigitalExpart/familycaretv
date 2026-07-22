@@ -23,7 +23,7 @@ sub pollLoop()
         end if
         
         ' Only poll if we have a token
-        token = GetRegistryToken()
+        token = getToken()
         if token <> ""
             sinceIso = lastSync.AsDateString("NoDayOfWeek") + "T" + lastSync.AsTimeString() + "Z" ' Approximation, standard ISO 8601 required
             
@@ -57,7 +57,7 @@ function ExecuteApiRequest(reqInfo as Object, token as String) as Object
     urlTransfer.SetCertificatesFile("common:/certs/ca-bundle.crt")
     urlTransfer.InitClientCertificates()
     
-    baseUrl = "https://api.familycaretv.com"
+    baseUrl = GetApiBaseUrl()
     url = baseUrl + reqInfo.endpoint
     
     if reqInfo.queryParams <> invalid
@@ -85,9 +85,5 @@ function ExecuteApiRequest(reqInfo as Object, token as String) as Object
 end function
 
 function GetRegistryToken() as String
-    sec = CreateObject("roRegistrySection", "Authentication")
-    if sec.Exists("AccessToken")
-        return sec.Read("AccessToken")
-    end if
-    return ""
+    return getToken()
 end function

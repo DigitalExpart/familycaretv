@@ -21,3 +21,24 @@ function clearToken()
     reg.Delete("auth_token")
     reg.Flush()
 end function
+
+function saveRefreshToken(token as String)
+    reg = GetRegistry()
+    reg.Write("refresh_token", token)
+    reg.Flush()
+end function
+
+function getRefreshToken() as String
+    reg = GetRegistry()
+    if reg.Exists("refresh_token")
+        return reg.Read("refresh_token")
+    end if
+    return ""
+end function
+
+function clearAllTokens()
+    reg = GetRegistry()
+    reg.Delete("auth_token")
+    reg.Delete("refresh_token")
+    reg.Flush()
+end function

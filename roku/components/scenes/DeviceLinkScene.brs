@@ -6,9 +6,9 @@ sub init()
     m.tokenPollTask = m.top.findNode("tokenPollTask")
     m.pollTimer = m.top.findNode("pollTimer")
     
-    m.instructionLabel.text = tr("Auth_Instruction")
-    m.expiresLabel.text = tr("Auth_Expires")
-    m.codeLabel.text = tr("Auth_Loading")
+    m.instructionLabel.text = "Go to familycare.tv/link and enter this code:"
+    m.expiresLabel.text = "Code expires in 15 minutes"
+    m.codeLabel.text = "LOADING..."
     
     m.deviceCode = ""
     
@@ -31,7 +31,7 @@ sub OnDeviceCodeResponse(event as Object)
         m.pollTimer.observeField("fire", "PollForToken")
         m.pollTimer.control = "start"
     else
-        m.codeLabel.text = tr("Auth_Error")
+        m.codeLabel.text = "ERROR. PLEASE RESTART."
     end if
 end sub
 
@@ -52,6 +52,9 @@ sub OnTokenResponse(event as Object)
     if response <> invalid and response.code = 200 and response.data <> invalid and response.data.token <> invalid
         m.pollTimer.control = "stop"
         saveToken(response.data.token)
+        if response.data.refreshToken <> invalid
+            saveRefreshToken(response.data.refreshToken)
+        end if
         m.top.navigate = "HomeScene"
     end if
 end sub

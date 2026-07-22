@@ -17,7 +17,7 @@ sub onDataReceived()
     if res <> invalid and res.statusCode = 200 and res.data <> invalid
         data = res.data
         content = CreateObject("roSGNode", "ContentNode")
-        row1 = createRow("Morning", data.morning); row2 = createRow("Daytime", data.daytime); row3 = createRow("Evening", data.evening); row4 = createRow("Completed", data.completed)
+        row1 = createRow("Morning", data.morning) : row2 = createRow("Daytime", data.daytime) : row3 = createRow("Evening", data.evening) : row4 = createRow("Completed", data.completed)
         if row1 <> invalid then content.appendChild(row1)
         if row2 <> invalid then content.appendChild(row2)
         if row3 <> invalid then content.appendChild(row3)

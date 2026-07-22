@@ -1,9 +1,9 @@
 sub init()
     m.navBar = m.top.findNode("navBar")
-    m.navBar.title = tr("Nav_Calendar")
+    m.navBar.title = "Calendar"
     
     m.loadingLabel = m.top.findNode("loadingLabel")
-    m.loadingLabel.text = tr("Loading")
+    m.loadingLabel.text = "Loading..."
     m.eventsGrid = m.top.findNode("eventsGrid")
     m.errorDialog = m.top.findNode("errorDialog")
     
@@ -33,7 +33,7 @@ sub OnEventsResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = tr("Calendar_Empty")
+            m.loadingLabel.text = "No events found."
             m.loadingLabel.visible = true
             m.top.setFocus(true)
         else
@@ -42,7 +42,7 @@ sub OnEventsResponse(event as Object)
             m.eventsGrid.setFocus(true)
         end if
     else
-        m.errorDialog.message = tr("Error_Network")
+        m.errorDialog.message = "Network error occurred. Please try again."
         m.errorDialog.show = true
         m.top.setFocus(true)
     end if

@@ -17,7 +17,7 @@ sub onDataReceived()
     if res <> invalid and res.statusCode = 200 and res.data <> invalid
         data = res.data
         content = CreateObject("roSGNode", "ContentNode")
-        row1 = createRow("Medications", data[0].medications); row2 = createRow("Vaccinations", data[0].vaccinations); row3 = createRow("Notes", data[0].notes)
+        row1 = createRow("Medications", data[0].medications) : row2 = createRow("Vaccinations", data[0].vaccinations) : row3 = createRow("Notes", data[0].notes)
         if row1 <> invalid then content.appendChild(row1)
         if row2 <> invalid then content.appendChild(row2)
         if row3 <> invalid then content.appendChild(row3)

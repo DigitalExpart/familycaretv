@@ -8,16 +8,16 @@ sub init()
     m.navGrid = m.top.findNode("navGrid")
     m.errorDialog = m.top.findNode("errorDialog")
     
-    m.topNavBar.title = tr("Home_Welcome")
+    m.topNavBar.title = "Welcome to FamilyCare TV"
     
     ' Populate Quick Nav Grid
     content = CreateObject("roSGNode", "ContentNode")
     
-    AddItem(content, tr("Nav_Patients"), "pkg:/images/icon_patients.png", "PatientsScene")
-    AddItem(content, tr("Nav_Calendar"), "pkg:/images/icon_calendar.png", "CalendarScene")
-    AddItem(content, tr("Nav_Music"), "pkg:/images/icon_music.png", "MusicScene")
-    AddItem(content, tr("Nav_Kids"), "pkg:/images/icon_kids.png", "KidsScene")
-    AddItem(content, tr("Nav_Settings"), "pkg:/images/icon_settings.png", "SettingsScene")
+    AddItem(content, "Patients", "pkg:/images/icon_patients.png", "PatientsScene")
+    AddItem(content, "Calendar", "pkg:/images/icon_calendar.png", "CalendarScene")
+    AddItem(content, "Music", "pkg:/images/icon_music.png", "MusicScene")
+    AddItem(content, "Kids", "pkg:/images/icon_kids.png", "KidsScene")
+    AddItem(content, "Settings", "pkg:/images/icon_settings.png", "SettingsScene")
     
     m.navGrid.content = content
     m.navGrid.observeField("itemSelected", "OnGridItemSelected")
@@ -47,19 +47,19 @@ sub OnDashboardResponse(event as Object)
     if response <> invalid and response.code = 200 and response.data <> invalid
         data = response.data
         
-        m.patientsLabel.text = tr("Home_PatientCount") + ": " + (data.patientCount).toStr()
-        m.eventsLabel.text = tr("Home_Events") + ": " + (data.eventsCount).toStr()
-        m.medsLabel.text = tr("Home_Meds") + ": " + (data.medsCount).toStr()
+        m.patientsLabel.text = "Patients: " + (data.patientCount).toStr()
+        m.eventsLabel.text = "Upcoming Events: " + (data.eventsCount).toStr()
+        m.medsLabel.text = "Medications: " + (data.medsCount).toStr()
         
         if data.verse <> invalid
-            m.verseLabel.text = tr("Home_Verse") + ": " + Chr(10) + data.verse.text + " - " + data.verse.reference
+            m.verseLabel.text = "Verse of the Day: " + Chr(10) + data.verse.text + " - " + data.verse.reference
         end if
         
         if data.drawingUrl <> invalid
             m.drawingPoster.uri = data.drawingUrl
         end if
     else
-        m.errorDialog.message = tr("Error_Network")
+        m.errorDialog.message = "Network error occurred. Please try again."
         m.errorDialog.show = true
     end if
 end sub

@@ -17,10 +17,10 @@ end sub
 sub OnItemFocusChange()
     if m.top.itemHasFocus
         m.scaleInterp.keyValue = [ [1.0, 1.0], [1.05, 1.05] ]
-        m.colorInterp.keyValue = [ 0x2C2C35FF, 0x4B4B6FFF ] ' Indigo Accent on focus
+        m.colorInterp.keyValue = [ "0x2C2C35FF", "0x4B4B6FFF" ] ' Indigo Accent on focus
     else
         m.scaleInterp.keyValue = [ [1.05, 1.05], [1.0, 1.0] ]
-        m.colorInterp.keyValue = [ 0x4B4B6FFF, 0x2C2C35FF ]
+        m.colorInterp.keyValue = [ "0x4B4B6FFF", "0x2C2C35FF" ]
     end if
     m.focusAnimation.control = "start"
 end sub

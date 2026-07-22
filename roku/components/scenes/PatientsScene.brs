@@ -1,9 +1,9 @@
 sub init()
     m.navBar = m.top.findNode("navBar")
-    m.navBar.title = tr("Nav_Patients")
+    m.navBar.title = "Patients"
     
     m.loadingLabel = m.top.findNode("loadingLabel")
-    m.loadingLabel.text = tr("Loading")
+    m.loadingLabel.text = "Loading..."
     m.patientsGrid = m.top.findNode("patientsGrid")
     m.errorDialog = m.top.findNode("errorDialog")
     
@@ -35,7 +35,7 @@ sub OnPatientsResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = tr("Patients_Empty")
+            m.loadingLabel.text = "No patients found."
             m.loadingLabel.visible = true
             m.top.setFocus(true)
         else
@@ -44,7 +44,7 @@ sub OnPatientsResponse(event as Object)
             m.patientsGrid.setFocus(true)
         end if
     else
-        m.errorDialog.message = tr("Error_Network")
+        m.errorDialog.message = "Network error occurred. Please try again."
         m.errorDialog.show = true
         m.top.setFocus(true)
     end if

@@ -1,6 +1,6 @@
 sub init()
     m.navBar = m.top.findNode("navBar")
-    m.navBar.title = tr("Nav_Music")
+    m.navBar.title = "Music"
     
     m.loadingLabel = m.top.findNode("loadingLabel")
     m.trackGrid = m.top.findNode("trackGrid")
@@ -42,7 +42,7 @@ sub OnMusicResponse(event as Object)
         end for
         
         if response.data.count() = 0
-            m.loadingLabel.text = tr("Music_Empty")
+            m.loadingLabel.text = "No music found."
             m.loadingLabel.visible = true
             m.top.setFocus(true)
         else
@@ -51,7 +51,7 @@ sub OnMusicResponse(event as Object)
             m.trackGrid.setFocus(true)
         end if
     else
-        m.errorDialog.message = tr("Error_Network")
+        m.errorDialog.message = "Network error occurred. Please try again."
         m.errorDialog.show = true
         m.top.setFocus(true)
     end if
@@ -84,8 +84,8 @@ sub OnAudioStateChange()
 end sub
 
 sub OnAudioPositionChange()
-    pos = m.audioPlayer.position
-    m.progressLabel.text = "Time: " + pos.toStr() + "s"
+    audioPos = m.audioPlayer.position
+    m.progressLabel.text = "Time: " + audioPos.toStr() + "s"
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean

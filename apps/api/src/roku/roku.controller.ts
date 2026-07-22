@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
 import { RokuService } from './roku.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LinkDeviceDto } from './dto/link-device.dto';
@@ -21,7 +21,7 @@ export class RokuController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('link-device')
   async linkDevice(@Request() req: any, @Body() dto: LinkDeviceDto) {
-    return this.rokuService.linkDevice(req.user.id, dto.code);
+    return this.rokuService.linkDevice(req.user.id, dto);
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
@@ -105,5 +105,23 @@ export class RokuController {
   @Get('pets')
   async getPets(@Request() req: any) {
     return this.rokuService.getPets(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('devices')
+  async getUserDevices(@Request() req: any) {
+    return this.rokuService.getUserDevices(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('devices/:id')
+  async removeDevice(@Request() req: any, @Param('id') id: string) {
+    return this.rokuService.removeDevice(req.user.id, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('admin/devices')
+  async getAllDevicesForAdmin() {
+    return this.rokuService.getAllDevicesForAdmin();
   }
 }

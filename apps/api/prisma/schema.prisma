@@ -250,6 +250,10 @@ model DeviceLink {
   code            String    @unique
   userId          String?
   deviceType      String?
+  deviceName      String?   @default("Roku TV")
+  deviceModel     String?
+  appVersion      String?
+  lastSeen        DateTime?
   linkedAt        DateTime?
   tokenIssuedAt   DateTime?
   expiresAt       DateTime

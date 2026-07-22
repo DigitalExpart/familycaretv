@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users, CheckSquare, Baby, Dog, Palette, Share2 } from 'lucide-react';
+import { LayoutDashboard, BookOpen, PenTool, Music, LogOut, Users, CheckSquare, Baby, Dog, Palette, Share2, Tv } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Users Activity', href: '/dashboard/users', icon: Users },
+    { name: 'Roku Devices', href: '/dashboard/roku-devices', icon: Tv },
     { name: 'Tasks', href: '/dashboard/tasks', icon: CheckSquare },
     { name: 'Kids', href: '/dashboard/kids', icon: Baby },
     { name: 'Pets', href: '/dashboard/pets', icon: Dog },

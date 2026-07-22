@@ -37,16 +37,17 @@ export class RokuService {
     };
   }
 
-  async linkDevice(userId: string, code: string) {
+  async linkDevice(userId: string, dto: any) {
+    const codeStr = (typeof dto === 'string' ? dto : dto.code) || '';
     const link = await this.prisma.deviceLink.findUnique({
-      where: { code: code.toUpperCase() },
+      where: { code: codeStr.toUpperCase() },
     });
 
     if (!link) {
       throw new NotFoundException('Invalid or expired linking code');
     }
 
-    if (new Date() > link.expiresAt) {
+    if (!link.linkedAt && new Date() > link.expiresAt) {
       await this.prisma.deviceLink.delete({ where: { id: link.id } });
       throw new BadRequestException('Code has expired');
     }
@@ -84,12 +85,20 @@ export class RokuService {
       }
     }
 
+    const deviceName = (typeof dto === 'object' && dto.deviceName) ? dto.deviceName : 'Roku TV';
+    const deviceModel = (typeof dto === 'object' && dto.deviceModel) ? dto.deviceModel : null;
+    const appVersion = (typeof dto === 'object' && dto.appVersion) ? dto.appVersion : null;
+
     await this.prisma.deviceLink.update({
       where: { id: link.id },
       data: { 
         userId,
         deviceType: 'roku',
+        deviceName,
+        ...(deviceModel ? { deviceModel } : {}),
+        ...(appVersion ? { appVersion } : {}),
         linkedAt: new Date(),
+        lastSeen: new Date(),
       },
     });
 
@@ -403,6 +412,81 @@ export class RokuService {
     } catch (err) {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
+  }
+
+  async getUserDevices(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { planTier: true },
+    });
+
+    const devices = await this.prisma.deviceLink.findMany({
+      where: { userId, linkedAt: { not: null } },
+      orderBy: { linkedAt: 'desc' },
+      select: {
+        id: true,
+        deviceId: true,
+        deviceName: true,
+        deviceModel: true,
+        appVersion: true,
+        linkedAt: true,
+        lastSeen: true,
+      },
+    });
+
+    const tier = (user?.planTier || 'PERSONAL') as keyof typeof PLAN_LIMITS;
+    const maxLimit = PLAN_LIMITS[tier]?.rokuDevices ?? 1;
+
+    return {
+      success: true,
+      data: {
+        devices,
+        planLimit: {
+          usedCount: devices.length,
+          maxLimit: maxLimit === Infinity ? 999 : maxLimit,
+          planTier: user?.planTier || 'PERSONAL',
+        },
+      },
+    };
+  }
+
+  async removeDevice(userId: string, deviceLinkId: string) {
+    const device = await this.prisma.deviceLink.findFirst({
+      where: { id: deviceLinkId, userId },
+    });
+
+    if (!device) {
+      throw new NotFoundException('Device not found or not owned by user');
+    }
+
+    await this.prisma.deviceLink.delete({
+      where: { id: device.id },
+    });
+
+    return { success: true, message: 'Device unlinked successfully' };
+  }
+
+  async getAllDevicesForAdmin() {
+    const devices = await this.prisma.deviceLink.findMany({
+      where: { linkedAt: { not: null } },
+      orderBy: { linkedAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            planTier: true,
+          },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      data: devices,
+    };
   }
 
   @Cron(CronExpression.EVERY_HOUR)

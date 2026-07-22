@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView
 import { useSubscriptionStatus, useCheckoutSession, usePaypalCheckoutSession } from '../../features/subscription/subscription-api';
 import * as WebBrowser from 'expo-web-browser';
 import { GradientHeader } from '../../components/ui/GradientHeader';
-import { Check, Star } from 'lucide-react-native';
+import { Check, Star, ShieldCheck } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 import { Colors } from '../../constants/theme';
@@ -51,8 +51,28 @@ export default function SubscriptionScreen() {
   }
 
   const { status, planTier, trialEndsAt, currentPeriodEnd } = data || { status: 'inactive', planTier: 'FREE_TRIAL', trialEndsAt: null, currentPeriodEnd: null };
+  const isAdmin = planTier === 'ADMIN';
   const isFamily = planTier === 'FAMILY';
   const isPersonal = planTier === 'PERSONAL';
+
+  if (isAdmin) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <GradientHeader title={t('subscription.title')} />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={[styles.activeCard, { borderColor: '#10B981', backgroundColor: isDark ? '#064E3B40' : '#ECFDF5' }]}>
+            <View style={styles.activeHeader}>
+              <ShieldCheck color="#10B981" size={32} />
+              <Text style={[styles.activeTitle, { color: '#065F46', fontSize: 20 }]}>Platform Administrator</Text>
+            </View>
+            <Text style={[styles.activeText, { color: '#047857', fontSize: 14, lineHeight: 22, marginTop: 8 }]}>
+              You are logged in as a Platform Administrator. Your account has permanent, unlimited access to all FamilyCare TV features, companion Roku devices, AI lookups, patients, kids, pets, tasks, notes, and CMS management tools.
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
 
   const renderActive = () => {
     return (

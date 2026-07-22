@@ -269,9 +269,11 @@ export default function ConnectRokuScreen() {
         {/* Section 4: Connected Devices & Plan Limits */}
         <View style={styles.sectionHeaderRow}>
           <Text style={[styles.sectionTitleNoMargin, { color: theme.text }]}>🖥️ Connected Devices</Text>
-          <View style={[styles.limitPill, { backgroundColor: theme.primary + '20' }]}>
-            <Text style={[styles.limitPillText, { color: theme.primary }]}>
-              {planLimit.usedCount} / {planLimit.maxLimit} Roku Devices
+          <View style={[styles.limitPill, { backgroundColor: planLimit.planTier === 'ADMIN' ? '#10B98120' : theme.primary + '20' }]}>
+            <Text style={[styles.limitPillText, { color: planLimit.planTier === 'ADMIN' ? '#10B981' : theme.primary }]}>
+              {planLimit.planTier === 'ADMIN' 
+                ? 'Platform Administrator • Unlimited Access' 
+                : `${planLimit.usedCount} / ${planLimit.maxLimit} Roku Devices`}
             </Text>
           </View>
         </View>

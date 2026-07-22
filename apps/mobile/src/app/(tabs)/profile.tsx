@@ -77,7 +77,13 @@ export default function ProfileScreen() {
             </Text>
             <View style={styles.planBadge}>
               <Text style={styles.planBadgeText}>
-                {user?.planTier === 'FAMILY' ? t('profile.familyPlanBadge', 'FAMILY PLAN') : (user?.planTier === 'PERSONAL' ? 'PERSONAL PLAN' : 'FREE PLAN')}
+                {user?.role === 'ADMIN' || (user as any)?.planTier === 'ADMIN' 
+                  ? 'PLATFORM ADMINISTRATOR • UNLIMITED ACCESS' 
+                  : user?.planTier === 'FAMILY' 
+                  ? t('profile.familyPlanBadge', 'FAMILY PLAN') 
+                  : user?.planTier === 'PERSONAL' 
+                  ? 'PERSONAL PLAN' 
+                  : 'FREE PLAN'}
               </Text>
             </View>
           </View>

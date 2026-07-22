@@ -92,6 +92,20 @@ export default function ProfileScreen() {
         <Text style={[styles.sectionTitle, { color: theme.text }]}>{t('settings.title')}</Text>
         
         <PremiumCard noPadding>
+          <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/(tabs)/connect-roku')}>
+            <View style={styles.settingIconContainer}>
+              <Tv color="#E50914" size={24} />
+            </View>
+            <View style={styles.settingTextContainer}>
+              <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.connectRoku', 'Connect Roku TV')}</Text>
+              <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
+                {t('profile.connectRokuDesc', 'Pair and manage your Roku TV Companion')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
           <TouchableOpacity style={styles.settingRow} onPress={toggleLanguage}>
             <View style={styles.settingIconContainer}>
               <Globe color={theme.primary} size={24} />
@@ -178,20 +192,6 @@ export default function ProfileScreen() {
               <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.referrals', 'Referrals & Commission')}</Text>
               <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
                 {t('profile.referralsDesc', 'Share your code and view stats')}
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
-          <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/(tabs)/connect-roku')}>
-            <View style={styles.settingIconContainer}>
-              <Tv color="#E50914" size={24} />
-            </View>
-            <View style={styles.settingTextContainer}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>{t('profile.connectRoku', '📺 Connect Roku TV')}</Text>
-              <Text style={[styles.settingValue, { color: theme.textSecondary }]}>
-                {t('profile.connectRokuDesc', 'Pair and manage your Roku TV Companion')}
               </Text>
             </View>
           </TouchableOpacity>

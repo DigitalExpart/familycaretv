@@ -52,10 +52,10 @@ export class RokuService {
       throw new BadRequestException('Code has expired');
     }
 
-    // Enforce Roku device limit per plan tier
+    // Enforce Roku device limit per plan tier (skipped for Platform Admins)
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { planTier: true },
+      select: { planTier: true, role: true },
     });
 
     // Clean up only unlinked, expired device links for this user (not active paired devices)
@@ -67,7 +67,7 @@ export class RokuService {
       }
     });
 
-    if (user) {
+    if (user && user.role !== 'ADMIN') {
       const tier = user.planTier as keyof typeof PLAN_LIMITS;
       const limit = PLAN_LIMITS[tier]?.rokuDevices ?? Infinity;
 
@@ -417,7 +417,7 @@ export class RokuService {
   async getUserDevices(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { planTier: true },
+      select: { planTier: true, role: true },
     });
 
     const devices = await this.prisma.deviceLink.findMany({
@@ -433,6 +433,20 @@ export class RokuService {
         lastSeen: true,
       },
     });
+
+    if (user?.role === 'ADMIN') {
+      return {
+        success: true,
+        data: {
+          devices,
+          planLimit: {
+            usedCount: devices.length,
+            maxLimit: 999,
+            planTier: 'ADMIN',
+          },
+        },
+      };
+    }
 
     const tier = (user?.planTier || 'PERSONAL') as keyof typeof PLAN_LIMITS;
     const maxLimit = PLAN_LIMITS[tier]?.rokuDevices ?? 1;

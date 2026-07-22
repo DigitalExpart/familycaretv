@@ -40,6 +40,9 @@ export class ResourceLimitGuard implements CanActivate {
     const user = request.user;
     if (!user) return true; // Let JwtAuthGuard handle
 
+    // Admin accounts have unlimited access and bypass all resource limits
+    if (user.role === 'ADMIN') return true;
+
     const resourceType = this.reflector.get<ResourceKey>(
       RESOURCE_TYPE_KEY,
       context.getHandler(),

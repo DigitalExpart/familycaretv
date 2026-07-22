@@ -36,6 +36,7 @@ export class SubscriptionsService {
       where: { id: userId },
       select: {
         planTier: true,
+        role: true,
         subscriptionStatus: true,
         trialEndsAt: true,
         currentPeriodEnd: true,
@@ -43,6 +44,21 @@ export class SubscriptionsService {
       },
     });
     if (!user) return null;
+
+    if (user.role === 'ADMIN') {
+      const counts = await this.getResourceCounts(userId);
+      return {
+        planTier: 'ADMIN',
+        subscriptionStatus: 'active',
+        active: true,
+        trial: false,
+        trialActive: false,
+        trialEndsAt: null,
+        renewal: null,
+        limits: getSerializableLimits('FAMILY'),
+        usage: counts,
+      };
+    }
 
     const tier = user.planTier as PlanTierKey;
     const limits = getSerializableLimits(tier);
@@ -148,9 +164,11 @@ export class SubscriptionsService {
   async checkResourceLimit(userId: string, resource: ResourceKey) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { planTier: true },
+      select: { planTier: true, role: true },
     });
     if (!user) return { allowed: false, message: 'User not found', limit: 0, current: 0 };
+
+    if (user.role === 'ADMIN') return { allowed: true };
 
     const tier = user.planTier as PlanTierKey;
     const limit = PLAN_LIMITS[tier][resource];
@@ -180,9 +198,19 @@ export class SubscriptionsService {
   async getAiUsage(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { planTier: true, timezone: true },
+      select: { planTier: true, role: true, timezone: true },
     });
     if (!user) return null;
+
+    if (user.role === 'ADMIN') {
+      return {
+        used: 0,
+        limit: -1,
+        remaining: -1,
+        unlimited: true,
+        resetIn: null,
+      };
+    }
 
     const tier = user.planTier as PlanTierKey;
     const limit = PLAN_LIMITS[tier].aiLookupsPerDay;
@@ -229,9 +257,11 @@ export class SubscriptionsService {
   async checkAiLimit(userId: string): Promise<{ allowed: boolean; message?: string }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { planTier: true, subscriptionStatus: true, trialEndsAt: true, createdAt: true },
+      select: { planTier: true, role: true, subscriptionStatus: true, trialEndsAt: true, createdAt: true },
     });
     if (!user) return { allowed: false, message: 'User not found.' };
+
+    if (user.role === 'ADMIN') return { allowed: true };
 
     const tier = user.planTier as PlanTierKey;
 

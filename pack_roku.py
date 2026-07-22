@@ -10,19 +10,23 @@ def clean_manifest():
         f.write(content)
 
 def zipdir(path, ziph):
+    valid_dirs = {'components', 'source', 'images', 'locale', 'fonts'}
+    valid_files = {'manifest'}
+    
     for root, dirs, files in os.walk(path):
+        rel_root = os.path.relpath(root, path).replace('\\', '/')
+        top_folder = rel_root.split('/')[0] if rel_root != '.' else '.'
+        
         for file in files:
-            # exclude the zip itself or py files
-            if file.endswith(".zip") or file.endswith(".py"):
-                continue
-            # avoid hidden files
-            if file.startswith("."):
-                continue
+            if rel_root == '.':
+                if file not in valid_files:
+                    continue
+            else:
+                if top_folder not in valid_dirs:
+                    continue
             
             full_path = os.path.join(root, file)
-            arcname = os.path.relpath(full_path, path)
-            # Ensure forward slashes for Roku
-            arcname = arcname.replace('\\', '/')
+            arcname = os.path.relpath(full_path, path).replace('\\', '/')
             ziph.write(full_path, arcname)
 
 if __name__ == '__main__':

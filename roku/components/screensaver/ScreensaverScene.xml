@@ -2,35 +2,35 @@
 <component name="ScreensaverScene" extends="Scene">
     <script type="text/brightscript" uri="pkg:/components/screensaver/ScreensaverScene.brs" />
     <children>
-        <Rectangle id="bg" width="1920" height="1080" color="0x000000" />
+        <Rectangle id="bg" width="1920" height="1080" color="0x000000FF" />
         
         <!-- Background element (optional bouncing verse if needed, but we'll use a static/animated Center for now) -->
         
         <!-- Top Right: Current Time & Date -->
         <Group id="dateTimeGroup" translation="[1400, 50]">
-            <Label id="clockText" translation="[0, 0]" font="font:LargeBoldSystemFont" color="0xFFFFFF" horizAlign="right" width="450" />
-            <Label id="dateText" translation="[0, 60]" font="font:MediumSystemFont" color="0xCCCCCC" horizAlign="right" width="450" />
+            <Label id="clockText" translation="[0, 0]" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" horizAlign="right" width="450" />
+            <Label id="dateText" translation="[0, 60]" font="font:MediumSystemFont" color="0xCCCCCCFF" horizAlign="right" width="450" />
         </Group>
 
         <!-- Center: Verse of the Day -->
         <Group id="verseGroup" translation="[360, 400]">
-            <Label id="verseText" width="1200" font="font:LargeBoldSystemFont" color="0xFFFFFF" wrap="true" horizAlign="center" />
-            <Label id="verseRef" width="1200" font="font:MediumSystemFont" color="0xAAAAAA" translation="[0, 150]" horizAlign="center" />
+            <Label id="verseText" width="1200" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" wrap="true" horizAlign="center" />
+            <Label id="verseRef" width="1200" font="font:MediumSystemFont" color="0xAAAAAAFF" translation="[0, 150]" horizAlign="center" />
         </Group>
         
         <!-- Bottom Left: Featured Book Cover -->
         <Group id="bookGroup" translation="[100, 600]">
             <Poster id="bookCover" width="200" height="300" loadDisplayMode="scaleToFit" />
-            <Label id="bookTitle" width="200" font="font:SmallBoldSystemFont" color="0xFFFFFF" translation="[0, 310]" wrap="true" />
-            <Label id="bookAuthor" width="200" font="font:SmallSystemFont" color="0xCCCCCC" translation="[0, 340]" wrap="true" />
+            <Label id="bookTitle" width="200" font="font:SmallBoldSystemFont" color="0xFFFFFFFF" translation="[0, 310]" wrap="true" />
+            <Label id="bookAuthor" width="200" font="font:SmallSystemFont" color="0xCCCCCCFF" translation="[0, 340]" wrap="true" />
         </Group>
 
         <!-- Bottom Right: QR Code -->
         <Group id="qrGroup" translation="[1550, 650]">
-            <Rectangle width="220" height="220" color="0xFFFFFF" translation="[0,0]">
+            <Rectangle width="220" height="220" color="0xFFFFFFFF" translation="[0,0]">
                 <Poster id="qrCode" width="200" height="200" translation="[10, 10]" loadDisplayMode="scaleToFit" />
             </Rectangle>
-            <Label font="font:SmallSystemFont" color="0xFFFFFF" text="Scan to link TV" translation="[0, 230]" width="220" horizAlign="center" />
+            <Label font="font:SmallSystemFont" color="0xFFFFFFFF" text="Scan to link TV" translation="[0, 230]" width="220" horizAlign="center" />
         </Group>
 
         <!-- Bottom: Live reminder ticker -->

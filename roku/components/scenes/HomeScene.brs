@@ -17,7 +17,7 @@ sub init()
     AddItem(content, "Calendar", "pkg:/images/icon_calendar.png", "CalendarScene")
     AddItem(content, "Music", "pkg:/images/icon_music.png", "MusicScene")
     AddItem(content, "Kids", "pkg:/images/icon_kids.png", "KidsScene")
-    AddItem(content, "Settings", "pkg:/images/icon_settings.png", "SettingsScene")
+    AddItem(content, "Settings", "pkg:/images/icon_settings.png", "SettingsScreen")
     
     m.navGrid.content = content
     m.navGrid.observeField("itemSelected", "OnGridItemSelected")

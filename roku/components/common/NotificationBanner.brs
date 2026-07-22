@@ -16,13 +16,13 @@ sub showBanner()
         m.messageLabel.text = notif.message
         
         ' Set Priority Color based on Notification Type
-        colorStr = "0x00FF00" ' Default Green
+        colorStr = "0x00FF00FF" ' Default Green
         if notif.type = "EMERGENCY"
-            colorStr = "0xFF0000" ' Red
+            colorStr = "0xFF0000FF" ' Red
         else if notif.type = "MEDICATION" or notif.type = "MEDICATION_REMINDER"
-            colorStr = "0xFFA500" ' Orange
+            colorStr = "0xFFA500FF" ' Orange
         else if notif.type = "APPOINTMENT" or notif.type = "APPOINTMENT_REMINDER"
-            colorStr = "0x0000FF" ' Blue
+            colorStr = "0x0000FFFF" ' Blue
         end if
         
         m.priorityBar.color = colorStr

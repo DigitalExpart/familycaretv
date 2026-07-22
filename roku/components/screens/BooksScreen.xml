@@ -3,26 +3,26 @@
     <script type="text/brightscript" uri="pkg:/components/screens/BooksScreen.brs" />
     
     <children>
-        <Rectangle id="bg" width="1920" height="1080" color="0x121212" />
+        <Rectangle id="bg" width="1920" height="1080" color="0x121212FF" />
         
         <!-- Hero Section: Book of the Day -->
         <Group id="heroSection" translation="[100, 50]" visible="false">
-            <Label text="Book of the Day" font="font:MediumSystemFont" color="0xAAAAAA" translation="[0, 0]" />
+            <Label text="Book of the Day" font="font:MediumSystemFont" color="0xAAAAAAFF" translation="[0, 0]" />
             <Poster id="heroCover" width="300" height="450" translation="[0, 40]" loadDisplayMode="scaleToFit" />
             
-            <Label id="heroTitle" font="font:LargeBoldSystemFont" color="0xFFFFFF" translation="[350, 40]" width="800" wrap="true" />
-            <Label id="heroAuthor" font="font:MediumSystemFont" color="0xCCCCCC" translation="[350, 100]" width="800" />
-            <Label id="heroDesc" font="font:SmallSystemFont" color="0x999999" translation="[350, 160]" width="800" wrap="true" numLines="5" />
+            <Label id="heroTitle" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" translation="[350, 40]" width="800" wrap="true" />
+            <Label id="heroAuthor" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[350, 100]" width="800" />
+            <Label id="heroDesc" font="font:SmallSystemFont" color="0x999999FF" translation="[350, 160]" width="800" wrap="true" numLines="5" />
             
             <!-- QR Code Box -->
-            <Rectangle width="200" height="240" translation="[350, 260]" color="0x222222">
+            <Rectangle width="200" height="240" translation="[350, 260]" color="0x222222FF">
                 <Poster id="heroQR" width="180" height="180" translation="[10, 10]" uri="pkg:/images/fallback_qr.png" />
-                <Label text="Scan to View" font="font:SmallSystemFont" color="0xFFFFFF" translation="[0, 200]" width="200" horizAlign="center" />
+                <Label text="Scan to View" font="font:SmallSystemFont" color="0xFFFFFFFF" translation="[0, 200]" width="200" horizAlign="center" />
             </Rectangle>
         </Group>
 
         <!-- Other Book Rows -->
-        <RowList id="bookList" translation="[100, 560]" itemComponentName="PremiumCard" numRows="2" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFF" />
+        <RowList id="bookList" translation="[100, 560]" itemComponentName="PremiumCard" numRows="2" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFFFF" />
         
         <ApiTask id="fetchTask" />
     </children>

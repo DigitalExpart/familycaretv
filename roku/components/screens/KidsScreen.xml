@@ -2,9 +2,9 @@
 <component name="KidsScreen" extends="Group">
     <script type="text/brightscript" uri="pkg:/components/screens/KidsScreen.brs" />
     <children>
-        <Rectangle id="bg" width="1920" height="1080" color="0x121212" />
-        <Label id="titleText" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0xFFFFFF" text="Kids" />
-        <RowList id="dataList" translation="[100, 150]" itemComponentName="PremiumCard" numRows="3" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFF" />
+        <Rectangle id="bg" width="1920" height="1080" color="0x121212FF" />
+        <Label id="titleText" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" text="Kids" />
+        <RowList id="dataList" translation="[100, 150]" itemComponentName="PremiumCard" numRows="3" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFFFF" />
         <ApiTask id="fetchTask" />
     </children>
 </component>

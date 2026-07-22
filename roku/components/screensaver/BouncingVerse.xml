@@ -13,6 +13,6 @@
             <Vector2DFieldInterpolator id="kbTranslation" key="[0, 0.5, 1]" keyValue="[[-140, -60], [0, 0], [-140, -60]]" fieldToInterp="bgArt.translation" />
         </Animation>
 
-        <Label id="verseText" width="1000" wrap="true" translation="[460, 400]" font="font:LargeBoldSystemFont" color="0xFFFFFF" />
+        <Label id="verseText" width="1000" wrap="true" translation="[460, 400]" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" />
     </children>
 </component>

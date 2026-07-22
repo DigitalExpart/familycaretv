@@ -1,12 +1,15 @@
 sub init()
+    print "=== [ROKU STARTUP] MainScene.init() Started ==="
     m.screenContainer = m.top.findNode("screenContainer")
     m.screenStack = []
     
     ' Start with the Splash Screen
     NavigateTo("SplashScene")
+    print "=== [ROKU STARTUP] MainScene.init() Finished ==="
 end sub
 
 sub NavigateTo(screenName as String)
+    print "=== [ROKU STARTUP] NavigateTo('"; screenName; "') ==="
     if m.currentScreen <> invalid
         m.currentScreen.visible = false
         ' Don't push SplashScene or DeviceLinkScene to the back stack
@@ -21,12 +24,16 @@ sub NavigateTo(screenName as String)
     end if
     
     newScreen = CreateObject("roSGNode", screenName)
-    m.screenContainer.appendChild(newScreen)
-    m.currentScreen = newScreen
-    m.currentScreen.visible = true
-    m.currentScreen.setFocus(true)
-    
-    m.currentScreen.observeField("navigate", "OnNavigateRequest")
+    if newScreen <> invalid
+        m.screenContainer.appendChild(newScreen)
+        m.currentScreen = newScreen
+        m.currentScreen.visible = true
+        m.currentScreen.setFocus(true)
+        m.currentScreen.observeField("navigate", "OnNavigateRequest")
+        print "=== [ROKU STARTUP] Successfully rendered screen: "; screenName; " ==="
+    else
+        print "=== [ROKU STARTUP ERROR] Failed to CreateObject for screen: "; screenName; " ==="
+    end if
 end sub
 
 sub OnNavigateRequest(event as Object)

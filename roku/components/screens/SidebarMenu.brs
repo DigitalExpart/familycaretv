@@ -27,8 +27,7 @@ end sub
 sub onItemSelected()
     selectedItem = m.menuList.content.getChild(m.menuList.itemSelected)
     if selectedItem <> invalid
-        ' Send an event up to MainScene to handle navigation
-        m.top.getScene().nextScreen = selectedItem.description
+        m.top.navigate = selectedItem.description
     end if
 end sub
 

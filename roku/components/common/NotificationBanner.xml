@@ -7,10 +7,10 @@
     </interface>
     
     <children>
-        <Rectangle id="backgroundRect" width="500" height="120" color="0x333333" itemSpacings="[10,10]">
-            <Label id="titleLabel" translation="[20, 20]" width="460" font="font:MediumBoldSystemFont" color="0xFFFFFF" />
-            <Label id="messageLabel" translation="[20, 60]" width="460" wrap="true" font="font:SmallSystemFont" color="0xCCCCCC" />
-            <Rectangle id="priorityBar" width="10" height="120" translation="[0, 0]" color="0x00FF00" />
+        <Rectangle id="backgroundRect" width="500" height="120" color="0x333333FF">
+            <Label id="titleLabel" translation="[20, 20]" width="460" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+            <Label id="messageLabel" translation="[20, 60]" width="460" wrap="true" font="font:SmallSystemFont" color="0xCCCCCCFF" />
+            <Rectangle id="priorityBar" width="10" height="120" translation="[0, 0]" color="0x00FF00FF" />
         </Rectangle>
         
         <Animation id="slideIn" duration="0.5" easeFunction="linear">

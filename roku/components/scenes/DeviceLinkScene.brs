@@ -6,7 +6,7 @@ sub init()
     m.tokenPollTask = m.top.findNode("tokenPollTask")
     m.pollTimer = m.top.findNode("pollTimer")
     
-    m.instructionLabel.text = "Go to familycare.tv/link and enter this code:"
+    m.instructionLabel.text = "Open Mobile App -> Profile -> Connect Roku TV and enter code:"
     m.expiresLabel.text = "Code expires in 15 minutes"
     m.codeLabel.text = "LOADING..."
     

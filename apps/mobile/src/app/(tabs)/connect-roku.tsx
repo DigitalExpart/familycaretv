@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -46,6 +46,7 @@ export default function ConnectRokuScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
   const theme = isDark ? Colors.dark : Colors.light;
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const [code, setCode] = useState('');
   const [deviceName, setDeviceName] = useState('Living Room TV');
@@ -160,7 +161,7 @@ export default function ConnectRokuScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <GradientHeader title="Connect Roku TV" showBack />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollContent}>
         {/* Header Hero */}
         <View style={styles.heroSection}>
           <View style={[styles.iconBadge, { backgroundColor: theme.primary + '18' }]}>
@@ -212,10 +213,14 @@ export default function ConnectRokuScreen() {
 
           <TouchableOpacity
             style={[styles.webLinkBtn, { borderColor: theme.border }]}
-            onPress={() => Linking.openURL('https://familycare.tv/link')}
+            onPress={() => {
+              if (scrollViewRef.current) {
+                scrollViewRef.current.scrollTo({ y: 380, animated: true });
+              }
+            }}
           >
             <ExternalLink size={16} color={theme.primary} />
-            <Text style={[styles.webLinkBtnText, { color: theme.primary }]}>Open FamilyCare TV Link Page</Text>
+            <Text style={[styles.webLinkBtnText, { color: theme.primary }]}>Enter Pairing Code Below</Text>
           </TouchableOpacity>
         </PremiumCard>
 

@@ -10,16 +10,17 @@ sub showChannelSGScreen()
     screen.setMessagePort(m.port)
     print "=== [ROKU STARTUP] Screen Created ==="
     
-    print "=== [ROKU STARTUP] Creating MainScene ==="
     scene = screen.CreateScene("MainScene")
     if scene <> invalid
-        print "=== [ROKU STARTUP] Scene Created & Loaded ==="
+        print "=== [ROKU STARTUP] Scene Created ==="
+        print "=== [ROKU STARTUP] Scene Loaded ==="
     else
         print "=== [ROKU STARTUP ERROR] CreateScene('MainScene') returned INVALID! ==="
     end if
 
     print "=== [ROKU STARTUP] Screen Shown ==="
     screen.show()
+    print "=== [ROKU STARTUP] First Render ==="
     
     while(true)
         msg = wait(0, m.port)

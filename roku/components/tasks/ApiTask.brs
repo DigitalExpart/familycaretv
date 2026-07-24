@@ -16,10 +16,8 @@ sub executeRequest()
 
     ' Set 30-second timeout to avoid hanging forever
     http.EnableEncodings(true)
-    http.SetHeaders({
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    })
+    http.AddHeader("Content-Type", "application/json")
+    http.AddHeader("Accept", "application/json")
 
     token = getToken()
     if token <> "" and token <> invalid
@@ -28,6 +26,9 @@ sub executeRequest()
 
     result = {}
     responseStr = ""
+
+    timer = CreateObject("roTimespan")
+    timer.Mark()
 
     if req.method = "POST"
         http.SetRequest("POST")
@@ -43,10 +44,16 @@ sub executeRequest()
 
     ' Wait up to 30 seconds for a response
     event = wait(30000, http.GetMessagePort())
+    elapsedMs = timer.TotalMilliseconds()
     
+    contentType = "application/json"
     if type(event) = "roUrlEvent"
         responseCode = event.GetResponseCode()
         responseStr = event.GetString()
+        headers = event.GetResponseHeaders()
+        if headers <> invalid and headers["content-type"] <> invalid
+            contentType = headers["content-type"]
+        end if
     else if event = invalid
         ' Timeout occurred
         http.AsyncCancel()
@@ -64,6 +71,9 @@ sub executeRequest()
 
     result.code = responseCode
     result.success = (responseCode >= 200 and responseCode < 300)
+    result.rawResponse = responseStr
+    result.responseTimeMs = elapsedMs
+    result.contentType = contentType
 
     if responseCode < 0
         result.data = invalid

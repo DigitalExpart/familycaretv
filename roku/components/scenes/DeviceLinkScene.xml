@@ -4,6 +4,7 @@
         <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/DeviceLinkScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Config.brs" />
     <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
     <children>
         <Label id="instructionLabel" 

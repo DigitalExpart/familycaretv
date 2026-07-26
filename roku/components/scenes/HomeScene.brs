@@ -47,15 +47,37 @@ sub OnDashboardResponse(event as Object)
     if response <> invalid and response.code = 200 and response.data <> invalid
         data = response.data
         
-        m.patientsLabel.text = "Patients: " + (data.patientCount).toStr()
-        m.eventsLabel.text = "Upcoming Events: " + (data.eventsCount).toStr()
-        m.medsLabel.text = "Medications: " + (data.medsCount).toStr()
+        pCount = 0
+        if data.patientCount <> invalid
+            pCount = data.patientCount
+        else if data.patients <> invalid
+            pCount = data.patients.count()
+        end if
+        m.patientsLabel.text = "Patients: " + pCount.toStr()
+
+        eCount = 0
+        if data.eventsCount <> invalid
+            eCount = data.eventsCount
+        else if data.reminders <> invalid
+            eCount = data.reminders.count()
+        end if
+        m.eventsLabel.text = "Upcoming Events: " + eCount.toStr()
+
+        mCount = 0
+        if data.medsCount <> invalid
+            mCount = data.medsCount
+        end if
+        m.medsLabel.text = "Medications: " + mCount.toStr()
         
         if data.verse <> invalid
             m.verseLabel.text = "Verse of the Day: " + Chr(10) + data.verse.text + " - " + data.verse.reference
+        else if data.verseOfTheDay <> invalid and data.verseOfTheDay.verse <> invalid
+            m.verseLabel.text = "Verse of the Day: " + Chr(10) + data.verseOfTheDay.verse + " - " + data.verseOfTheDay.reference
+        else
+            m.verseLabel.text = "Verse of the Day: " + Chr(10) + "For God so loved the world that he gave his one and only Son." + " - John 3:16"
         end if
         
-        if data.drawingUrl <> invalid
+        if data.drawingUrl <> invalid and data.drawingUrl <> ""
             m.drawingPoster.uri = data.drawingUrl
         end if
     else

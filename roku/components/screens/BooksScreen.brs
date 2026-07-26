@@ -24,7 +24,7 @@ end sub
 
 sub onDataReceived()
     res = m.fetchTask.response
-    if res <> invalid and res.statusCode = 200 and res.data <> invalid
+    if res <> invalid and res.code = 200 and res.data <> invalid
         books = res.data
         if type(books) = "roArray" and books.count() > 0
             ' 1. Hero Section (Book of the Day)

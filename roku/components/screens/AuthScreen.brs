@@ -15,7 +15,7 @@ end sub
 
 sub onAuthResponse()
     res = m.authTask.response
-    if res <> invalid and res.statusCode = 201 and res.data <> invalid
+    if res <> invalid and res.code = 201 and res.data <> invalid
         m.codeLabel.text = res.data.code
         ' In a real scenario, we would start a timer to poll for token using this deviceId
     end if

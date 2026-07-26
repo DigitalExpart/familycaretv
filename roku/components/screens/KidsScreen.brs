@@ -14,7 +14,7 @@ end sub
 
 sub onDataReceived()
     res = m.fetchTask.response
-    if res <> invalid and res.statusCode = 200 and res.data <> invalid
+    if res <> invalid and res.code = 200 and res.data <> invalid
         data = res.data
         content = CreateObject("roSGNode", "ContentNode")
         row1 = createRow("Homework & Tasks", data[0].tasks) : row2 = createRow("School Events", data[0].events) : row3 = createRow("Notes", data[0].notes)

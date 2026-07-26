@@ -30,7 +30,7 @@ end sub
 
 sub onDashboardDataReceived()
     res = m.fetchDashboardTask.response
-    if res <> invalid and res.statusCode = 200 and res.data <> invalid
+    if res <> invalid and res.code = 200 and res.data <> invalid
         data = res.data
         
         if data.user <> invalid

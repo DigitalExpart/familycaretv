@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="BibleVerseScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/BibleVerseScene.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+        <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+        <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        <!-- Full verse display card -->
+        <Rectangle width="1200" height="400" color="0xFFFFFFFF" translation="[360, 280]" />
+        <Rectangle width="1200" height="4" color="0x00A89DFF" translation="[360, 280]" />
+        <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[400, 300]" />
+        <Label id="verseFullText" font="font:LargeSystemFont" color="0x1A1A2EFF"
+            translation="[400, 360]" width="1120" wrap="true" maxLines="6"
+            text="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life." />
+        <Label id="verseFullRef" text="- John 3:16" font="font:MediumSystemFont" color="0x8E8EA0FF" translation="[400, 620]" />
+        <Label text="Press BACK to return home." font="font:SmallSystemFont" color="0xB0B0BEFF" translation="[400, 700]" />
+    </children>
+</component>

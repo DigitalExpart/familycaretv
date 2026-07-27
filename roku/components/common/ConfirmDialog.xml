@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="ConfirmDialog" extends="Group">
+    <interface>
+        <field id="title" type="string" value="Confirm Action" onChange="OnTextChange" />
+        <field id="message" type="string" value="Are you sure you want to proceed?" onChange="OnTextChange" />
+        <field id="confirmText" type="string" value="Yes, Delete" onChange="OnTextChange" />
+        <field id="cancelText" type="string" value="Cancel" onChange="OnTextChange" />
+        <field id="confirmed" type="boolean" value="false" alwaysNotify="true" />
+        <field id="cancelled" type="boolean" value="false" alwaysNotify="true" />
+        <field id="show" type="boolean" value="false" onChange="OnShowChange" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/ConfirmDialog.brs" />
+    <children>
+        <!-- Overlay backdrop -->
+        <Rectangle width="1920" height="1080" color="0x00000066" />
+
+        <!-- Dialog Card -->
+        <Group translation="[560, 360]">
+            <Rectangle width="806" height="346" color="0x00000010" translation="[3, 3]" />
+            <Rectangle width="800" height="340" color="0xFFFFFFFF" />
+            <Rectangle width="800" height="5" color="0xFF5252FF" />
+
+            <Label id="titleLabel" text="Confirm Delete"
+                font="font:LargeBoldSystemFont" color="0x1A1A2EFF"
+                translation="[40, 30]" />
+
+            <Label id="messageLabel" text="Are you sure?"
+                font="font:MediumSystemFont" color="0x4A4A68FF"
+                translation="[40, 85]" width="720" wrap="true" maxLines="3" />
+
+            <!-- Buttons Row -->
+            <Group id="btnGroup" translation="[40, 240]">
+                <!-- Confirm Button (Red) -->
+                <Group id="confirmBtn" translation="[0, 0]">
+                    <Rectangle id="confirmFocusBorder" width="344" height="64" color="0xFF5252FF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="confirmBg" width="340" height="60" color="0xFF5252FF" />
+                    <Label id="confirmLabel" text="Yes, Delete"
+                        font="font:MediumBoldSystemFont" color="0xFFFFFFFF"
+                        horizAlign="center" width="340" translation="[0, 15]" />
+                </Group>
+
+                <!-- Cancel Button (Gray) -->
+                <Group id="cancelBtn" translation="[380, 0]">
+                    <Rectangle id="cancelFocusBorder" width="344" height="64" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="cancelBg" width="340" height="60" color="0xE0E3E8FF" />
+                    <Label id="cancelLabel" text="Cancel"
+                        font="font:MediumBoldSystemFont" color="0x1A1A2EFF"
+                        horizAlign="center" width="340" translation="[0, 15]" />
+                </Group>
+            </Group>
+        </Group>
+    </children>
+</component>

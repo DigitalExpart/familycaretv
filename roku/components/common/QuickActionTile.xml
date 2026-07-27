@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="QuickActionTile" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="OnItemContentChange" />
+        <field id="itemHasFocus" type="boolean" value="false" onChange="OnItemFocusChange" />
+        <field id="width" type="float" value="415" />
+        <field id="height" type="float" value="175" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/QuickActionTile.brs" />
+    <children>
+        <!-- Focus glow (behind everything, shown on focus) -->
+        <Rectangle id="focusGlow" width="419" height="179" color="0x00A89D50"
+            translation="[-2, -2]" visible="false" />
+
+        <!-- Card shadow -->
+        <Rectangle id="shadow" width="409" height="169" color="0x0000000D"
+            translation="[6, 6]" />
+
+        <!-- Card background -->
+        <Rectangle id="cardBg" width="405" height="165" color="0xFFFFFFFF"
+            translation="[4, 4]" />
+
+        <!-- Left accent bar -->
+        <Rectangle id="accentBar" width="5" height="165" color="0x00A89DFF"
+            translation="[4, 4]" />
+
+        <!-- Icon (centered horizontally) -->
+        <Poster id="icon" width="48" height="48"
+            translation="[183, 16]"
+            loadDisplayMode="scaleToFit" />
+
+        <!-- Title (centered) -->
+        <Label id="titleLabel"
+            font="font:MediumBoldSystemFont"
+            color="0x1A1A2EFF"
+            horizAlign="center"
+            translation="[0, 74]"
+            width="415" />
+
+        <!-- Subtitle (centered) -->
+        <Label id="descLabel"
+            font="font:SmallSystemFont"
+            color="0x8E8EA0FF"
+            horizAlign="center"
+            translation="[0, 112]"
+            width="415" />
+
+        <!-- Focus scale animation -->
+        <Animation id="focusInAnim" duration="0.15" repeat="false" easeFunction="outCubic">
+            <Vector2DFieldInterpolator id="scaleUpInterp"
+                key="[0.0, 1.0]"
+                keyValue="[ [1.0, 1.0], [1.05, 1.05] ]"
+                fieldToInterp="cardBg.scale" />
+        </Animation>
+
+        <Animation id="focusOutAnim" duration="0.15" repeat="false" easeFunction="outCubic">
+            <Vector2DFieldInterpolator id="scaleDownInterp"
+                key="[0.0, 1.0]"
+                keyValue="[ [1.05, 1.05], [1.0, 1.0] ]"
+                fieldToInterp="cardBg.scale" />
+        </Animation>
+    </children>
+</component>

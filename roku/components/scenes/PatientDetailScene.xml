@@ -1,19 +1,106 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="PatientDetailScene" extends="Group">
     <interface>
-        <field id="patientData" type="assocarray" alwaysNotify="true" />
+        <field id="patientData" type="assocarray" alwaysNotify="true" onChange="OnPatientDataChange" />
         <field id="closeRequest" type="boolean" value="false" alwaysNotify="true" />
+        <field id="patientUpdated" type="boolean" value="false" alwaysNotify="true" />
+        <field id="patientDeleted" type="boolean" value="false" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/PatientDetailScene.brs" />
-    
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
-        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
-        <TopNavBar id="navBar" title="Patient Detail" />
-        
-        <Label id="nameLabel" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" translation="[100, 200]" />
-        <Label id="dobLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 280]" />
-        <Label id="doctorsLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 360]" />
-        <Label id="medsLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 440]" />
-        <Label id="notesLabel" font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 520]" wrap="true" width="1000" />
+        <!-- Light warm gray background -->
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Patient Detail" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        </Group>
+
+        <!-- Main Card Container -->
+        <Group translation="[360, 140]">
+            <Rectangle width="1206" height="846" color="0x0000000A" translation="[3, 3]" />
+            <Rectangle width="1200" height="840" color="0xFFFFFFFF" />
+            <Rectangle width="1200" height="5" color="0x00A89DFF" />
+
+            <!-- Avatar & Header -->
+            <Poster id="avatarIcon" width="100" height="100" translation="[60, 40]"
+                loadDisplayMode="scaleToFit" uri="pkg:/images/icon_patients.png" />
+
+            <Label id="nameLabel" text="Patient Name"
+                font="font:LargeBoldSystemFont" color="0x1A1A2EFF"
+                translation="[180, 45]" />
+
+            <Label id="dobLabel" text="DOB: —"
+                font="font:MediumSystemFont" color="0x4A4A68FF"
+                translation="[180, 95]" />
+
+            <!-- Action Buttons Bar (Edit, Delete, Back) -->
+            <Group id="actionsRow" translation="[180, 150]">
+                <!-- Edit Button -->
+                <Group id="editBtn" translation="[0, 0]">
+                    <Rectangle id="editFocusBorder" width="224" height="54" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="editBg" width="220" height="50" color="0x00A89DFF" />
+                    <Label text="✎ Edit Patient" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
+                </Group>
+
+                <!-- Delete Button -->
+                <Group id="deleteBtn" translation="[240, 0]">
+                    <Rectangle id="deleteFocusBorder" width="224" height="54" color="0xFF5252FF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="deleteBg" width="220" height="50" color="0xFF5252FF" />
+                    <Label text="🗑 Delete" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
+                </Group>
+
+                <!-- Back Button -->
+                <Group id="backBtn" translation="[480, 0]">
+                    <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="backBg" width="220" height="50" color="0xE0E3E8FF" />
+                    <Label text="← Back" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" horizAlign="center" width="220" translation="[0, 12]" />
+                </Group>
+            </Group>
+
+            <!-- Divider line -->
+            <Rectangle width="1080" height="2" color="0xE0E3E8FF" translation="[60, 230]" />
+
+            <!-- Summary Stat Cards -->
+            <Group translation="[60, 260]">
+                <Rectangle width="330" height="110" color="0xF5F7FAFF" translation="[0, 0]" />
+                <Rectangle width="5" height="110" color="0x00A89DFF" translation="[0, 0]" />
+                <Label id="doctorsLabel" text="Doctors: 0" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[20, 35]" />
+
+                <Rectangle width="330" height="110" color="0xF5F7FAFF" translation="[360, 0]" />
+                <Rectangle width="5" height="110" color="0xFFA726FF" translation="[360, 0]" />
+                <Label id="medsLabel" text="Medications: 0" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[380, 35]" />
+
+                <Rectangle width="330" height="110" color="0xF5F7FAFF" translation="[720, 0]" />
+                <Rectangle width="5" height="110" color="0x7E57C2FF" translation="[720, 0]" />
+                <Label id="notesCountLabel" text="Notes: 0" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[740, 35]" />
+            </Group>
+
+            <!-- Medical Notes & Instructions Section -->
+            <Group translation="[60, 410]">
+                <Label text="Medical Notes &amp; Care Instructions" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[0, 0]" />
+                <Rectangle width="1080" height="340" color="0xF5F7FAFF" translation="[0, 35]" />
+                <Label id="notesTextLabel" text="No medical notes recorded."
+                    font="font:MediumSystemFont" color="0x1A1A2EFF"
+                    translation="[20, 55]" width="1040" wrap="true" maxLines="10" />
+            </Group>
+        </Group>
+
+        <!-- Delete Confirmation Dialog -->
+        <ConfirmDialog id="confirmDeleteDialog" title="Delete Patient" message="Are you sure you want to delete this patient record? This action cannot be undone." confirmText="Yes, Delete" cancelText="Cancel" />
+
+        <!-- Services -->
+        <ApiTask id="deleteTask" />
+        <ErrorDialog id="errorDialog" />
+
+        <Group id="loadingOverlay" visible="false">
+            <Rectangle width="1920" height="1080" color="0x00000044" />
+            <LoadingSpinner translation="[930, 480]" />
+        </Group>
     </children>
 </component>

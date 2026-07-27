@@ -18,9 +18,14 @@ sub NavigateTo(screenName as String)
         end if
     end if
     
-    ' Clear stack if navigating to HomeScene (it's the root)
-    if screenName = "HomeScene" or screenName = "DeviceLinkScene"
+    ' Clear stack if navigating to HomeScene / HomeSceneV2 (it's the root)
+    if screenName = "HomeScene" or screenName = "HomeSceneV2" or screenName = "DeviceLinkScene"
         m.screenStack.clear()
+    end if
+    
+    ' Map legacy HomeScene to HomeSceneV2
+    if screenName = "HomeScene"
+        screenName = "HomeSceneV2"
     end if
     
     newScreen = CreateObject("roSGNode", screenName)

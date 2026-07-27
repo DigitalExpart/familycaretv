@@ -5,24 +5,60 @@
         <field id="patientData" type="assocarray" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/PatientsScene.brs" />
-    
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
-        <TopNavBar id="navBar" title="Patients" />
-        
-        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
-        
+        <!-- Light warm gray background -->
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Top Header Bar -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Patients Directory" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+
+            <!-- [+] Add Patient Button (top right) -->
+            <Group id="addBtnGroup" translation="[1580, 18]">
+                <Rectangle id="addBtnFocusBorder" width="284" height="54" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
+                <Rectangle id="addBtnBg" width="280" height="50" color="0x00A89DFF" />
+                <Label text="✚ Add Patient" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="280" translation="[0, 12]" />
+            </Group>
+        </Group>
+
         <!-- Patients Grid -->
         <MarkupGrid id="patientsGrid"
-            translation="[100, 200]"
-            itemComponentName="PremiumCard"
-            itemSize="[320, 220]"
+            translation="[80, 140]"
+            itemComponentName="QuickActionTile"
+            itemSize="[415, 175]"
             itemSpacing="[20, 20]"
-            numColumns="5"
-            numRows="3"
+            numColumns="4"
+            numRows="5"
             drawFocusFeedback="false"
             visible="false" />
-            
+
+        <!-- Empty State Container -->
+        <Group id="emptyState" visible="false" translation="[560, 360]">
+            <Rectangle width="800" height="260" color="0xFFFFFFFF" />
+            <Rectangle width="800" height="4" color="0x00A89DFF" />
+            <Label text="No Patients Found" font="font:LargeBoldSystemFont" color="0x1A1A2EFF" translation="[40, 40]" />
+            <Label text="There are currently no patient profiles in your account." font="font:MediumSystemFont" color="0x4A4A68FF" translation="[40, 95]" />
+            <Label text="Click the [+ Add Patient] button above to create a new profile." font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[40, 150]" />
+        </Group>
+
+        <!-- Footer -->
+        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
+        <Label text="Back Return  |  OK View/Edit Patient  |  ▲ Up to Add Patient Button"
+            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+
+        <!-- Services -->
         <ApiTask id="patientsTask" />
         <ErrorDialog id="errorDialog" />
+
+        <!-- Loading Overlay -->
+        <Group id="loadingOverlay" visible="true">
+            <LoadingSpinner translation="[930, 480]" />
+            <Label text="Loading patients..." font="font:MediumSystemFont" color="0x4A4A68FF" horizAlign="center" width="1920" translation="[0, 560]" />
+        </Group>
     </children>
 </component>

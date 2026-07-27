@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="HomeSceneV2" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/HomeSceneV2.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+    <children>
+        <!-- ═══ PAGE BACKGROUND (light warm gray) ═══ -->
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- ═══ HEADER BAR ═══ -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+            <!-- Logo -->
+            <Label id="logoText" text="FamilyCare TV"
+                font="font:LargeBoldSystemFont" color="0x00A89DFF"
+                translation="[60, 20]" />
+            <Label text="Health  ·  Wellness  ·  Family"
+                font="font:SmallSystemFont" color="0x8E8EA0FF"
+                translation="[60, 56]" />
+            <!-- Clock and Date (right side) -->
+            <Label id="headerClock"
+                font="font:MediumBoldSystemFont" color="0x1A1A2EFF"
+                horizAlign="right" width="280"
+                translation="[1380, 18]" />
+            <Label id="headerDate"
+                font="font:SmallSystemFont" color="0x8E8EA0FF"
+                horizAlign="right" width="280"
+                translation="[1380, 50]" />
+            <!-- Language Toggle -->
+            <Group id="langGroup" translation="[1720, 22]">
+                <Rectangle width="80" height="44" color="0xE0F7F5FF" />
+                <Label id="langLabel" text="EN"
+                    font="font:SmallBoldSystemFont" color="0x00A89DFF"
+                    translation="[24, 10]" />
+            </Group>
+        </Group>
+
+        <!-- ═══ WELCOME GREETING ═══ -->
+        <Label id="welcomeLabel" text="Good Afternoon"
+            font="font:LargeBoldSystemFont" color="0x1A1A2EFF"
+            translation="[80, 100]" />
+
+        <!-- ═══ DASHBOARD STAT CARDS ═══ -->
+        <Group id="statsRow" translation="[0, 148]">
+            <!-- Card 1: Patients (teal accent) -->
+            <Group translation="[80, 0]">
+                <Rectangle width="423" height="93" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="420" height="90" color="0xFFFFFFFF" />
+                <Rectangle width="5" height="90" color="0x00A89DFF" />
+                <Label id="stat1Value" text="—"
+                    font="font:LargeBoldSystemFont" color="0x00A89DFF"
+                    translation="[24, 10]" />
+                <Label id="stat1Label" text="Patients"
+                    font="font:SmallSystemFont" color="0x4A4A68FF"
+                    translation="[24, 55]" />
+            </Group>
+            <!-- Card 2: Today's Meds (orange accent) -->
+            <Group translation="[525, 0]">
+                <Rectangle width="423" height="93" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="420" height="90" color="0xFFFFFFFF" />
+                <Rectangle width="5" height="90" color="0xFFA726FF" />
+                <Label id="stat2Value" text="—"
+                    font="font:LargeBoldSystemFont" color="0xFFA726FF"
+                    translation="[24, 10]" />
+                <Label id="stat2Label" text="Today's Meds"
+                    font="font:SmallSystemFont" color="0x4A4A68FF"
+                    translation="[24, 55]" />
+            </Group>
+            <!-- Card 3: Appointments (blue accent) -->
+            <Group translation="[970, 0]">
+                <Rectangle width="423" height="93" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="420" height="90" color="0xFFFFFFFF" />
+                <Rectangle width="5" height="90" color="0x42A5F5FF" />
+                <Label id="stat3Value" text="—"
+                    font="font:LargeBoldSystemFont" color="0x42A5F5FF"
+                    translation="[24, 10]" />
+                <Label id="stat3Label" text="Appointments"
+                    font="font:SmallSystemFont" color="0x4A4A68FF"
+                    translation="[24, 55]" />
+            </Group>
+            <!-- Card 4: Pending Tasks (purple accent) -->
+            <Group translation="[1415, 0]">
+                <Rectangle width="423" height="93" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="420" height="90" color="0xFFFFFFFF" />
+                <Rectangle width="5" height="90" color="0x7E57C2FF" />
+                <Label id="stat4Value" text="—"
+                    font="font:LargeBoldSystemFont" color="0x7E57C2FF"
+                    translation="[24, 10]" />
+                <Label id="stat4Label" text="Pending Tasks"
+                    font="font:SmallSystemFont" color="0x4A4A68FF"
+                    translation="[24, 55]" />
+            </Group>
+        </Group>
+
+        <!-- ═══ VERSE OF THE DAY CARD ═══ -->
+        <Group id="verseCardGroup" translation="[80, 260]">
+            <!-- Focus border (behind card, visible on focus) -->
+            <Rectangle id="verseFocusBorder" width="828" height="208"
+                color="0x00A89DFF" translation="[-4, -4]" visible="false" />
+            <!-- Shadow -->
+            <Rectangle width="824" height="204" color="0x0000000A" translation="[3, 3]" />
+            <!-- Card background -->
+            <Rectangle id="verseCardBg" width="820" height="200" color="0xFFFFFFFF" />
+            <!-- Top accent line -->
+            <Rectangle width="820" height="3" color="0x00A89DFF" />
+            <!-- Section title -->
+            <Label text="Verse of the Day"
+                font="font:SmallBoldSystemFont" color="0x00A89DFF"
+                translation="[24, 12]" />
+            <!-- Verse text -->
+            <Label id="verseText"
+                font="font:MediumSystemFont" color="0x1A1A2EFF"
+                translation="[24, 42]" width="770" wrap="true" maxLines="4" />
+            <!-- Reference -->
+            <Label id="verseRef"
+                font="font:SmallSystemFont" color="0x8E8EA0FF"
+                translation="[24, 170]" />
+        </Group>
+
+        <!-- ═══ DRAWING OF THE DAY CARD ═══ -->
+        <Group id="drawingCardGroup" translation="[930, 260]">
+            <!-- Focus border -->
+            <Rectangle id="drawingFocusBorder" width="908" height="208"
+                color="0xFF6B6BFF" translation="[-4, -4]" visible="false" />
+            <!-- Shadow -->
+            <Rectangle width="904" height="204" color="0x0000000A" translation="[3, 3]" />
+            <!-- Card background -->
+            <Rectangle id="drawingCardBg" width="900" height="200" color="0xFFFFFFFF" />
+            <!-- Top accent line -->
+            <Rectangle width="900" height="3" color="0xFF6B6BFF" />
+            <!-- Section title -->
+            <Label text="Drawing of the Day"
+                font="font:SmallBoldSystemFont" color="0xFF6B6BFF"
+                translation="[24, 12]" />
+            <!-- Drawing image -->
+            <Poster id="drawingPoster" width="230" height="155"
+                translation="[24, 38]" loadDisplayMode="scaleToFit" />
+            <!-- Thought of the day text -->
+            <Label id="drawingThought"
+                font="font:SmallSystemFont" color="0x4A4A68FF"
+                translation="[274, 42]" width="380" wrap="true" maxLines="5" />
+            <!-- QR Code overlay (bottom-right of drawing card) -->
+            <Group id="qrGroup" translation="[750, 45]">
+                <Rectangle width="100" height="100" color="0xF0F0F0FF" />
+                <Poster id="qrPoster" width="90" height="90"
+                    translation="[5, 5]" loadDisplayMode="scaleToFit"
+                    uri="pkg:/images/fallback_qr.png" />
+                <Label text="Scan"
+                    font="font:SmallSystemFont" color="0x8E8EA0FF"
+                    translation="[0, 105]" width="100" horizAlign="center" />
+            </Group>
+        </Group>
+
+        <!-- ═══ QUICK ACTIONS SECTION ═══ -->
+        <Label text="Quick Actions"
+            font="font:MediumBoldSystemFont" color="0x1A1A2EFF"
+            translation="[80, 482]" />
+
+        <MarkupGrid id="quickActionsGrid"
+            translation="[80, 520]"
+            itemComponentName="QuickActionTile"
+            itemSize="[415, 175]"
+            itemSpacing="[20, 15]"
+            numColumns="4"
+            numRows="2"
+            drawFocusFeedback="false" />
+
+        <!-- ═══ FOOTER BAR ═══ -->
+        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
+        <Label text="Back  |  OK Select  |  * Options"
+            font="font:SmallSystemFont" color="0x8E8EA0FF"
+            translation="[80, 1050]" />
+        <Label id="footerStatus" text="Connected"
+            font="font:SmallSystemFont" color="0x66BB6AFF"
+            horizAlign="right" width="300"
+            translation="[1540, 1050]" />
+
+        <!-- ═══ SERVICES (unchanged API task) ═══ -->
+        <ApiTask id="dashboardTask" />
+        <Timer id="clockTimer" duration="30" repeat="true" />
+        <ErrorDialog id="errorDialog" />
+
+        <!-- ═══ LOADING OVERLAY ═══ -->
+        <Group id="loadingOverlay" visible="true">
+            <Rectangle width="1920" height="1080" color="0xF2F4F7EE" />
+            <LoadingSpinner id="spinner" translation="[930, 450]" />
+            <Label text="Loading your dashboard..."
+                font="font:MediumSystemFont" color="0x4A4A68FF"
+                horizAlign="center" width="1920"
+                translation="[0, 530]" />
+        </Group>
+    </children>
+</component>

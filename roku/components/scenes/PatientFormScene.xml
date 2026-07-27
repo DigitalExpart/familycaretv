@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PatientFormScene" extends="Group">
+    <interface>
+        <!-- If editing, pass existing patient assocarray -->
+        <field id="patientData" type="assocarray" onChange="OnPatientDataChange" />
+        <field id="closeRequest" type="boolean" value="false" alwaysNotify="true" />
+        <field id="saved" type="boolean" value="false" alwaysNotify="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/PatientFormScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
+    <children>
+        <!-- Light warm gray background -->
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label id="formTitle" text="Add New Patient" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        </Group>
+
+        <!-- Form Card Container -->
+        <Group translation="[460, 140]">
+            <Rectangle width="1006" height="846" color="0x0000000A" translation="[3, 3]" />
+            <Rectangle width="1000" height="840" color="0xFFFFFFFF" />
+            <Rectangle width="1000" height="5" color="0x00A89DFF" />
+
+            <Label id="formSubtitle" text="Enter patient information below using the TV remote keyboard."
+                font="font:MediumSystemFont" color="0x4A4A68FF"
+                translation="[50, 30]" />
+
+            <!-- Input Fields -->
+            <Group translation="[150, 90]">
+                <!-- Field 1: Full Name -->
+                <FormInputField id="nameField" label="Full Name *" placeholder="e.g. Maria Rodriguez" translation="[0, 0]" />
+
+                <!-- Field 2: Date of Birth -->
+                <FormInputField id="dobField" label="Date of Birth (YYYY-MM-DD)" placeholder="e.g. 1954-08-15" translation="[0, 110]" />
+
+                <!-- Field 3: Gender -->
+                <FormInputField id="genderField" label="Gender" placeholder="e.g. Female, Male" translation="[0, 220]" />
+
+                <!-- Field 4: Notes -->
+                <FormInputField id="notesField" label="Medical Notes / Care Instructions" placeholder="e.g. Requires wheelchair assistance, prefers Spanish" translation="[0, 330]" />
+            </Group>
+
+            <!-- Buttons Row -->
+            <Group id="buttonsGroup" translation="[150, 680]">
+                <!-- Save Button -->
+                <Group id="saveBtnGroup" translation="[0, 0]">
+                    <Rectangle id="saveFocusBorder" width="344" height="64" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="saveBg" width="340" height="60" color="0x00A89DFF" />
+                    <Label id="saveLabel" text="Save Patient"
+                        font="font:MediumBoldSystemFont" color="0xFFFFFFFF"
+                        horizAlign="center" width="340" translation="[0, 15]" />
+                </Group>
+
+                <!-- Cancel Button -->
+                <Group id="cancelBtnGroup" translation="[360, 0]">
+                    <Rectangle id="cancelFocusBorder" width="344" height="64" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="cancelBg" width="340" height="60" color="0xE0E3E8FF" />
+                    <Label id="cancelLabel" text="Cancel"
+                        font="font:MediumBoldSystemFont" color="0x1A1A2EFF"
+                        horizAlign="center" width="340" translation="[0, 15]" />
+                </Group>
+            </Group>
+        </Group>
+
+        <!-- Services -->
+        <ApiTask id="saveTask" />
+        <ErrorDialog id="errorDialog" />
+
+        <!-- Keyboard Dialog container -->
+        <KeyboardDialog id="keyboardDialog" visible="false" />
+
+        <!-- Loading Overlay -->
+        <Group id="loadingOverlay" visible="false">
+            <Rectangle width="1920" height="1080" color="0x00000044" />
+            <LoadingSpinner translation="[930, 480]" />
+            <Label text="Saving patient data..." font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="1920" translation="[0, 560]" />
+        </Group>
+    </children>
+</component>

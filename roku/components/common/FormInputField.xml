@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="FormInputField" extends="Group">
+    <interface>
+        <field id="label" type="string" value="Field" onChange="OnDataChange" />
+        <field id="value" type="string" value="" onChange="OnDataChange" />
+        <field id="placeholder" type="string" value="Enter value..." onChange="OnDataChange" />
+        <field id="width" type="float" value="700" />
+        <field id="height" type="float" value="90" />
+        <field id="isFocused" type="boolean" value="false" onChange="OnFocusChange" />
+        <field id="clicked" type="boolean" value="false" alwaysNotify="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/FormInputField.brs" />
+    <children>
+        <!-- Field Label -->
+        <Label id="fieldLabel" text="Field Name"
+            font="font:SmallBoldSystemFont" color="0x4A4A68FF"
+            translation="[0, 0]" />
+
+        <!-- Input Box Container -->
+        <Group translation="[0, 28]">
+            <Rectangle id="focusGlow" width="704" height="60" color="0x00A89D50" translation="[-2, -2]" visible="false" />
+            <Rectangle id="boxBg" width="700" height="56" color="0xF5F7FAFF" />
+            <Rectangle id="borderLine" width="700" height="2" color="0xE0E3E8FF" translation="[0, 54]" />
+
+            <!-- Value / Placeholder Text -->
+            <Label id="valueLabel" text="Enter value..."
+                font="font:MediumSystemFont" color="0x8E8EA0FF"
+                translation="[16, 12]" width="668" />
+        </Group>
+    </children>
+</component>

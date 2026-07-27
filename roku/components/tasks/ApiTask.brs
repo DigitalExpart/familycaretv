@@ -30,8 +30,13 @@ sub executeRequest()
     timer = CreateObject("roTimespan")
     timer.Mark()
 
-    if req.method = "POST"
-        http.SetRequest("POST")
+    method = "GET"
+    if req.method <> invalid and req.method <> ""
+        method = UCase(req.method)
+    end if
+
+    if method = "POST" or method = "PUT" or method = "PATCH" or method = "DELETE"
+        http.SetRequest(method)
         if req.body <> invalid
             bodyString = FormatJson(req.body)
             http.AsyncPostFromString(bodyString)
@@ -39,6 +44,7 @@ sub executeRequest()
             http.AsyncPostFromString("")
         end if
     else
+        http.SetRequest("GET")
         http.AsyncGetToString()
     end if
 

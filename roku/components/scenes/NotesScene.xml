@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="NotesScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/NotesScene.brs" />
+    <children>
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+        <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+        <Label text="Notes" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        <Rectangle width="800" height="200" color="0xFFFFFFFF" translation="[560, 380]" />
+        <Rectangle width="800" height="4" color="0x008F86FF" translation="[560, 380]" />
+        <Label text="Notes" font="font:LargeBoldSystemFont" color="0x1A1A2EFF" translation="[600, 400]" />
+        <Label text="Personal notes management coming in the next update." font="font:MediumSystemFont" color="0x8E8EA0FF" translation="[600, 460]" width="700" wrap="true" />
+        <Label text="Press BACK to return home." font="font:SmallSystemFont" color="0xB0B0BEFF" translation="[600, 520]" />
+    </children>
+</component>

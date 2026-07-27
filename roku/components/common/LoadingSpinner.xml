@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="LoadingSpinner" extends="Group">
+    <script type="text/brightscript" uri="pkg:/components/common/LoadingSpinner.brs" />
+    <children>
+        <!-- Three animated dots for a cascading loading effect -->
+        <Label id="dot1" text="●" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[0, 0]" />
+        <Label id="dot2" text="●" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[35, 0]" />
+        <Label id="dot3" text="●" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[70, 0]" />
+
+        <Animation id="dot1Anim" duration="1.2" repeat="true" easeFunction="linear">
+            <FloatFieldInterpolator key="[0, 0.33, 0.66, 1.0]"
+                keyValue="[1.0, 0.3, 0.3, 1.0]"
+                fieldToInterp="dot1.opacity" />
+        </Animation>
+
+        <Animation id="dot2Anim" duration="1.2" repeat="true" easeFunction="linear">
+            <FloatFieldInterpolator key="[0, 0.33, 0.66, 1.0]"
+                keyValue="[0.3, 1.0, 0.3, 0.3]"
+                fieldToInterp="dot2.opacity" />
+        </Animation>
+
+        <Animation id="dot3Anim" duration="1.2" repeat="true" easeFunction="linear">
+            <FloatFieldInterpolator key="[0, 0.33, 0.66, 1.0]"
+                keyValue="[0.3, 0.3, 1.0, 0.3]"
+                fieldToInterp="dot3.opacity" />
+        </Animation>
+    </children>
+</component>

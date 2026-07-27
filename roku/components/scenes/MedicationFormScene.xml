@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MedicationFormScene" extends="Group">
+    <interface>
+        <field id="medicationData" type="assocarray" onChange="OnMedDataChange" />
+        <field id="closeRequest" type="boolean" value="false" alwaysNotify="true" />
+        <field id="saved" type="boolean" value="false" alwaysNotify="true" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/MedicationFormScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
+    <children>
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0xFFA726FF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label id="formTitle" text="Add Medication" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        </Group>
+
+        <!-- Form Card Container -->
+        <Group translation="[460, 140]">
+            <Rectangle width="1006" height="846" color="0x0000000A" translation="[3, 3]" />
+            <Rectangle width="1000" height="840" color="0xFFFFFFFF" />
+            <Rectangle width="1000" height="5" color="0xFFA726FF" />
+
+            <Label id="formSubtitle" text="Enter medication details using the remote control."
+                font="font:MediumSystemFont" color="0x4A4A68FF"
+                translation="[50, 30]" />
+
+            <!-- Input Fields -->
+            <Group translation="[150, 90]">
+                <FormInputField id="nameField" label="Medication Name *" placeholder="e.g. Lisinopril, Metformin" translation="[0, 0]" />
+                <FormInputField id="dosageField" label="Dosage" placeholder="e.g. 10mg, 500mg" translation="[0, 110]" />
+                <FormInputField id="frequencyField" label="Frequency / Schedule" placeholder="e.g. Once daily in morning" translation="[0, 220]" />
+                <FormInputField id="purposeField" label="Purpose / Reason" placeholder="e.g. Blood pressure management" translation="[0, 330]" />
+            </Group>
+
+            <!-- Buttons Row -->
+            <Group id="buttonsGroup" translation="[150, 680]">
+                <Group id="saveBtnGroup" translation="[0, 0]">
+                    <Rectangle id="saveFocusBorder" width="344" height="64" color="0xFFA726FF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="saveBg" width="340" height="60" color="0xFFA726FF" />
+                    <Label id="saveLabel" text="Save Medication"
+                        font="font:MediumBoldSystemFont" color="0xFFFFFFFF"
+                        horizAlign="center" width="340" translation="[0, 15]" />
+                </Group>
+
+                <Group id="cancelBtnGroup" translation="[360, 0]">
+                    <Rectangle id="cancelFocusBorder" width="344" height="64" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="cancelBg" width="340" height="60" color="0xE0E3E8FF" />
+                    <Label id="cancelLabel" text="Cancel"
+                        font="font:MediumBoldSystemFont" color="0x1A1A2EFF"
+                        horizAlign="center" width="340" translation="[0, 15]" />
+                </Group>
+            </Group>
+        </Group>
+
+        <!-- Services -->
+        <ApiTask id="saveTask" />
+        <ErrorDialog id="errorDialog" />
+
+        <KeyboardDialog id="keyboardDialog" visible="false" />
+
+        <Group id="loadingOverlay" visible="false">
+            <Rectangle width="1920" height="1080" color="0x00000044" />
+            <LoadingSpinner translation="[930, 480]" />
+            <Label text="Saving medication..." font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="1920" translation="[0, 560]" />
+        </Group>
+    </children>
+</component>

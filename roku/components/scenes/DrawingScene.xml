@@ -4,32 +4,59 @@
         <field id="navigate" type="string" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/DrawingScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
         <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
-        <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
-        <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
-        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-        <Label text="Drawing of the Day" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
-        <!-- Large centered drawing display -->
-        <Rectangle width="1200" height="700" color="0xFFFFFFFF" translation="[360, 130]" />
-        <Rectangle width="1200" height="4" color="0xFF6B6BFF" translation="[360, 130]" />
-        <Poster id="drawingFullImage" width="800" height="500"
-            translation="[560, 170]" loadDisplayMode="scaleToFit" />
-        <Label id="drawingTitle" text="Drawing of the Day"
-            font="font:MediumBoldSystemFont" color="0xFF6B6BFF"
-            translation="[560, 690]" />
-        <Label id="drawingDesc" text="Explore creativity with today's featured drawing."
-            font="font:MediumSystemFont" color="0x4A4A68FF"
-            translation="[560, 730]" width="800" wrap="true" />
-        <!-- QR Code (bottom-right) -->
-        <Group translation="[1400, 690]">
-            <Rectangle width="120" height="120" color="0xF0F0F0FF" />
-            <Poster id="drawingQR" width="110" height="110" translation="[5, 5]"
-                loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
-            <Label text="Scan to buy" font="font:SmallSystemFont" color="0x8E8EA0FF"
-                translation="[0, 125]" width="120" horizAlign="center" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0xFF6B6BFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Drawing of the Day &amp; Activity Gallery" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
         </Group>
-        <Label text="Press BACK to return home." font="font:SmallSystemFont"
-            color="0xB0B0BEFF" translation="[560, 800]" />
+
+        <!-- Main Display Container -->
+        <Group translation="[260, 120]">
+            <Rectangle width="1406" height="886" color="0x0000000A" translation="[3, 3]" />
+            <Rectangle width="1400" height="880" color="0xFFFFFFFF" />
+            <Rectangle width="1400" height="5" color="0xFF6B6BFF" />
+
+            <!-- Large Centered Drawing Image -->
+            <Poster id="drawingImage" width="900" height="580"
+                translation="[250, 30]" loadDisplayMode="scaleToFit" />
+
+            <!-- QR Code Overlay Box (bottom-right of card) -->
+            <Group id="qrOverlay" translation="[1160, 680]">
+                <Rectangle width="210" height="170" color="0xF5F7FAEE" />
+                <Poster id="qrPoster" width="120" height="120" translation="[45, 10]"
+                    loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
+                <Label text="Scan to Buy Book" font="font:SmallBoldSystemFont" color="0x00A89DFF"
+                    translation="[0, 138]" width="210" horizAlign="center" />
+            </Group>
+
+            <!-- Thought of the Day Text Box (below image) -->
+            <Group translation="[60, 630]">
+                <Label text="Thought of the Day" font="font:MediumBoldSystemFont" color="0xFF6B6BFF" translation="[0, 0]" />
+                <Label id="thoughtText"
+                    font="font:MediumSystemFont" color="0x1A1A2EFF"
+                    translation="[0, 35]" width="1050" wrap="true" maxLines="6"
+                    text="&quot;Art enables us to find ourselves and lose ourselves at the same time.&quot; Enjoy today's artwork created with love for the family." />
+            </Group>
+        </Group>
+
+        <!-- Footer -->
+        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
+        <Label text="Back Return to Dashboard  |  Scan QR code with smartphone to order custom coloring books"
+            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+
+        <!-- Services -->
+        <ApiTask id="drawingTask" />
+        <ErrorDialog id="errorDialog" />
+
+        <Group id="loadingOverlay" visible="true">
+            <LoadingSpinner translation="[930, 480]" />
+        </Group>
     </children>
 </component>

@@ -4,20 +4,69 @@
         <field id="navigate" type="string" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/BibleVerseScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
         <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
-        <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
-        <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
-        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-        <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
-        <!-- Full verse display card -->
-        <Rectangle width="1200" height="400" color="0xFFFFFFFF" translation="[360, 280]" />
-        <Rectangle width="1200" height="4" color="0x00A89DFF" translation="[360, 280]" />
-        <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[400, 300]" />
-        <Label id="verseFullText" font="font:LargeSystemFont" color="0x1A1A2EFF"
-            translation="[400, 360]" width="1120" wrap="true" maxLines="6"
-            text="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life." />
-        <Label id="verseFullRef" text="- John 3:16" font="font:MediumSystemFont" color="0x8E8EA0FF" translation="[400, 620]" />
-        <Label text="Press BACK to return home." font="font:SmallSystemFont" color="0xB0B0BEFF" translation="[400, 700]" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+
+            <!-- Language Toggle Button (EN / ES) -->
+            <Group id="langToggleBtn" translation="[1680, 18]">
+                <Rectangle id="langFocusBorder" width="164" height="54" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
+                <Rectangle id="langBg" width="160" height="50" color="0xE0F7F5FF" />
+                <Label id="langToggleText" text="EN / ES" font="font:MediumBoldSystemFont" color="0x00A89DFF" horizAlign="center" width="160" translation="[0, 12]" />
+            </Group>
+        </Group>
+
+        <!-- Main Card Container -->
+        <Group translation="[360, 140]">
+            <Rectangle width="1206" height="846" color="0x0000000A" translation="[3, 3]" />
+            <Rectangle width="1200" height="840" color="0xFFFFFFFF" />
+            <Rectangle width="1200" height="5" color="0x00A89DFF" />
+
+            <Label text="Daily Scripture &amp; Reflection" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[60, 40]" />
+
+            <!-- Verse Box -->
+            <Rectangle width="1080" height="300" color="0xF5F7FAFF" translation="[60, 90]" />
+            <Rectangle width="6" height="300" color="0x00A89DFF" translation="[60, 90]" />
+
+            <Label id="verseText"
+                font="font:LargeSystemFont" color="0x1A1A2EFF"
+                translation="[90, 115]" width="1020" wrap="true" maxLines="7"
+                text="&quot;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&quot;" />
+
+            <Label id="verseRef" text="- John 3:16"
+                font="font:MediumBoldSystemFont" color="0x00A89DFF"
+                translation="[90, 335]" />
+
+            <!-- Daily Reflection Section -->
+            <Group translation="[60, 420]">
+                <Label text="Thought for Today" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[0, 0]" />
+                <Rectangle width="1080" height="280" color="0xF5F7FAFF" translation="[0, 35]" />
+                <Label id="reflectionText"
+                    font="font:MediumSystemFont" color="0x4A4A68FF"
+                    translation="[20, 55]" width="1040" wrap="true" maxLines="8"
+                    text="May this verse bring peace, comfort, and strength to your family today. Take a moment to reflect on love, grace, and hope." />
+            </Group>
+        </Group>
+
+        <!-- Footer -->
+        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
+        <Label text="Back Return to Dashboard  |  OK Toggle English / Spanish Language"
+            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+
+        <!-- Services -->
+        <ApiTask id="verseTask" />
+        <ErrorDialog id="errorDialog" />
+
+        <Group id="loadingOverlay" visible="true">
+            <LoadingSpinner translation="[930, 480]" />
+        </Group>
     </children>
 </component>

@@ -1,72 +1,79 @@
 sub init()
-    m.navBar = m.top.findNode("navBar")
-    m.navBar.title = "Kids"
-    
-    m.loadingLabel = m.top.findNode("loadingLabel")
-    m.drawingsGrid = m.top.findNode("drawingsGrid")
-    m.errorDialog = m.top.findNode("errorDialog")
-    
-    m.imageViewer = m.top.findNode("imageViewer")
-    m.fullScreenPoster = m.top.findNode("fullScreenPoster")
-    
-    m.drawingsTask = m.top.findNode("drawingsTask")
-    m.drawingsTask.observeField("response", "OnDrawingsResponse")
-    
-    m.drawingsTask.request = {
-        endpoint: "/drawings",
+    m.kidsGrid = m.top.findNode("kidsGrid")
+    m.previewOverlay = m.top.findNode("previewOverlay")
+    m.previewImage = m.top.findNode("previewImage")
+    m.previewTitle = m.top.findNode("previewTitle")
+    m.previewDesc = m.top.findNode("previewDesc")
+    m.loadingOverlay = m.top.findNode("loadingOverlay")
+
+    m.kidsTask = m.top.findNode("kidsTask")
+    m.kidsTask.observeField("response", "OnKidsResponse")
+
+    m.kidsGrid.observeField("itemSelected", "OnActivitySelected")
+
+    FetchKidsActivities()
+end sub
+
+sub FetchKidsActivities()
+    m.loadingOverlay.visible = true
+    m.kidsTask.request = {
+        endpoint: "/roku/kids",
         method: "GET"
     }
-    m.drawingsTask.control = "RUN"
-    
-    m.drawingsGrid.observeField("itemSelected", "OnDrawingSelected")
+    m.kidsTask.control = "RUN"
 end sub
 
-sub OnDrawingsResponse(event as Object)
+sub OnKidsResponse(event as Object)
+    m.loadingOverlay.visible = false
     response = event.getData()
-    m.loadingLabel.visible = false
-    
-    if response <> invalid and response.code = 200 and response.data <> invalid
-        m.drawingsData = response.data
-        content = CreateObject("roSGNode", "ContentNode")
-        
-        for each drawing in response.data
-            item = CreateObject("roSGNode", "ContentNode")
-            item.title = drawing.title
-            item.HDPosterUrl = drawing.imageUrl
-            content.appendChild(item)
-        end for
-        
-        if response.data.count() = 0
-            m.loadingLabel.text = "No drawings found."
-            m.loadingLabel.visible = true
-            m.top.setFocus(true)
-        else
-            m.drawingsGrid.content = content
-            m.drawingsGrid.visible = true
-            m.drawingsGrid.setFocus(true)
-        end if
-    else
-        m.errorDialog.message = "Network error occurred. Please try again."
-        m.errorDialog.show = true
-        m.top.setFocus(true)
-    end if
+
+    activities = [
+        { title: "Animal Kingdom Coloring", desc: "Fun animal coloring pages for kids & grandkids.", image: "pkg:/images/icon_kids.png" },
+        { title: "Family Tree Drawing", desc: "Draw and map out your family roots together.", image: "pkg:/images/icon_kids.png" },
+        { title: "Bible Story Coloring", desc: "Classic Bible stories with illustrated outlines.", image: "pkg:/images/icon_kids.png" },
+        { title: "Grandparents Memory Book", desc: "Prompted pages to share favorite family memories.", image: "pkg:/images/icon_kids.png" },
+        { title: "Under The Sea Adventure", desc: "Ocean life coloring sheet featuring dolphins & turtles.", image: "pkg:/images/icon_kids.png" },
+        { title: "Sunshine & Garden Flowers", desc: "Spring garden flower shapes for easy coloring.", image: "pkg:/images/icon_kids.png" }
+    ]
+
+    m.rawKidsData = activities
+    content = CreateObject("roSGNode", "ContentNode")
+
+    for each act in activities
+        item = CreateObject("roSGNode", "ContentNode")
+        item.title = act.title
+        item.shortDescriptionLine1 = act.desc
+        item.HDPosterUrl = act.image
+        content.appendChild(item)
+    end for
+
+    m.kidsGrid.content = content
+    m.kidsGrid.setFocus(true)
 end sub
 
-sub OnDrawingSelected()
-    selectedIndex = m.drawingsGrid.itemSelected
-    drawing = m.drawingsData[selectedIndex]
-    
-    m.fullScreenPoster.uri = drawing.imageUrl
-    m.imageViewer.visible = true
+sub OnActivitySelected()
+    selectedIndex = m.kidsGrid.itemSelected
+    if selectedIndex >= 0 and selectedIndex < m.rawKidsData.count()
+        selectedAct = m.rawKidsData[selectedIndex]
+        m.previewTitle.text = selectedAct.title
+        m.previewDesc.text = selectedAct.desc
+        m.previewImage.uri = selectedAct.image
+        m.previewOverlay.visible = true
+    end if
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
-        if key = "back"
-            if m.imageViewer.visible
-                m.imageViewer.visible = false
-                m.drawingsGrid.setFocus(true)
+        if m.previewOverlay.visible
+            if key = "back" or key = "OK"
+                m.previewOverlay.visible = false
+                m.kidsGrid.setFocus(true)
+                handled = true
+            end if
+        else
+            if key = "back"
+                m.top.navigate = "HomeScene"
                 handled = true
             end if
         end if

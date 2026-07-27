@@ -4,29 +4,62 @@
         <field id="navigate" type="string" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/KidsScene.brs" />
-    
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
-        <TopNavBar id="navBar" title="Kids" />
-        
-        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
-        
-        <!-- Drawings Grid -->
-        <MarkupGrid id="drawingsGrid"
-            translation="[100, 200]"
-            itemComponentName="PremiumCard"
-            itemSize="[320, 220]"
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x7E57C2FF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Kids Activities &amp; Coloring Gallery" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        </Group>
+
+        <!-- Gallery Grid -->
+        <MarkupGrid id="kidsGrid"
+            translation="[80, 140]"
+            itemComponentName="QuickActionTile"
+            itemSize="[415, 175]"
             itemSpacing="[20, 20]"
-            numColumns="5"
-            numRows="3"
-            drawFocusFeedback="false"
-            visible="false" />
-            
-        <!-- Fullscreen Image Viewer -->
-        <Rectangle id="imageViewer" width="1920" height="1080" color="0x000000FF" visible="false">
-            <Poster id="fullScreenPoster" width="1920" height="1080" loadDisplayMode="scaleToFit" />
-        </Rectangle>
-            
-        <ApiTask id="drawingsTask" />
+            numColumns="4"
+            numRows="5"
+            drawFocusFeedback="false" />
+
+        <!-- Fullscreen Artwork Preview Overlay -->
+        <Group id="previewOverlay" visible="false">
+            <Rectangle width="1920" height="1080" color="0x000000CC" />
+
+            <Group translation="[260, 100]">
+                <Rectangle width="1400" height="880" color="0xFFFFFFFF" />
+                <Poster id="previewImage" width="900" height="600" translation="[250, 40]" loadDisplayMode="scaleToFit" />
+
+                <Label id="previewTitle" text="Activity Title" font="font:LargeBoldSystemFont" color="0x1A1A2EFF" translation="[60, 660]" />
+                <Label id="previewDesc" text="Activity description and instructions." font="font:MediumSystemFont" color="0x4A4A68FF" translation="[60, 710]" width="1000" wrap="true" />
+
+                <!-- QR Overlay -->
+                <Group translation="[1160, 680]">
+                    <Rectangle width="200" height="160" color="0xF5F7FAFF" />
+                    <Poster width="110" height="110" translation="[45, 10]" loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
+                    <Label text="Scan to Print" font="font:SmallBoldSystemFont" color="0x7E57C2FF" translation="[0, 125]" width="200" horizAlign="center" />
+                </Group>
+
+                <Label text="Press BACK or OK to close preview" font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[60, 820]" />
+            </Group>
+        </Group>
+
+        <!-- Footer -->
+        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
+        <Label text="Back Return to Dashboard  |  OK View Full Screen Activity Card"
+            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+
+        <!-- Services -->
+        <ApiTask id="kidsTask" />
         <ErrorDialog id="errorDialog" />
+
+        <Group id="loadingOverlay" visible="true">
+            <LoadingSpinner translation="[930, 480]" />
+        </Group>
     </children>
 </component>

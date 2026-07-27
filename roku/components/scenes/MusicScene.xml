@@ -4,34 +4,107 @@
         <field id="navigate" type="string" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/MusicScene.brs" />
-    
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
-        <Rectangle width="1920" height="1080" color="0x0A0A0AFF" />
-        <TopNavBar id="navBar" title="Music" />
-        
-        <Label id="loadingLabel" text="Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[900, 500]" />
-        
-        <!-- Track List -->
-        <MarkupGrid id="trackGrid"
-            translation="[100, 200]"
-            itemComponentName="PremiumCard"
-            itemSize="[320, 220]"
-            itemSpacing="[20, 20]"
-            numColumns="5"
-            numRows="3"
-            drawFocusFeedback="false"
-            visible="false" />
-            
-        <!-- Player Overlay -->
-        <Rectangle id="playerOverlay" width="1920" height="200" color="0x111111EE" translation="[0, 880]" visible="false">
-            <Label id="nowPlayingLabel" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[100, 40]" />
-            <Label id="progressLabel" font="font:SmallSystemFont" color="0x888888FF" translation="[100, 100]" />
-            <Label text="[OK] to Play/Pause" font="font:SmallSystemFont" color="0xCCCCCCFF" translation="[100, 150]" />
-        </Rectangle>
-            
-        <Audio id="audioPlayer" />
-            
+        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Header -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0xFF6B6BFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Music &amp; Relaxing Audio Library" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+        </Group>
+
+        <!-- Main Player & Playlist Layout -->
+        <Group translation="[80, 130]">
+
+            <!-- Left Panel: Now Playing Card -->
+            <Group translation="[0, 0]">
+                <Rectangle width="646" height="866" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="640" height="860" color="0xFFFFFFFF" />
+                <Rectangle width="640" height="5" color="0xFF6B6BFF" />
+
+                <!-- Album Art Card -->
+                <Rectangle width="440" height="360" color="0xFF6B6B22" translation="[100, 40]" />
+                <Poster id="albumArtPoster" width="440" height="360" translation="[100, 40]"
+                    loadDisplayMode="scaleToFit" uri="pkg:/images/icon_music.png" />
+
+                <!-- Track Info -->
+                <Label id="trackTitle" text="Relaxing Piano Melodies"
+                    font="font:LargeBoldSystemFont" color="0x1A1A2EFF"
+                    translation="[40, 430]" width="560" horizAlign="center" />
+
+                <Label id="trackArtist" text="FamilyCare Wellness Music"
+                    font="font:MediumSystemFont" color="0x4A4A68FF"
+                    translation="[40, 480]" width="560" horizAlign="center" />
+
+                <!-- Audio Progress Bar -->
+                <Group translation="[60, 540]">
+                    <Rectangle width="520" height="8" color="0xE0E3E8FF" />
+                    <Rectangle id="progressBar" width="210" height="8" color="0xFF6B6BFF" />
+                    <Label id="timeElapsed" text="01:45" font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[0, 18]" />
+                    <Label id="timeTotal" text="04:20" font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[460, 18]" />
+                </Group>
+
+                <!-- Audio Control Buttons Row -->
+                <Group id="controlsGroup" translation="[110, 630]">
+                    <!-- Prev Button -->
+                    <Group id="prevBtn" translation="[0, 0]">
+                        <Rectangle id="prevFocusBorder" width="104" height="64" color="0xFF6B6BFF" translation="[-2, -2]" visible="false" />
+                        <Rectangle width="100" height="60" color="0xE0E3E8FF" />
+                        <Label text="◄◄" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" horizAlign="center" width="100" translation="[0, 15]" />
+                    </Group>
+
+                    <!-- Play / Pause Button -->
+                    <Group id="playBtn" translation="[120, 0]">
+                        <Rectangle id="playFocusBorder" width="184" height="64" color="0xFF6B6BFF" translation="[-2, -2]" visible="false" />
+                        <Rectangle id="playBg" width="180" height="60" color="0xFF6B6BFF" />
+                        <Label id="playLabel" text="❚❚ Pause" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="180" translation="[0, 15]" />
+                    </Group>
+
+                    <!-- Next Button -->
+                    <Group id="nextBtn" translation="[320, 0]">
+                        <Rectangle id="nextFocusBorder" width="104" height="64" color="0xFF6B6BFF" translation="[-2, -2]" visible="false" />
+                        <Rectangle width="100" height="60" color="0xE0E3E8FF" />
+                        <Label text="►►" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" horizAlign="center" width="100" translation="[0, 15]" />
+                    </Group>
+                </Group>
+
+                <Label text="Press OK to Play / Pause active track" font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[40, 780]" width="560" horizAlign="center" />
+            </Group>
+
+            <!-- Right Panel: Playlist Tracks Grid -->
+            <Group translation="[680, 0]">
+                <Rectangle width="1086" height="866" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="1080" height="860" color="0xFFFFFFFF" />
+                <Rectangle width="1080" height="5" color="0x00A89DFF" />
+
+                <Label text="Select Playlist Track" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[40, 25]" />
+
+                <MarkupGrid id="playlistGrid"
+                    translation="[40, 70]"
+                    itemComponentName="QuickActionTile"
+                    itemSize="[485, 170]"
+                    itemSpacing="[20, 15]"
+                    numColumns="2"
+                    numRows="4"
+                    drawFocusFeedback="false" />
+            </Group>
+        </Group>
+
+        <!-- Footer -->
+        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
+        <Label text="Back Return to Dashboard  |  OK Play Selected Track  |  ◄ Left / ► Right Audio Controls"
+            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+
+        <!-- Services -->
         <ApiTask id="musicTask" />
         <ErrorDialog id="errorDialog" />
+
+        <Group id="loadingOverlay" visible="true">
+            <LoadingSpinner translation="[930, 480]" />
+        </Group>
     </children>
 </component>

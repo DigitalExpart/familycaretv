@@ -1,42 +1,87 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="ScreensaverScene" extends="Scene">
     <script type="text/brightscript" uri="pkg:/components/screensaver/ScreensaverScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+
     <children>
-        <Rectangle id="bg" width="1920" height="1080" color="0x000000FF" />
-        
-        <!-- Background element (optional bouncing verse if needed, but we'll use a static/animated Center for now) -->
-        
-        <!-- Top Right: Current Time & Date -->
-        <Group id="dateTimeGroup" translation="[1400, 50]">
-            <Label id="clockText" translation="[0, 0]" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" horizAlign="right" width="450" />
-            <Label id="dateText" translation="[0, 60]" font="font:MediumSystemFont" color="0xCCCCCCFF" horizAlign="right" width="450" />
+        <!-- Background -->
+        <Rectangle id="bg" width="1920" height="1080" color="0xF2F4F7FF" />
+
+        <!-- Header Bar -->
+        <Group id="headerGroup">
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
+            <Label text="Screensaver • Living Room Display" font="font:MediumSystemFont" color="0x8E8EA0FF" translation="[340, 30]" />
+
+            <!-- Top Right Clock -->
+            <Group id="dateTimeGroup" translation="[1380, 15]">
+                <Label id="clockText" font="font:LargeBoldSystemFont" color="0x1A1A2EFF" horizAlign="right" width="480" />
+                <Label id="dateText" font="font:SmallSystemFont" color="0x4A4A68FF" horizAlign="right" width="480" translation="[0, 42]" />
+            </Group>
         </Group>
 
-        <!-- Center: Verse of the Day -->
-        <Group id="verseGroup" translation="[360, 400]">
-            <Label id="verseText" width="1200" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" wrap="true" horizAlign="center" />
-            <Label id="verseRef" width="1200" font="font:MediumSystemFont" color="0xAAAAAAFF" translation="[0, 150]" horizAlign="center" />
-        </Group>
-        
-        <!-- Bottom Left: Featured Book Cover -->
-        <Group id="bookGroup" translation="[100, 600]">
-            <Poster id="bookCover" width="200" height="300" loadDisplayMode="scaleToFit" />
-            <Label id="bookTitle" width="200" font="font:SmallBoldSystemFont" color="0xFFFFFFFF" translation="[0, 310]" wrap="true" />
-            <Label id="bookAuthor" width="200" font="font:SmallSystemFont" color="0xCCCCCCFF" translation="[0, 340]" wrap="true" />
+        <!-- Main Display Content Container -->
+        <Group translation="[80, 130]">
+
+            <!-- Left Panel: Drawing of the Day Artwork Card -->
+            <Group id="drawingGroup" translation="[0, 0]">
+                <Rectangle width="646" height="786" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="640" height="780" color="0xFFFFFFFF" />
+                <Rectangle width="640" height="5" color="0xFF6B6BFF" />
+
+                <Label text="Drawing of the Day" font="font:SmallBoldSystemFont" color="0xFF6B6BFF" translation="[30, 20]" />
+                <Poster id="drawingPoster" width="580" height="420" translation="[30, 60]"
+                    loadDisplayMode="scaleToFit" uri="pkg:/images/icon_kids.png" />
+
+                <Label id="drawingThought"
+                    font="font:SmallSystemFont" color="0x4A4A68FF"
+                    translation="[30, 500]" width="580" wrap="true" maxLines="8"
+                    text="&quot;Take a moment today to appreciate art and creativity.&quot;" />
+            </Group>
+
+            <!-- Right Panel: Scripture & QR Overlay -->
+            <Group translation="[680, 0]">
+                <!-- Verse Card -->
+                <Rectangle width="1086" height="526" color="0x0000000A" translation="[3, 3]" />
+                <Rectangle width="1080" height="520" color="0xFFFFFFFF" />
+                <Rectangle width="1080" height="5" color="0x00A89DFF" />
+
+                <Label text="Verse of the Day" font="font:SmallBoldSystemFont" color="0x00A89DFF" translation="[40, 25]" />
+
+                <Label id="verseText"
+                    font="font:LargeSystemFont" color="0x1A1A2EFF"
+                    translation="[40, 75]" width="1000" wrap="true" maxLines="8"
+                    text="&quot;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&quot;" />
+
+                <Label id="verseRef" text="- John 3:16"
+                    font="font:MediumBoldSystemFont" color="0x00A89DFF"
+                    translation="[40, 440]" />
+
+                <!-- Bottom QR Code Card -->
+                <Group translation="[0, 550]">
+                    <Rectangle width="1086" height="236" color="0x0000000A" translation="[3, 3]" />
+                    <Rectangle width="1080" height="230" color="0xFFFFFFFF" />
+                    <Rectangle width="1080" height="5" color="0x7E57C2FF" />
+
+                    <!-- QR Code -->
+                    <Group translation="[40, 20]">
+                        <Rectangle width="190" height="190" color="0xF5F7FAFF" />
+                        <Poster id="qrCode" width="170" height="170" translation="[10, 10]"
+                            loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
+                    </Group>
+
+                    <Label text="FamilyCare Mobile &amp; TV Sync" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[260, 40]" />
+                    <Label text="Scan QR code to access your family care dashboard on your mobile phone." font="font:SmallSystemFont" color="0x4A4A68FF" translation="[260, 85]" width="760" wrap="true" />
+                    <Label text="Press any remote key to exit screensaver and return to app." font="font:SmallBoldSystemFont" color="0x00A89DFF" translation="[260, 150]" />
+                </Group>
+            </Group>
         </Group>
 
-        <!-- Bottom Right: QR Code -->
-        <Group id="qrGroup" translation="[1550, 650]">
-            <Rectangle width="220" height="220" color="0xFFFFFFFF" translation="[0,0]">
-                <Poster id="qrCode" width="200" height="200" translation="[10, 10]" loadDisplayMode="scaleToFit" />
-            </Rectangle>
-            <Label font="font:SmallSystemFont" color="0xFFFFFFFF" text="Scan to link TV" translation="[0, 230]" width="220" horizAlign="center" />
-        </Group>
+        <!-- Bottom Reminder Ticker Bar -->
+        <NotificationTicker id="notificationTicker" translation="[0, 1000]" />
 
-        <!-- Bottom: Live reminder ticker -->
-        <!-- NotificationTicker is a custom component, we'll position it near the bottom edge -->
-        <NotificationTicker id="notificationTicker" translation="[0, 950]" />
-        
+        <!-- Services -->
         <ApiTask id="screensaverTask" />
         <Timer id="clockTimer" duration="1" repeat="true" control="start" />
     </children>

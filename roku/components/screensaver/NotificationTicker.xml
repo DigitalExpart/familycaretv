@@ -3,6 +3,7 @@
     <script type="text/brightscript" uri="pkg:/components/screensaver/NotificationTicker.brs" />
     <interface>
         <function name="setNotifications" />
+        <function name="setMessages" />
     </interface>
     <children>
         <Rectangle width="1920" height="80" color="0x222222FF" />

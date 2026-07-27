@@ -1,28 +1,25 @@
 sub init()
     m.clockText = m.top.findNode("clockText")
     m.dateText = m.top.findNode("dateText")
-    
+
     m.verseText = m.top.findNode("verseText")
     m.verseRef = m.top.findNode("verseRef")
-    
-    m.bookCover = m.top.findNode("bookCover")
-    m.bookTitle = m.top.findNode("bookTitle")
-    m.bookAuthor = m.top.findNode("bookAuthor")
-    
+
+    m.drawingPoster = m.top.findNode("drawingPoster")
+    m.drawingThought = m.top.findNode("drawingThought")
+
     m.qrCode = m.top.findNode("qrCode")
     m.notificationTicker = m.top.findNode("notificationTicker")
-    
+
     m.screensaverTask = m.top.findNode("screensaverTask")
     m.screensaverTask.observeField("response", "onDataReceived")
-    
+
     m.clockTimer = m.top.findNode("clockTimer")
     m.clockTimer.observeField("fire", "updateClock")
-    
-    ' Initial clock update
+
     updateClock()
-    
-    ' Fetch screensaver payload
-    m.screensaverTask.request = { endpoint: "/roku/screensaver", method: "GET" }
+
+    m.screensaverTask.request = { endpoint: "/roku/dashboard", method: "GET" }
     m.screensaverTask.control = "RUN"
 end sub
 
@@ -30,56 +27,68 @@ sub updateClock()
     now = CreateObject("roDateTime")
     now.ToLocalTime()
     m.clockText.text = now.AsTimeString("short-hms")
-    m.dateText.text = now.AsDateString("LongDate")
+    m.dateText.text = now.AsDateString("short-month-short-weekday")
 end sub
 
 sub onDataReceived()
     res = m.screensaverTask.response
     if res <> invalid and res.code = 200 and res.data <> invalid
         data = res.data
-        
-        ' Update QR Code
-        qrUrl = "pkg:/images/fallback_qr.png"
+
+        ' QR Code
         if data.qrCodeUrl <> invalid and data.qrCodeUrl <> ""
-            qrUrl = data.qrCodeUrl
+            m.qrCode.uri = data.qrCodeUrl
         end if
-        m.qrCode.uri = qrUrl
-        
-        ' Note: /roku/screensaver might not return all these fields natively yet, 
-        ' but based on the plan it should. The backend was augmented.
+
+        ' Verse of the Day
         if data.verse <> invalid
-            m.verseText.text = chr(34) + data.verse.text + chr(34)
-            m.verseRef.text = data.verse.reference
-        else if data.verseOfTheDay <> invalid ' fallback to home structure
-            m.verseText.text = chr(34) + data.verseOfTheDay.verse + chr(34)
-            m.verseRef.text = data.verseOfTheDay.reference
+            m.verseText.text = Chr(34) + data.verse.text + Chr(34)
+            m.verseRef.text = "- " + data.verse.reference
+        else if data.verseOfTheDay <> invalid and data.verseOfTheDay.verse <> invalid
+            m.verseText.text = Chr(34) + data.verseOfTheDay.verse + Chr(34)
+            m.verseRef.text = "- " + data.verseOfTheDay.reference
         end if
-        
-        ' Book of the Day
-        if data.featuredBook <> invalid
-            b = data.featuredBook
-            m.bookTitle.text = b.title
-            m.bookAuthor.text = b.author
-            cUri = "pkg:/images/fallback_artwork.png"
-            if b.coverUrl <> invalid and b.coverUrl <> "" then cUri = b.coverUrl
-            m.bookCover.uri = cUri
-        else if data.books <> invalid and data.books.count() > 0
-            b = data.books[0]
-            m.bookTitle.text = b.title
-            m.bookAuthor.text = b.author
-            cUri = "pkg:/images/fallback_artwork.png"
-            if b.coverUrl <> invalid and b.coverUrl <> "" then cUri = b.coverUrl
-            m.bookCover.uri = cUri
+
+        ' Drawing of the Day
+        if data.drawingUrl <> invalid and data.drawingUrl <> ""
+            m.drawingPoster.uri = data.drawingUrl
+        else if data.drawing <> invalid and data.drawing.imageUrl <> invalid
+            m.drawingPoster.uri = data.drawing.imageUrl
         end if
-        
-        ' Notifications Ticker
-        ' The ticker expects an array of strings or nodes. Assuming it exposes an interface for this.
-        if data.reminders <> invalid and m.notificationTicker <> invalid
-            messages = []
+
+        if data.drawingThought <> invalid and data.drawingThought <> ""
+            m.drawingThought.text = Chr(34) + data.drawingThought + Chr(34)
+        end if
+
+        ' Notifications & Reminders Ticker
+        reminders = []
+        if data.reminders <> invalid
             for each r in data.reminders
-                messages.push(r.title)
+                if r.title <> invalid
+                    reminders.push(r.title)
+                end if
             end for
-            m.notificationTicker.callFunc("setMessages", messages)
+        end if
+
+        if data.medications <> invalid
+            for each mItem in data.medications
+                if mItem.name <> invalid
+                    reminders.push("Medication Due: " + mItem.name)
+                end if
+            end for
+        end if
+
+        if m.notificationTicker <> invalid
+            m.notificationTicker.callFunc("setNotifications", reminders)
         end if
     end if
 end sub
+
+function onKeyEvent(key as String, press as Boolean) as Boolean
+    ' Any key press exits screensaver
+    if press
+        m.top.closeRequest = true
+        return true
+    end if
+    return false
+end function

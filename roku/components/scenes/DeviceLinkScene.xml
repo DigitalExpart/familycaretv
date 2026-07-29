@@ -7,30 +7,96 @@
     <script type="text/brightscript" uri="pkg:/source/Config.brs" />
     <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
     <children>
-        <Label id="instructionLabel" 
-            text="" 
-            font="font:MediumSystemFont" 
-            color="0x1A1A2EFF" 
-            horizAlign="center" 
-            translation="[0, 400]" 
-            width="1920" />
-            
-        <Label id="codeLabel" 
-            text="" 
-            font="font:LargeBoldSystemFont" 
-            color="0x00A89DFF" 
-            horizAlign="center" 
-            translation="[0, 500]" 
-            width="1920" />
-            
-        <Label id="expiresLabel" 
-            text="" 
-            font="font:SmallSystemFont" 
-            color="0x4A4A68FF" 
-            horizAlign="center" 
-            translation="[0, 650]" 
-            width="1920" />
-            
+        <!-- ═══ FULL DARK BACKGROUND ═══ -->
+        <Rectangle width="1920" height="1080" color="0x0D1B2AFF" />
+
+        <!-- ═══ TOP BRANDING ═══ -->
+        <Label text="FamilyCare TV"
+            font="font:LargeBoldSystemFont" color="0x00C9B8FF"
+            horizAlign="center" width="1920"
+            translation="[0, 80]" />
+        <Label text="Health  ·  Wellness  ·  Family"
+            font="font:SmallSystemFont" color="0x66A8A0FF"
+            horizAlign="center" width="1920"
+            translation="[0, 130]" />
+
+        <!-- ═══ CENTER CARD (dark card on dark bg) ═══ -->
+        <Group translation="[460, 220]">
+            <!-- Card shadow -->
+            <Rectangle width="1004" height="504" color="0x00000044" translation="[4, 4]" />
+            <!-- Card background -->
+            <Rectangle width="1000" height="500" color="0x162A3DFF" />
+            <!-- Teal top accent -->
+            <Rectangle width="1000" height="4" color="0x00C9B8FF" />
+
+            <!-- Icon area -->
+            <Label text="📺"
+                font="font:LargeBoldSystemFont" color="0xFFFFFFFF"
+                horizAlign="center" width="1000"
+                translation="[0, 30]" />
+
+            <!-- Instruction text -->
+            <Label id="instructionLabel" 
+                text="" 
+                font="font:MediumSystemFont" 
+                color="0xCCE5E2FF" 
+                horizAlign="center" 
+                width="1000"
+                wrap="true"
+                maxLines="2"
+                translation="[0, 100]" />
+
+            <!-- Code display area -->
+            <Group translation="[200, 190]">
+                <!-- Code background -->
+                <Rectangle width="600" height="120" color="0x0D1B2AFF" />
+                <!-- Code border -->
+                <Rectangle width="600" height="4" color="0x00C9B8FF" />
+                <Rectangle width="600" height="4" color="0x00C9B8FF" translation="[0, 116]" />
+                <Rectangle width="4" height="120" color="0x00C9B8FF" />
+                <Rectangle width="4" height="120" color="0x00C9B8FF" translation="[596, 0]" />
+                <!-- Code text -->
+                <Label id="codeLabel" 
+                    text="" 
+                    font="font:LargeBoldSystemFont" 
+                    color="0x00FFEDFF" 
+                    horizAlign="center" 
+                    vertAlign="center"
+                    width="600"
+                    height="120" />
+            </Group>
+
+            <!-- Expires text -->
+            <Label id="expiresLabel" 
+                text="" 
+                font="font:SmallSystemFont" 
+                color="0x66A8A0FF" 
+                horizAlign="center" 
+                width="1000"
+                translation="[0, 340]" />
+
+            <!-- Steps instructions -->
+            <Label text="Step 1: Open FamilyCare Mobile App"
+                font="font:SmallSystemFont" color="0x99B8B3FF"
+                horizAlign="center" width="1000"
+                translation="[0, 390]" />
+            <Label text="Step 2: Go to Profile → Connect Roku TV"
+                font="font:SmallSystemFont" color="0x99B8B3FF"
+                horizAlign="center" width="1000"
+                translation="[0, 420]" />
+            <Label text="Step 3: Enter the code shown above"
+                font="font:SmallSystemFont" color="0x99B8B3FF"
+                horizAlign="center" width="1000"
+                translation="[0, 450]" />
+        </Group>
+
+        <!-- ═══ FOOTER ═══ -->
+        <Label text="Waiting for activation..."
+            font="font:SmallSystemFont" color="0x4D7A73FF"
+            horizAlign="center" width="1920"
+            translation="[0, 780]" />
+
+        <!-- ═══ API TASKS ═══ -->
         <ApiTask id="deviceCodeTask" />
         <ApiTask id="tokenPollTask" />
         <Timer id="pollTimer" repeat="true" duration="5.0" />

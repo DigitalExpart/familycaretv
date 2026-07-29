@@ -6,10 +6,15 @@
     <script type="text/brightscript" uri="pkg:/components/scenes/SplashScene.brs" />
     <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
     <children>
+        <!-- Dark gradient background -->
+        <Rectangle width="1920" height="1080" color="0x0D1B2AFF" />
+        <Rectangle width="1920" height="540" color="0x1B2838FF" translation="[0, 540]" />
+
+        <!-- Centered branding -->
         <Label id="titleLabel" 
             text="FamilyCare TV" 
             font="font:LargeBoldSystemFont" 
-            color="0x00A89DFF" 
+            color="0x00C9B8FF" 
             horizAlign="center" 
             vertAlign="center" 
             width="1920" 
@@ -18,9 +23,18 @@
         <Label id="subtitleLabel" 
             text="" 
             font="font:MediumSystemFont" 
-            color="0x4A4A68FF" 
+            color="0xCCE5E2FF" 
             horizAlign="center" 
             translation="[0, 600]" 
+            width="1920" />
+
+        <!-- Loading indicator text -->
+        <Label id="loadingLabel"
+            text="Loading..."
+            font="font:SmallSystemFont"
+            color="0x66A8A0FF"
+            horizAlign="center"
+            translation="[0, 660]"
             width="1920" />
             
         <Timer id="initTimer" repeat="false" duration="2.0" />

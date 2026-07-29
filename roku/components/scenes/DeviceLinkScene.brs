@@ -6,15 +6,20 @@ sub init()
     m.tokenPollTask = m.top.findNode("tokenPollTask")
     m.pollTimer = m.top.findNode("pollTimer")
     
-    m.instructionLabel.text = "Open Mobile App -> Profile -> Connect Roku TV and enter code:"
+    m.instructionLabel.text = "Open Mobile App → Profile → Connect Roku TV"
     m.expiresLabel.text = "Code expires in 15 minutes"
     m.codeLabel.text = "LOADING..."
     
     m.deviceCode = ""
     m.pollCount = 0
+    m.retryCount = 0
     m.deviceId = CreateObject("roDeviceInfo").GetChannelClientId()
     
     ' Fetch device code
+    FetchDeviceCode()
+end sub
+
+sub FetchDeviceCode()
     m.deviceCodeTask.observeField("response", "OnDeviceCodeResponse")
     m.deviceCodeTask.request = {
         endpoint: "/roku/device-code",
@@ -25,10 +30,20 @@ end sub
 
 sub OnDeviceCodeResponse(event as Object)
     response = event.getData()
+    print "=== [DEVICE CODE] Response received ==="
+    if response <> invalid
+        print "=== [DEVICE CODE] Status code: "; response.code; " ==="
+        if response.rawResponse <> invalid
+            print "=== [DEVICE CODE] Raw response: "; response.rawResponse; " ==="
+        end if
+    end if
+
     if response <> invalid and response.data <> invalid and response.data.code <> invalid
         m.deviceCode = response.data.code
         m.codeLabel.text = m.deviceCode
+        m.retryCount = 0
         
+        print "=== [ACTIVATION TRACE STEP 1] Code received: "; m.deviceCode; " ==="
         print "=== [ACTIVATION TRACE STEP 1] Polling started ==="
         print "=== [ACTIVATION TRACE STEP 1] Polling interval: 5 seconds ==="
         m.pollCount = 0
@@ -40,8 +55,29 @@ sub OnDeviceCodeResponse(event as Object)
         m.pollTimer.observeField("fire", "PollForToken")
         m.pollTimer.control = "start"
     else
-        m.codeLabel.text = "ERROR. PLEASE RESTART."
+        ' Retry up to 3 times before showing error
+        m.retryCount++
+        if m.retryCount <= 3
+            print "=== [DEVICE CODE] Retry "; m.retryCount; " of 3 ==="
+            m.codeLabel.text = "CONNECTING..."
+            m.expiresLabel.text = "Retrying... (attempt " + m.retryCount.toStr() + " of 3)"
+            ' Wait 3 seconds before retry
+            retryTimer = CreateObject("roSGNode", "Timer")
+            retryTimer.duration = 3
+            retryTimer.repeat = false
+            retryTimer.observeField("fire", "RetryFetchCode")
+            m.top.appendChild(retryTimer)
+            retryTimer.control = "start"
+        else
+            print "=== [DEVICE CODE] All retries exhausted ==="
+            m.codeLabel.text = "CONNECTION ERROR"
+            m.expiresLabel.text = "Press OK to retry or Back to exit"
+        end if
     end if
+end sub
+
+sub RetryFetchCode()
+    FetchDeviceCode()
 end sub
 
 sub PollForToken()
@@ -127,3 +163,17 @@ sub OnTokenResponse(event as Object)
         end if
     end if
 end sub
+
+function onKeyEvent(key as String, press as Boolean) as Boolean
+    if press and key = "OK"
+        ' If showing error, allow manual retry
+        if m.deviceCode = ""
+            m.retryCount = 0
+            m.codeLabel.text = "LOADING..."
+            m.expiresLabel.text = ""
+            FetchDeviceCode()
+            return true
+        end if
+    end if
+    return false
+end function

@@ -96,10 +96,14 @@ sub PollForToken()
             code: m.deviceCode
         }
     }
+    if m.top <> invalid
+        m.top.appendChild(task)
+    end if
     task.control = "RUN"
 end sub
 
 sub OnTokenResponse(event as Object)
+    if event = invalid return
     response = event.getData()
     if response = invalid return
     
@@ -114,52 +118,91 @@ sub OnTokenResponse(event as Object)
         print "=== [ACTIVATION TRACE STEP 3] Response Time: "; response.responseTimeMs; " ms ==="
     end if
 
-    if response.data <> invalid
+    ' Clean up completed task node if appended
+    senderNode = event.getRoSGNode()
+    if senderNode <> invalid and m.top <> invalid
+        m.top.removeChild(senderNode)
+    end if
+
+    ' Validate HTTP status code
+    if response.code <> invalid and (response.code < 200 or response.code >= 300)
+        print "=== [ACTIVATION TRACE] Non-200 response code: "; response.code; " ==="
+        if response.code = 401 or response.code = 404
+            ' Code expired or deleted from backend
+            print "=== [ACTIVATION TRACE] Code expired/invalid, stopping polling ==="
+            if m.pollTimer <> invalid then m.pollTimer.control = "stop"
+            if m.codeLabel <> invalid then m.codeLabel.text = "EXPIRED"
+            if m.expiresLabel <> invalid then m.expiresLabel.text = "Press OK to generate a new code"
+            m.deviceCode = ""
+        end if
+        return
+    end if
+
+    if response.data <> invalid and type(response.data) = "roAssociativeArray"
         d = response.data
         print "=== [ACTIVATION TRACE STEP 4] Parsed JSON Values: ==="
         if d.DoesExist("pending") then print "   pending = "; d.pending
         if d.DoesExist("status") then print "   status = "; d.status
-        if d.DoesExist("token") then print "   token = "; Left(d.token, 15); "..."
-        if d.DoesExist("accessToken") then print "   accessToken = "; Left(d.accessToken, 15); "..."
-        if d.DoesExist("refreshToken") then print "   refreshToken = "; Left(d.refreshToken, 15); "..."
+        if d.DoesExist("token") and d.token <> invalid then print "   token = "; Left(d.token, 15); "..."
+        if d.DoesExist("accessToken") and d.accessToken <> invalid then print "   accessToken = "; Left(d.accessToken, 15); "..."
+        if d.DoesExist("refreshToken") and d.refreshToken <> invalid then print "   refreshToken = "; Left(d.refreshToken, 15); "..."
         if d.DoesExist("deviceId") then print "   deviceId = "; d.deviceId
 
-        ' Check Link Status State Machine
-        if d.pending = true
-            print "=== [ACTIVATION TRACE STEP 5] Link Status: Pending ==="
-        else if (d.pending = false or d.token <> invalid or d.accessToken <> invalid)
-            print "=== [ACTIVATION TRACE STEP 5] Link Status: Linked ==="
-            print "=== [ACTIVATION TRACE STEP 5] Link Status: Activated ==="
+        isPending = false
+        if d.DoesExist("pending") and d.pending = true
+            isPending = true
+        end if
 
-            m.pollTimer.control = "stop"
+        hasToken = false
+        if d.DoesExist("token") and d.token <> invalid and d.token <> ""
+            hasToken = true
+        else if d.DoesExist("accessToken") and d.accessToken <> invalid and d.accessToken <> ""
+            hasToken = true
+        end if
+
+        ' Check Link Status State Machine
+        if isPending
+            print "=== [ACTIVATION TRACE STEP 5] Link Status: Pending ==="
+        else if not isPending or hasToken
+            print "=== [ACTIVATION TRACE STEP 5] Link Status: Linked / Activated ==="
+
+            if m.pollTimer <> invalid then m.pollTimer.control = "stop"
 
             ' Extract Token
             tokenVal = ""
-            if d.token <> invalid and d.token <> ""
+            if d.DoesExist("token") and d.token <> invalid and d.token <> ""
                 tokenVal = d.token
-            else if d.accessToken <> invalid and d.accessToken <> ""
+            else if d.DoesExist("accessToken") and d.accessToken <> invalid and d.accessToken <> ""
                 tokenVal = d.accessToken
             end if
 
             print "=== [ACTIVATION TRACE STEP 6] Access Token: "; tokenVal; " ==="
             print "=== [ACTIVATION TRACE STEP 6] Token Length: "; Len(tokenVal); " ==="
 
-            ' Save Token to Registry
-            saveToken(tokenVal)
-            savedToken = getToken()
-            print "=== [ACTIVATION TRACE STEP 6] Registry Save Result: SUCCESS ==="
-            print "=== [ACTIVATION TRACE STEP 6] Registry Read Result: "; (savedToken = tokenVal); " (Length: "; Len(savedToken); ") ==="
+            if tokenVal <> ""
+                ' Save Token to Registry
+                saveToken(tokenVal)
+                savedToken = getToken()
+                print "=== [ACTIVATION TRACE STEP 6] Registry Save Result: SUCCESS ==="
+                print "=== [ACTIVATION TRACE STEP 6] Registry Read Result: "; (savedToken = tokenVal); " (Length: "; Len(savedToken); ") ==="
 
-            if d.refreshToken <> invalid and d.refreshToken <> ""
-                saveRefreshToken(d.refreshToken)
+                if d.DoesExist("refreshToken") and d.refreshToken <> invalid and d.refreshToken <> ""
+                    saveRefreshToken(d.refreshToken)
+                end if
+
+                ' Navigate to Home Scene
+                print "=== [ACTIVATION TRACE STEP 7] NavigateToHome() ==="
+                print "=== [ACTIVATION TRACE STEP 7] Scene Changed: DeviceLinkScene -> HomeScene ==="
+                print "=== [ACTIVATION TRACE STEP 7] Current Scene: HomeScene ==="
+                if m.top <> invalid
+                    m.top.navigate = "HomeScene"
+                end if
+            else
+                print "=== [ACTIVATION TRACE ERROR] Token is empty despite pending=false ==="
             end if
-
-            ' Navigate to Home Scene
-            print "=== [ACTIVATION TRACE STEP 7] NavigateToHome() ==="
-            print "=== [ACTIVATION TRACE STEP 7] Scene Changed: DeviceLinkScene -> HomeScene ==="
-            print "=== [ACTIVATION TRACE STEP 7] Current Scene: HomeScene ==="
-            m.top.navigate = "HomeScene"
         end if
+    else
+        print "=== [ACTIVATION TRACE ERROR] response.data is invalid or not roAssociativeArray ==="
     end if
 end sub
 

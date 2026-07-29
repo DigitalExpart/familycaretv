@@ -73,7 +73,25 @@ end function
 function GetFormattedTime() as String
     now = CreateObject("roDateTime")
     now.ToLocalTime()
-    return now.AsTimeString("short-hms")
+    hours = now.GetHours()
+    minutes = now.GetMinutes()
+    seconds = now.GetSeconds()
+
+    ampm = "AM"
+    if hours >= 12
+        ampm = "PM"
+        if hours > 12 then hours = hours - 12
+    else if hours = 0
+        hours = 12
+    end if
+
+    minsStr = minutes.toStr()
+    if minutes < 10 then minsStr = "0" + minsStr
+
+    secsStr = seconds.toStr()
+    if seconds < 10 then secsStr = "0" + secsStr
+
+    return hours.toStr() + ":" + minsStr + ":" + secsStr + " " + ampm
 end function
 
 ' ─── SHORT DATE ───

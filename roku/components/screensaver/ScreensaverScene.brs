@@ -26,7 +26,7 @@ end sub
 sub updateClock()
     now = CreateObject("roDateTime")
     now.ToLocalTime()
-    m.clockText.text = now.AsTimeString("short-hms")
+    m.clockText.text = GetFormattedTime()
     m.dateText.text = now.AsDateString("short-month-short-weekday")
 end sub
 

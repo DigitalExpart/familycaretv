@@ -25,7 +25,7 @@ sub pollLoop()
         ' Only poll if we have a token
         token = getToken()
         if token <> ""
-            sinceIso = lastSync.AsDateString("NoDayOfWeek") + "T" + lastSync.AsTimeString() + "Z" ' Approximation, standard ISO 8601 required
+            sinceIso = lastSync.ToISOString()
             
             ' Perform GET /roku/updates
             reqInfo = {

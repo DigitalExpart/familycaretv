@@ -48,9 +48,6 @@ sub OnDeviceCodeResponse(event as Object)
         print "=== [ACTIVATION TRACE STEP 1] Polling interval: 5 seconds ==="
         m.pollCount = 0
         
-        ' Observe tokenPollTask response once
-        m.tokenPollTask.observeField("response", "OnTokenResponse")
-
         ' Start 5s polling timer
         m.pollTimer.observeField("fire", "PollForToken")
         m.pollTimer.control = "start"
@@ -81,23 +78,25 @@ sub RetryFetchCode()
 end sub
 
 sub PollForToken()
+    if m.deviceCode = "" or m.deviceCode = invalid return
+
     m.pollCount++
     print "=== [ACTIVATION TRACE STEP 1] Polling count: "; m.pollCount; " ==="
     print "=== [ACTIVATION TRACE STEP 2] Polling URL: "; GetApiBaseUrl() + "/roku/token"; " ==="
     print "=== [ACTIVATION TRACE STEP 2] HTTP Method: POST ==="
     print "=== [ACTIVATION TRACE STEP 2] Device ID: "; m.deviceId; " ==="
     print "=== [ACTIVATION TRACE STEP 2] Activation Code: "; m.deviceCode; " ==="
-    print "=== [ACTIVATION TRACE STEP 2] Headers: Content-Type=application/json, Accept=application/json ==="
-    print "=== [ACTIVATION TRACE STEP 2] JWT: None (Unauthenticated Polling) ==="
 
-    m.tokenPollTask.request = {
+    task = CreateObject("roSGNode", "ApiTask")
+    task.observeField("response", "OnTokenResponse")
+    task.request = {
         endpoint: "/roku/token",
         method: "POST",
         body: {
             code: m.deviceCode
         }
     }
-    m.tokenPollTask.control = "RUN"
+    task.control = "RUN"
 end sub
 
 sub OnTokenResponse(event as Object)

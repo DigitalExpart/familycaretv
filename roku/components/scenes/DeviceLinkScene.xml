@@ -10,7 +10,7 @@
         <Label id="instructionLabel" 
             text="" 
             font="font:MediumSystemFont" 
-            color="0xCCCCCCFF" 
+            color="0x1A1A2EFF" 
             horizAlign="center" 
             translation="[0, 400]" 
             width="1920" />
@@ -18,7 +18,7 @@
         <Label id="codeLabel" 
             text="" 
             font="font:LargeBoldSystemFont" 
-            color="0xFFFFFFFF" 
+            color="0x00A89DFF" 
             horizAlign="center" 
             translation="[0, 500]" 
             width="1920" />
@@ -26,7 +26,7 @@
         <Label id="expiresLabel" 
             text="" 
             font="font:SmallSystemFont" 
-            color="0x888888FF" 
+            color="0x4A4A68FF" 
             horizAlign="center" 
             translation="[0, 650]" 
             width="1920" />

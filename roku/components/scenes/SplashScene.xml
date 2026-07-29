@@ -9,7 +9,7 @@
         <Label id="titleLabel" 
             text="FamilyCare TV" 
             font="font:LargeBoldSystemFont" 
-            color="0xFFFFFFFF" 
+            color="0x00A89DFF" 
             horizAlign="center" 
             vertAlign="center" 
             width="1920" 
@@ -18,7 +18,7 @@
         <Label id="subtitleLabel" 
             text="" 
             font="font:MediumSystemFont" 
-            color="0xCCCCCCFF" 
+            color="0x4A4A68FF" 
             horizAlign="center" 
             translation="[0, 600]" 
             width="1920" />

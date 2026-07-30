@@ -13,14 +13,18 @@ sub init()
     m.deviceCode = ""
     m.pollCount = 0
     m.retryCount = 0
+    m.isPollingActive = false
     m.deviceId = CreateObject("roDeviceInfo").GetChannelClientId()
+    
+    ' Observe tasks once
+    m.deviceCodeTask.observeField("response", "OnDeviceCodeResponse")
+    m.tokenPollTask.observeField("response", "OnTokenResponse")
     
     ' Fetch device code
     FetchDeviceCode()
 end sub
 
 sub FetchDeviceCode()
-    m.deviceCodeTask.observeField("response", "OnDeviceCodeResponse")
     m.deviceCodeTask.request = {
         endpoint: "/roku/device-code",
         method: "POST"
@@ -44,11 +48,11 @@ sub OnDeviceCodeResponse(event as Object)
         m.retryCount = 0
         
         print "=== [ACTIVATION TRACE STEP 1] Code received: "; m.deviceCode; " ==="
-        print "=== [ACTIVATION TRACE STEP 1] Polling started ==="
-        print "=== [ACTIVATION TRACE STEP 1] Polling interval: 5 seconds ==="
+        print "=== [ACTIVATION TRACE STEP 1] Polling started (interval: 5s) ==="
         m.pollCount = 0
         
         ' Start 5s polling timer
+        m.pollTimer.unobserveField("fire")
         m.pollTimer.observeField("fire", "PollForToken")
         m.pollTimer.control = "start"
     else
@@ -58,7 +62,7 @@ sub OnDeviceCodeResponse(event as Object)
             print "=== [DEVICE CODE] Retry "; m.retryCount; " of 3 ==="
             m.codeLabel.text = "CONNECTING..."
             m.expiresLabel.text = "Retrying... (attempt " + m.retryCount.toStr() + " of 3)"
-            ' Wait 3 seconds before retry
+            
             retryTimer = CreateObject("roSGNode", "Timer")
             retryTimer.duration = 3
             retryTimer.repeat = false
@@ -79,56 +83,38 @@ end sub
 
 sub PollForToken()
     if m.deviceCode = "" or m.deviceCode = invalid return
+    if m.isPollingActive return
 
     m.pollCount++
     print "=== [ACTIVATION TRACE STEP 1] Polling count: "; m.pollCount; " ==="
-    print "=== [ACTIVATION TRACE STEP 2] Polling URL: "; GetApiBaseUrl() + "/roku/token"; " ==="
-    print "=== [ACTIVATION TRACE STEP 2] HTTP Method: POST ==="
-    print "=== [ACTIVATION TRACE STEP 2] Device ID: "; m.deviceId; " ==="
-    print "=== [ACTIVATION TRACE STEP 2] Activation Code: "; m.deviceCode; " ==="
+    print "=== [ACTIVATION TRACE STEP 2] Code: "; m.deviceCode; " ==="
 
-    task = CreateObject("roSGNode", "ApiTask")
-    task.observeField("response", "OnTokenResponse")
-    task.request = {
+    m.isPollingActive = true
+    m.tokenPollTask.request = {
         endpoint: "/roku/token",
         method: "POST",
         body: {
             code: m.deviceCode
         }
     }
-    if m.top <> invalid
-        m.top.appendChild(task)
-    end if
-    task.control = "RUN"
+    m.tokenPollTask.control = "RUN"
 end sub
 
 sub OnTokenResponse(event as Object)
+    m.isPollingActive = false
     if event = invalid return
     response = event.getData()
     if response = invalid return
     
     print "=== [ACTIVATION TRACE STEP 3] HTTP Status: "; response.code; " ==="
     if response.rawResponse <> invalid
-        print "=== [ACTIVATION TRACE STEP 3] Raw JSON Response: "; response.rawResponse; " ==="
-    end if
-    if response.contentType <> invalid
-        print "=== [ACTIVATION TRACE STEP 3] Content-Type: "; response.contentType; " ==="
-    end if
-    if response.responseTimeMs <> invalid
-        print "=== [ACTIVATION TRACE STEP 3] Response Time: "; response.responseTimeMs; " ms ==="
-    end if
-
-    ' Clean up completed task node if appended
-    senderNode = event.getRoSGNode()
-    if senderNode <> invalid and m.top <> invalid
-        m.top.removeChild(senderNode)
+        print "=== [ACTIVATION TRACE STEP 3] Raw Response: "; response.rawResponse; " ==="
     end if
 
     ' Validate HTTP status code
     if response.code <> invalid and (response.code < 200 or response.code >= 300)
         print "=== [ACTIVATION TRACE] Non-200 response code: "; response.code; " ==="
         if response.code = 401 or response.code = 404
-            ' Code expired or deleted from backend
             print "=== [ACTIVATION TRACE] Code expired/invalid, stopping polling ==="
             if m.pollTimer <> invalid then m.pollTimer.control = "stop"
             if m.codeLabel <> invalid then m.codeLabel.text = "EXPIRED"
@@ -140,60 +126,52 @@ sub OnTokenResponse(event as Object)
 
     if response.data <> invalid and type(response.data) = "roAssociativeArray"
         d = response.data
-        print "=== [ACTIVATION TRACE STEP 4] Parsed JSON Values: ==="
-        if d.DoesExist("pending") then print "   pending = "; d.pending
-        if d.DoesExist("status") then print "   status = "; d.status
-        if d.DoesExist("token") and d.token <> invalid then print "   token = "; Left(d.token, 15); "..."
-        if d.DoesExist("accessToken") and d.accessToken <> invalid then print "   accessToken = "; Left(d.accessToken, 15); "..."
-        if d.DoesExist("refreshToken") and d.refreshToken <> invalid then print "   refreshToken = "; Left(d.refreshToken, 15); "..."
-        if d.DoesExist("deviceId") then print "   deviceId = "; d.deviceId
+        print "=== [ACTIVATION TRACE STEP 4] Parsed JSON Values ==="
 
         isPending = false
-        if d.DoesExist("pending") and d.pending = true
-            isPending = true
+        if d.DoesExist("pending")
+            if d.pending = true or d.pending = "true" or d.pending = 1
+                isPending = true
+            end if
         end if
 
         hasToken = false
-        if d.DoesExist("token") and d.token <> invalid and d.token <> ""
+        tokenVal = ""
+        if d.DoesExist("token") and d.token <> invalid and d.token <> "" and type(d.token) = "roString"
+            tokenVal = d.token
             hasToken = true
-        else if d.DoesExist("accessToken") and d.accessToken <> invalid and d.accessToken <> ""
+        else if d.DoesExist("accessToken") and d.accessToken <> invalid and d.accessToken <> "" and type(d.accessToken) = "roString"
+            tokenVal = d.accessToken
             hasToken = true
         end if
 
         ' Check Link Status State Machine
-        if isPending
+        if isPending and not hasToken
             print "=== [ACTIVATION TRACE STEP 5] Link Status: Pending ==="
-        else if not isPending or hasToken
+        else if not isPending or hasToken or (d.DoesExist("status") and d.status = "linked")
             print "=== [ACTIVATION TRACE STEP 5] Link Status: Linked / Activated ==="
 
+            ' Stop polling immediately
             if m.pollTimer <> invalid then m.pollTimer.control = "stop"
 
-            ' Extract Token
-            tokenVal = ""
-            if d.DoesExist("token") and d.token <> invalid and d.token <> ""
-                tokenVal = d.token
-            else if d.DoesExist("accessToken") and d.accessToken <> invalid and d.accessToken <> ""
-                tokenVal = d.accessToken
-            end if
+            ' Update UI on TV screen immediately
+            if m.codeLabel <> invalid then m.codeLabel.text = "LINKED!"
+            if m.expiresLabel <> invalid then m.expiresLabel.text = "Activation successful! Loading Home..."
 
-            print "=== [ACTIVATION TRACE STEP 6] Access Token: "; tokenVal; " ==="
-            print "=== [ACTIVATION TRACE STEP 6] Token Length: "; Len(tokenVal); " ==="
+            print "=== [ACTIVATION TRACE STEP 6] Access Token Length: "; Len(tokenVal); " ==="
 
             if tokenVal <> ""
                 ' Save Token to Registry
                 saveToken(tokenVal)
                 savedToken = getToken()
                 print "=== [ACTIVATION TRACE STEP 6] Registry Save Result: SUCCESS ==="
-                print "=== [ACTIVATION TRACE STEP 6] Registry Read Result: "; (savedToken = tokenVal); " (Length: "; Len(savedToken); ") ==="
 
                 if d.DoesExist("refreshToken") and d.refreshToken <> invalid and d.refreshToken <> ""
                     saveRefreshToken(d.refreshToken)
                 end if
 
                 ' Navigate to Home Scene
-                print "=== [ACTIVATION TRACE STEP 7] NavigateToHome() ==="
-                print "=== [ACTIVATION TRACE STEP 7] Scene Changed: DeviceLinkScene -> HomeScene ==="
-                print "=== [ACTIVATION TRACE STEP 7] Current Scene: HomeScene ==="
+                print "=== [ACTIVATION TRACE STEP 7] Navigating to HomeScene ==="
                 if m.top <> invalid
                     m.top.navigate = "HomeScene"
                 end if
@@ -208,8 +186,8 @@ end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
     if press and key = "OK"
-        ' If showing error, allow manual retry
-        if m.deviceCode = ""
+        ' If showing error or expired, allow manual retry
+        if m.deviceCode = "" or m.codeLabel.text = "EXPIRED" or m.codeLabel.text = "CONNECTION ERROR"
             m.retryCount = 0
             m.codeLabel.text = "LOADING..."
             m.expiresLabel.text = ""

@@ -10,6 +10,8 @@ end sub
 
 sub NavigateTo(screenName as String)
     print "=== [ROKU STARTUP] NavigateTo('"; screenName; "') ==="
+    oldScreen = m.currentScreen
+    
     if m.currentScreen <> invalid
         m.currentScreen.visible = false
         ' Don't push SplashScene or DeviceLinkScene to the back stack
@@ -35,6 +37,12 @@ sub NavigateTo(screenName as String)
         m.currentScreen.visible = true
         m.currentScreen.setFocus(true)
         m.currentScreen.observeField("navigate", "OnNavigateRequest")
+        
+        ' Clean up old SplashScene or DeviceLinkScene node from screen container
+        if oldScreen <> invalid and (oldScreen.subtype() = "SplashScene" or oldScreen.subtype() = "DeviceLinkScene")
+            m.screenContainer.removeChild(oldScreen)
+        end if
+        
         print "=== [ROKU STARTUP] Successfully rendered screen: "; screenName; " ==="
     else
         print "=== [ROKU STARTUP ERROR] Failed to CreateObject for screen: "; screenName; " ==="

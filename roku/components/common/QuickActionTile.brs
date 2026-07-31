@@ -1,4 +1,5 @@
 sub init()
+    m.scaleContainer = m.top.findNode("scaleContainer")
     m.cardBg = m.top.findNode("cardBg")
     m.focusGlow = m.top.findNode("focusGlow")
     m.shadow = m.top.findNode("shadow")
@@ -47,13 +48,11 @@ end sub
 sub OnItemFocusChange()
     if m.top.itemHasFocus
         m.focusGlow.visible = true
-        m.cardBg.color = "0xF0FDFBFF"       ' Light teal tint
-        m.shadow.color = "0x00000020"        ' Darker shadow
+        m.cardBg.color = "0x323232FF"       ' Darker pop out tint
         m.focusInAnim.control = "start"
     else
         m.focusGlow.visible = false
-        m.cardBg.color = "0xFFFFFFFF"        ' White
-        m.shadow.color = "0x0000000D"        ' Subtle shadow
+        m.cardBg.color = "0x242424FF"        ' Dark gray base
         m.focusOutAnim.control = "start"
     end if
 end sub

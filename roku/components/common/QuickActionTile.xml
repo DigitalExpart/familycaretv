@@ -8,56 +8,68 @@
     </interface>
     <script type="text/brightscript" uri="pkg:/components/common/QuickActionTile.brs" />
     <children>
-        <!-- Focus glow (behind everything, shown on focus) -->
-        <Rectangle id="focusGlow" width="419" height="179" color="0x00A89D50"
-            translation="[-2, -2]" visible="false" />
+        <Group id="scaleContainer" translation="[207.5, 87.5]">
+            <!-- Everything is translated back to be centered around [0,0] for proper scaling -->
+            
+            <!-- Focus glow (behind everything, shown on focus) -->
+            <Rectangle id="focusGlow" width="419" height="179" color="0x00A89D50"
+                translation="[-209.5, -89.5]" visible="false" />
 
-        <!-- Card shadow -->
-        <Rectangle id="shadow" width="409" height="169" color="0x0000000D"
-            translation="[6, 6]" />
+            <!-- Card shadow (animated opacity) -->
+            <Rectangle id="shadow" width="409" height="169" color="0x0000000D"
+                translation="[-201.5, -81.5]" opacity="0.3" />
 
-        <!-- Card background -->
-        <Rectangle id="cardBg" width="405" height="165" color="0x1E1E1EFF"
-            translation="[4, 4]" />
+            <!-- Card background -->
+            <Rectangle id="cardBg" width="405" height="165" color="0x242424FF"
+                translation="[-203.5, -83.5]" />
 
-        <!-- Left accent bar -->
-        <Rectangle id="accentBar" width="5" height="165" color="0x00A89DFF"
-            translation="[4, 4]" />
+            <!-- Left accent bar -->
+            <Rectangle id="accentBar" width="5" height="165" color="0x00A89DFF"
+                translation="[-203.5, -83.5]" />
 
-        <!-- Icon (centered horizontally) -->
-        <Poster id="icon" width="48" height="48"
-            translation="[183, 16]"
-            loadDisplayMode="scaleToFit" />
+            <!-- Icon (centered horizontally) -->
+            <Poster id="icon" width="48" height="48"
+                translation="[-24.5, -71.5]"
+                loadDisplayMode="scaleToFit" />
 
-        <!-- Title (centered) -->
-        <Label id="titleLabel"
-            font="font:MediumBoldSystemFont"
-            color="0xFFFFFFFF"
-            horizAlign="center"
-            translation="[0, 74]"
-            width="415" />
+            <!-- Title (centered) -->
+            <Label id="titleLabel"
+                font="font:MediumBoldSystemFont"
+                color="0xFFFFFFFF"
+                horizAlign="center"
+                translation="[-207.5, -13.5]"
+                width="415" />
 
-        <!-- Subtitle (centered) -->
-        <Label id="descLabel"
-            font="font:SmallSystemFont"
-            color="0x8E8EA0FF"
-            horizAlign="center"
-            translation="[0, 112]"
-            width="415" />
+            <!-- Subtitle (centered) -->
+            <Label id="descLabel"
+                font="font:SmallSystemFont"
+                color="0x8E8EA0FF"
+                horizAlign="center"
+                translation="[-207.5, 24.5]"
+                width="415" />
+        </Group>
 
         <!-- Focus scale animation -->
         <Animation id="focusInAnim" duration="0.15" repeat="false" easeFunction="outCubic">
             <Vector2DFieldInterpolator id="scaleUpInterp"
                 key="[0.0, 1.0]"
-                keyValue="[ [1.0, 1.0], [1.05, 1.05] ]"
-                fieldToInterp="cardBg.scale" />
+                keyValue="[ [1.0, 1.0], [1.08, 1.08] ]"
+                fieldToInterp="scaleContainer.scale" />
+            <FloatFieldInterpolator id="shadowOpUpInterp"
+                key="[0.0, 1.0]"
+                keyValue="[ 0.3, 0.8 ]"
+                fieldToInterp="shadow.opacity" />
         </Animation>
 
         <Animation id="focusOutAnim" duration="0.15" repeat="false" easeFunction="outCubic">
             <Vector2DFieldInterpolator id="scaleDownInterp"
                 key="[0.0, 1.0]"
-                keyValue="[ [1.05, 1.05], [1.0, 1.0] ]"
-                fieldToInterp="cardBg.scale" />
+                keyValue="[ [1.08, 1.08], [1.0, 1.0] ]"
+                fieldToInterp="scaleContainer.scale" />
+            <FloatFieldInterpolator id="shadowOpDownInterp"
+                key="[0.0, 1.0]"
+                keyValue="[ 0.8, 0.3 ]"
+                fieldToInterp="shadow.opacity" />
         </Animation>
     </children>
 </component>

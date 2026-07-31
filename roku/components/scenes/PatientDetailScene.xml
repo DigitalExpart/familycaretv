@@ -20,11 +20,6 @@
             <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[320, 20]" />
 
                 <!-- Back Button -->
-                <Group id="backBtn" translation="[60, 20]">
-                    <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="backBg" width="220" height="50" color="0x444444FF" />
-                    <Label text="← Back" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
-                </Group>
             
             <Label text="Patient Detail" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[600, 30]" />
         </Group>

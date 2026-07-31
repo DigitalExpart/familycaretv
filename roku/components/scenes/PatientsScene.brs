@@ -1,6 +1,4 @@
 sub init()
-    m.backBtn = m.top.findNode("backBtn")
-    m.backFocusBorder = m.top.findNode("backFocusBorder")
     m.patientsGrid = m.top.findNode("patientsGrid")
     m.addBtnBg = m.top.findNode("addBtnBg")
     m.addBtnFocusBorder = m.top.findNode("addBtnFocusBorder")
@@ -146,25 +144,12 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
 
         if m.focusZone = 1
             ' Grid focus
-            if key = "up" and not m.backBtn.hasFocus()
+            if key = "up"
                 focusedIdx = m.patientsGrid.itemFocused
                 if focusedIdx < 4
                     SetFocusZone(0)
                     handled = true
                 end if
-            else if key = "up" and m.backBtn.hasFocus()
-                ' Already at top
-            else if key = "up" and m.patientsGrid.hasFocus()
-                m.backBtn.setFocus(true)
-                m.backFocusBorder.visible = true
-                handled = true
-            else if key = "down" and m.backBtn.hasFocus()
-                m.backFocusBorder.visible = false
-                m.patientsGrid.setFocus(true)
-                handled = true
-            else if key = "OK" and m.backBtn.hasFocus()
-                m.top.navigate = "HomeScene"
-                handled = true
             else if key = "back"
                 m.top.navigate = "HomeScene"
                 handled = true
@@ -176,17 +161,6 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 handled = true
             else if key = "OK"
                 OpenAddPatientForm()
-                handled = true
-            else if key = "left"
-                m.backBtn.setFocus(true)
-                m.backFocusBorder.visible = true
-                handled = true
-            else if key = "right" and m.backBtn.hasFocus()
-                m.backFocusBorder.visible = false
-                SetFocusZone(0)
-                handled = true
-            else if key = "OK" and m.backBtn.hasFocus()
-                m.top.navigate = "HomeScene"
                 handled = true
             else if key = "back"
                 m.top.navigate = "HomeScene"

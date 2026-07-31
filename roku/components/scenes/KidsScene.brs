@@ -1,6 +1,4 @@
 sub init()
-    m.backBtn = m.top.findNode("backBtn")
-    m.backFocusBorder = m.top.findNode("backFocusBorder")
     m.kidsGrid = m.top.findNode("kidsGrid")
     m.previewOverlay = m.top.findNode("previewOverlay")
     m.previewImage = m.top.findNode("previewImage")
@@ -74,18 +72,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 handled = true
             end if
         else
-            if key = "up" and m.kidsGrid.hasFocus()
-                m.backBtn.setFocus(true)
-                m.backFocusBorder.visible = true
-                handled = true
-            else if key = "down" and m.backBtn.hasFocus()
-                m.backFocusBorder.visible = false
-                m.kidsGrid.setFocus(true)
-                handled = true
-            else if key = "OK" and m.backBtn.hasFocus()
-                m.top.navigate = "HomeScene"
-                handled = true
-            else if key = "back"
+            if key = "back"
                 m.top.navigate = "HomeScene"
                 handled = true
             end if

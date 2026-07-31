@@ -13,11 +13,6 @@
         <Group id="headerGroup">
             <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
             <Rectangle width="1920" height="3" color="0xFF6B6BFF" translation="[0, 87]" />
-            <Group id="backBtn" translation="[60, 20]">
-                <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
-                <Rectangle id="backBg" width="220" height="50" color="0x444444FF" />
-                <Label text="← Back" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
-            </Group>
             
             <Label text="Drawing of the Day &amp; Activity Gallery" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
         </Group>

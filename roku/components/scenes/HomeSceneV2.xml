@@ -185,7 +185,7 @@
 
         <!-- ═══ LOADING OVERLAY ═══ -->
         <Group id="loadingOverlay" visible="true">
-            <Rectangle width="1920" height="1080" color="0xF2F4F7EE" />
+            <Rectangle width="1920" height="1080" color="0x121212FF" />
             <LoadingSpinner id="spinner" translation="[930, 450]" />
             <Label text="Loading your dashboard..."
                 font="font:MediumSystemFont" color="0xAAAAAAFF"

@@ -80,7 +80,7 @@ export default function ConnectRokuScreen() {
   }, []);
 
   const handleLinkDevice = async () => {
-    const trimmedCode = code.trim().toUpperCase();
+    const trimmedCode = code.trim().toUpperCase().replace(/O/g, '0').replace(/[IL]/g, '1');
     if (!trimmedCode) {
       Alert.alert('Error', 'Please enter the 6-8 character code shown on your Roku TV.');
       return;

@@ -11,20 +11,28 @@
 
     <children>
         <!-- Light warm gray background -->
-        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle width="1920" height="1080" color="0x121212FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
             <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-            <Label text="Patient Detail" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[320, 20]" />
+
+                <!-- Back Button -->
+                <Group id="backBtn" translation="[60, 20]">
+                    <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="backBg" width="220" height="50" color="0x444444FF" />
+                    <Label text="← Back" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
+                </Group>
+            
+            <Label text="Patient Detail" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[600, 30]" />
         </Group>
 
         <!-- Main Card Container -->
         <Group translation="[360, 140]">
             <Rectangle width="1206" height="846" color="0x0000000A" translation="[3, 3]" />
-            <Rectangle width="1200" height="840" color="0xFFFFFFFF" />
+            <Rectangle width="1200" height="840" color="0x1E1E1EFF" />
             <Rectangle width="1200" height="5" color="0x00A89DFF" />
 
             <!-- Avatar & Header -->
@@ -32,11 +40,11 @@
                 loadDisplayMode="scaleToFit" uri="pkg:/images/icon_patients.png" />
 
             <Label id="nameLabel" text="Patient Name"
-                font="font:LargeBoldSystemFont" color="0x1A1A2EFF"
+                font="font:LargeBoldSystemFont" color="0xFFFFFFFF"
                 translation="[180, 45]" />
 
             <Label id="dobLabel" text="DOB: —"
-                font="font:MediumSystemFont" color="0x4A4A68FF"
+                font="font:MediumSystemFont" color="0xAAAAAAFF"
                 translation="[180, 95]" />
 
             <!-- Action Buttons Bar (Edit, Delete, Back) -->
@@ -53,40 +61,32 @@
                     <Rectangle id="deleteFocusBorder" width="224" height="54" color="0xFF5252FF" translation="[-2, -2]" visible="false" />
                     <Rectangle id="deleteBg" width="220" height="50" color="0xFF5252FF" />
                     <Label text="🗑 Delete" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
-                </Group>
-
-                <!-- Back Button -->
-                <Group id="backBtn" translation="[480, 0]">
-                    <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="backBg" width="220" height="50" color="0xE0E3E8FF" />
-                    <Label text="← Back" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" horizAlign="center" width="220" translation="[0, 12]" />
-                </Group>
-            </Group>
+                </Group></Group>
 
             <!-- Divider line -->
-            <Rectangle width="1080" height="2" color="0xE0E3E8FF" translation="[60, 230]" />
+            <Rectangle width="1080" height="2" color="0x444444FF" translation="[60, 230]" />
 
             <!-- Summary Stat Cards -->
             <Group translation="[60, 260]">
-                <Rectangle width="330" height="110" color="0xF5F7FAFF" translation="[0, 0]" />
+                <Rectangle width="330" height="110" color="0x2A2A2AFF" translation="[0, 0]" />
                 <Rectangle width="5" height="110" color="0x00A89DFF" translation="[0, 0]" />
-                <Label id="doctorsLabel" text="Doctors: 0" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[20, 35]" />
+                <Label id="doctorsLabel" text="Doctors: 0" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[20, 35]" />
 
-                <Rectangle width="330" height="110" color="0xF5F7FAFF" translation="[360, 0]" />
+                <Rectangle width="330" height="110" color="0x2A2A2AFF" translation="[360, 0]" />
                 <Rectangle width="5" height="110" color="0xFFA726FF" translation="[360, 0]" />
-                <Label id="medsLabel" text="Medications: 0" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[380, 35]" />
+                <Label id="medsLabel" text="Medications: 0" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[380, 35]" />
 
-                <Rectangle width="330" height="110" color="0xF5F7FAFF" translation="[720, 0]" />
+                <Rectangle width="330" height="110" color="0x2A2A2AFF" translation="[720, 0]" />
                 <Rectangle width="5" height="110" color="0x7E57C2FF" translation="[720, 0]" />
-                <Label id="notesCountLabel" text="Notes: 0" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[740, 35]" />
+                <Label id="notesCountLabel" text="Notes: 0" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[740, 35]" />
             </Group>
 
             <!-- Medical Notes & Instructions Section -->
             <Group translation="[60, 410]">
                 <Label text="Medical Notes &amp; Care Instructions" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[0, 0]" />
-                <Rectangle width="1080" height="340" color="0xF5F7FAFF" translation="[0, 35]" />
+                <Rectangle width="1080" height="340" color="0x2A2A2AFF" translation="[0, 35]" />
                 <Label id="notesTextLabel" text="No medical notes recorded."
-                    font="font:MediumSystemFont" color="0x1A1A2EFF"
+                    font="font:MediumSystemFont" color="0xFFFFFFFF"
                     translation="[20, 55]" width="1040" wrap="true" maxLines="10" />
             </Group>
         </Group>

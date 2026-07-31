@@ -1,4 +1,6 @@
 sub init()
+    m.backBtn = m.top.findNode("backBtn")
+    m.backFocusBorder = m.top.findNode("backFocusBorder")
     m.verseText = m.top.findNode("verseText")
     m.verseRef = m.top.findNode("verseRef")
     m.reflectionText = m.top.findNode("reflectionText")
@@ -64,8 +66,22 @@ end sub
 function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
-        if key = "OK"
-            ToggleLanguage()
+        if key = "up" and not m.backBtn.hasFocus()
+            m.backBtn.setFocus(true)
+            m.backFocusBorder.visible = true
+            m.langFocusBorder.visible = false
+            handled = true
+        else if key = "down" and m.backBtn.hasFocus()
+            m.backFocusBorder.visible = false
+            m.langFocusBorder.visible = true
+            m.top.setFocus(true)
+            handled = true
+        else if key = "OK"
+            if m.backBtn.hasFocus()
+                m.top.navigate = "HomeScene"
+            else
+                ToggleLanguage()
+            end if
             handled = true
         else if key = "back"
             m.top.navigate = "HomeScene"

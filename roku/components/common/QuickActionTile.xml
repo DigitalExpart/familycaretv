@@ -17,7 +17,7 @@
             translation="[6, 6]" />
 
         <!-- Card background -->
-        <Rectangle id="cardBg" width="405" height="165" color="0xFFFFFFFF"
+        <Rectangle id="cardBg" width="405" height="165" color="0x1E1E1EFF"
             translation="[4, 4]" />
 
         <!-- Left accent bar -->
@@ -32,7 +32,7 @@
         <!-- Title (centered) -->
         <Label id="titleLabel"
             font="font:MediumBoldSystemFont"
-            color="0x1A1A2EFF"
+            color="0xFFFFFFFF"
             horizAlign="center"
             translation="[0, 74]"
             width="415" />

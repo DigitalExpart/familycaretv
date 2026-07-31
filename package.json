@@ -14,8 +14,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "turbo": "latest",
-    "prettier": "latest"
+    "prettier": "latest",
+    "turbo": "latest"
   },
-  "dependencies": {}
+  "dependencies": {
+    "fast-xml-parser": "^5.10.1"
+  }
 }

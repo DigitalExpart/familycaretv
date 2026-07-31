@@ -1,4 +1,6 @@
 sub init()
+    m.backBtn = m.top.findNode("backBtn")
+    m.backFocusBorder = m.top.findNode("backFocusBorder")
     m.drawingImage = m.top.findNode("drawingImage")
     m.thoughtText = m.top.findNode("thoughtText")
     m.qrPoster = m.top.findNode("qrPoster")
@@ -48,7 +50,18 @@ end sub
 function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
-        if key = "back"
+        if key = "up" and m.top.hasFocus()
+            m.backBtn.setFocus(true)
+            m.backFocusBorder.visible = true
+            handled = true
+        else if key = "down" and m.backBtn.hasFocus()
+            m.backFocusBorder.visible = false
+            m.top.setFocus(true)
+            handled = true
+        else if key = "OK" and m.backBtn.hasFocus()
+            m.top.navigate = "HomeScene"
+            handled = true
+        else if key = "back"
             m.top.navigate = "HomeScene"
             handled = true
         end if

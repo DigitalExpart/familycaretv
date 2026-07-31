@@ -8,14 +8,14 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle width="1920" height="1080" color="0x121212FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
             <Rectangle width="1920" height="3" color="0x607D8BFF" translation="[0, 87]" />
             <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-            <Label text="App Settings &amp; Device Pairing" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+            <Label text="App Settings &amp; Device Pairing" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
         </Group>
 
         <!-- Settings Options Grid -->
@@ -23,41 +23,41 @@
             <!-- Card 1: Language Settings -->
             <Group id="cardLang" translation="[0, 0]">
                 <Rectangle id="langFocusBorder" width="844" height="164" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="840" height="160" color="0xFFFFFFFF" />
+                <Rectangle width="840" height="160" color="0x1E1E1EFF" />
                 <Rectangle width="5" height="160" color="0x00A89DFF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Language / Idioma" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[95, 25]" />
-                <Label id="langStatusText" text="Current Language: English (EN) • Click OK to switch to Spanish" font="font:SmallSystemFont" color="0x4A4A68FF" translation="[95, 65]" width="700" wrap="true" />
+                <Label text="Language / Idioma" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[95, 25]" />
+                <Label id="langStatusText" text="Current Language: English (EN) • Click OK to switch to Spanish" font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="700" wrap="true" />
             </Group>
 
             <!-- Card 2: Account & Device Info -->
             <Group id="cardDevice" translation="[880, 0]">
                 <Rectangle id="deviceFocusBorder" width="884" height="164" color="0x42A5F5FF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="880" height="160" color="0xFFFFFFFF" />
+                <Rectangle width="880" height="160" color="0x1E1E1EFF" />
                 <Rectangle width="5" height="160" color="0x42A5F5FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Device Pairing &amp; Account Status" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[95, 25]" />
-                <Label id="accountInfoLabel" text="Paired Device • Status: Active • App Version: 2.1.0 Premium" font="font:SmallSystemFont" color="0x4A4A68FF" translation="[95, 65]" width="740" wrap="true" />
+                <Label text="Device Pairing &amp; Account Status" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[95, 25]" />
+                <Label id="accountInfoLabel" text="Paired Device • Status: Active • App Version: 2.1.0 Premium" font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="740" wrap="true" />
             </Group>
 
             <!-- Card 3: Screensaver & Display Settings -->
             <Group id="cardScreensaver" translation="[0, 190]">
                 <Rectangle id="saverFocusBorder" width="844" height="164" color="0x7E57C2FF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="840" height="160" color="0xFFFFFFFF" />
+                <Rectangle width="840" height="160" color="0x1E1E1EFF" />
                 <Rectangle width="5" height="160" color="0x7E57C2FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Screensaver &amp; Idle Timeout" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[95, 25]" />
-                <Label text="Displays Drawing of the Day &amp; Scripture when TV is idle." font="font:SmallSystemFont" color="0x4A4A68FF" translation="[95, 65]" width="700" wrap="true" />
+                <Label text="Screensaver &amp; Idle Timeout" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[95, 25]" />
+                <Label text="Displays Drawing of the Day &amp; Scripture when TV is idle." font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="700" wrap="true" />
             </Group>
 
             <!-- Card 4: Unlink Device / Logout -->
             <Group id="cardUnlink" translation="[880, 190]">
                 <Rectangle id="unlinkFocusBorder" width="884" height="164" color="0xFF5252FF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="880" height="160" color="0xFFFFFFFF" />
+                <Rectangle width="880" height="160" color="0x1E1E1EFF" />
                 <Rectangle width="5" height="160" color="0xFF5252FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
                 <Label text="Unlink Device / Logout" font="font:MediumBoldSystemFont" color="0xFF5252FF" translation="[95, 25]" />
-                <Label text="Disconnect this Roku TV from your FamilyCare account and clear stored authentication." font="font:SmallSystemFont" color="0x4A4A68FF" translation="[95, 65]" width="740" wrap="true" />
+                <Label text="Disconnect this Roku TV from your FamilyCare account and clear stored authentication." font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="740" wrap="true" />
             </Group>
         </Group>
 

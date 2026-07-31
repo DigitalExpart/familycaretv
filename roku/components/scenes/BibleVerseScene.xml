@@ -7,14 +7,19 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle width="1920" height="1080" color="0x121212FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
             <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-            <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+            <Group id="backBtn" translation="[60, 20]">
+                <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
+                <Rectangle id="backBg" width="220" height="50" color="0x444444FF" />
+                <Label text="← Back" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
+            </Group>
+            
+            <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
 
             <!-- Language Toggle Button (EN / ES) -->
             <Group id="langToggleBtn" translation="[1680, 18]">
@@ -27,17 +32,17 @@
         <!-- Main Card Container -->
         <Group translation="[360, 140]">
             <Rectangle width="1206" height="846" color="0x0000000A" translation="[3, 3]" />
-            <Rectangle width="1200" height="840" color="0xFFFFFFFF" />
+            <Rectangle width="1200" height="840" color="0x1E1E1EFF" />
             <Rectangle width="1200" height="5" color="0x00A89DFF" />
 
             <Label text="Daily Scripture &amp; Reflection" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[60, 40]" />
 
             <!-- Verse Box -->
-            <Rectangle width="1080" height="300" color="0xF5F7FAFF" translation="[60, 90]" />
+            <Rectangle width="1080" height="300" color="0x2A2A2AFF" translation="[60, 90]" />
             <Rectangle width="6" height="300" color="0x00A89DFF" translation="[60, 90]" />
 
             <Label id="verseText"
-                font="font:LargeSystemFont" color="0x1A1A2EFF"
+                font="font:LargeSystemFont" color="0xFFFFFFFF"
                 translation="[90, 115]" width="1020" wrap="true" maxLines="7"
                 text="&quot;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&quot;" />
 
@@ -47,10 +52,10 @@
 
             <!-- Daily Reflection Section -->
             <Group translation="[60, 420]">
-                <Label text="Thought for Today" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[0, 0]" />
-                <Rectangle width="1080" height="280" color="0xF5F7FAFF" translation="[0, 35]" />
+                <Label text="Thought for Today" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[0, 0]" />
+                <Rectangle width="1080" height="280" color="0x2A2A2AFF" translation="[0, 35]" />
                 <Label id="reflectionText"
-                    font="font:MediumSystemFont" color="0x4A4A68FF"
+                    font="font:MediumSystemFont" color="0xAAAAAAFF"
                     translation="[20, 55]" width="1040" wrap="true" maxLines="8"
                     text="May this verse bring peace, comfort, and strength to your family today. Take a moment to reflect on love, grace, and hope." />
             </Group>

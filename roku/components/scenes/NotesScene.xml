@@ -7,14 +7,19 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle width="1920" height="1080" color="0x121212FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
             <Rectangle width="1920" height="3" color="0x008F86FF" translation="[0, 87]" />
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-            <Label text="Personal &amp; Care Notes" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[340, 30]" />
+            <Group id="backBtn" translation="[60, 20]">
+                <Rectangle id="backFocusBorder" width="224" height="54" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
+                <Rectangle id="backBg" width="220" height="50" color="0x444444FF" />
+                <Label text="← Back" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
+            </Group>
+            
+            <Label text="Personal &amp; Care Notes" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
 
             <!-- [+] Add Note Button -->
             <Group id="addBtnGroup" translation="[1600, 18]">
@@ -37,10 +42,10 @@
 
         <!-- Empty State -->
         <Group id="emptyState" visible="false" translation="[560, 360]">
-            <Rectangle width="800" height="260" color="0xFFFFFFFF" />
+            <Rectangle width="800" height="260" color="0x1E1E1EFF" />
             <Rectangle width="800" height="4" color="0x008F86FF" />
-            <Label text="No Personal Notes" font="font:LargeBoldSystemFont" color="0x1A1A2EFF" translation="[40, 40]" />
-            <Label text="Store caregiver reminders, medical updates, and family memos here." font="font:MediumSystemFont" color="0x4A4A68FF" translation="[40, 95]" />
+            <Label text="No Personal Notes" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" translation="[40, 40]" />
+            <Label text="Store caregiver reminders, medical updates, and family memos here." font="font:MediumSystemFont" color="0xAAAAAAFF" translation="[40, 95]" />
             <Label text="Click [+ Add Note] to create your first note entry." font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[40, 150]" />
         </Group>
 
@@ -58,7 +63,7 @@
 
         <Group id="loadingOverlay" visible="true">
             <LoadingSpinner translation="[930, 480]" />
-            <Label text="Loading notes..." font="font:MediumSystemFont" color="0x4A4A68FF" horizAlign="center" width="1920" translation="[0, 560]" />
+            <Label text="Loading notes..." font="font:MediumSystemFont" color="0xAAAAAAFF" horizAlign="center" width="1920" translation="[0, 560]" />
         </Group>
     </children>
 </component>

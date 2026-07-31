@@ -17,15 +17,15 @@
         <!-- Dialog Card -->
         <Group translation="[560, 360]">
             <Rectangle width="806" height="346" color="0x00000010" translation="[3, 3]" />
-            <Rectangle width="800" height="340" color="0xFFFFFFFF" />
+            <Rectangle width="800" height="340" color="0x1E1E1EFF" />
             <Rectangle width="800" height="5" color="0xFF5252FF" />
 
             <Label id="titleLabel" text="Confirm Delete"
-                font="font:LargeBoldSystemFont" color="0x1A1A2EFF"
+                font="font:LargeBoldSystemFont" color="0xFFFFFFFF"
                 translation="[40, 30]" />
 
             <Label id="messageLabel" text="Are you sure?"
-                font="font:MediumSystemFont" color="0x4A4A68FF"
+                font="font:MediumSystemFont" color="0xAAAAAAFF"
                 translation="[40, 85]" width="720" wrap="true" maxLines="3" />
 
             <!-- Buttons Row -->
@@ -41,11 +41,11 @@
 
                 <!-- Cancel Button (Gray) -->
                 <Group id="cancelBtn" translation="[380, 0]">
-                    <Rectangle id="cancelFocusBorder" width="344" height="64" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="cancelBg" width="340" height="60" color="0xE0E3E8FF" />
+                    <Rectangle id="cancelFocusBorder" width="224" height="64" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
+                    <Rectangle id="cancelBg" width="220" height="60" color="0x444444FF" />
                     <Label id="cancelLabel" text="Cancel"
-                        font="font:MediumBoldSystemFont" color="0x1A1A2EFF"
-                        horizAlign="center" width="340" translation="[0, 15]" />
+                        font="font:MediumBoldSystemFont" color="0xFFFFFFFF"
+                        horizAlign="center" width="220" translation="[0, 15]" />
                 </Group>
             </Group>
         </Group>

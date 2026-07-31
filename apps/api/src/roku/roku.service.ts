@@ -38,9 +38,10 @@ export class RokuService {
   }
 
   async linkDevice(userId: string, dto: any) {
-    const codeStr = (typeof dto === 'string' ? dto : dto.code) || '';
+    const rawCode = (typeof dto === 'string' ? dto : dto.code) || '';
+    const codeStr = rawCode.trim().toUpperCase().replace(/O/g, '0').replace(/[IL]/g, '1');
     const link = await this.prisma.deviceLink.findUnique({
-      where: { code: codeStr.toUpperCase() },
+      where: { code: codeStr },
     });
 
     if (!link) {
@@ -154,22 +155,31 @@ export class RokuService {
   }
 
   async getHome(userId: string) {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { firstName: true, lastName: true, subscriptionStatus: true, trialEndsAt: true, currentPeriodEnd: true }
     });
 
-    // Unified reminders for today
+    const patients = await this.prisma.patient.findMany({
+      where: { userId },
+      select: { id: true, fullName: true, avatarUrl: true, condition: true }
+    });
+
+    const medications = await this.prisma.medication.findMany({
+      where: { patient: { userId } }
+    });
+
+    const events = await this.prisma.event.findMany({
+      where: { patient: { userId } },
+      orderBy: { startDateTime: 'asc' }
+    });
+
+    const tasks = await this.prisma.task.findMany({
+      where: { userId }
+    });
+
     const reminders = await this.prisma.reminder.findMany({
-      where: {
-        userId,
-        scheduledAt: { gte: today, lt: tomorrow }
-      },
+      where: { userId },
       orderBy: { scheduledAt: 'asc' }
     });
 
@@ -194,7 +204,11 @@ export class RokuService {
       orderBy: { displayOrder: 'asc' }
     });
 
+    const combinedEvents = events.length > 0 ? events : reminders;
+    const userName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Family Member';
+
     return {
+      userName,
       user: {
         firstName: user?.firstName,
         lastName: user?.lastName,
@@ -204,7 +218,15 @@ export class RokuService {
           renewal: user?.currentPeriodEnd
         }
       },
-      reminders,
+      patientCount: patients.length,
+      patients,
+      medsCount: medications.length,
+      medications,
+      eventsCount: combinedEvents.length,
+      events: combinedEvents,
+      reminders: combinedEvents,
+      tasksCount: tasks.length,
+      tasks,
       notifications,
       verseOfTheDay,
       books,

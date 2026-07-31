@@ -5,19 +5,19 @@
 
     <children>
         <!-- Background -->
-        <Rectangle id="bg" width="1920" height="1080" color="0xF2F4F7FF" />
+        <Rectangle id="bg" width="1920" height="1080" color="0x121212FF" />
 
         <!-- Header Bar -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
             <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
             <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
             <Label text="Screensaver • Living Room Display" font="font:MediumSystemFont" color="0x8E8EA0FF" translation="[340, 30]" />
 
             <!-- Top Right Clock -->
             <Group id="dateTimeGroup" translation="[1380, 15]">
-                <Label id="clockText" font="font:LargeBoldSystemFont" color="0x1A1A2EFF" horizAlign="right" width="480" />
-                <Label id="dateText" font="font:SmallSystemFont" color="0x4A4A68FF" horizAlign="right" width="480" translation="[0, 42]" />
+                <Label id="clockText" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" horizAlign="right" width="480" />
+                <Label id="dateText" font="font:SmallSystemFont" color="0xAAAAAAFF" horizAlign="right" width="480" translation="[0, 42]" />
             </Group>
         </Group>
 
@@ -27,7 +27,7 @@
             <!-- Left Panel: Drawing of the Day Artwork Card -->
             <Group id="drawingGroup" translation="[0, 0]">
                 <Rectangle width="646" height="786" color="0x0000000A" translation="[3, 3]" />
-                <Rectangle width="640" height="780" color="0xFFFFFFFF" />
+                <Rectangle width="640" height="780" color="0x1E1E1EFF" />
                 <Rectangle width="640" height="5" color="0xFF6B6BFF" />
 
                 <Label text="Drawing of the Day" font="font:SmallBoldSystemFont" color="0xFF6B6BFF" translation="[30, 20]" />
@@ -35,7 +35,7 @@
                     loadDisplayMode="scaleToFit" uri="pkg:/images/icon_kids.png" />
 
                 <Label id="drawingThought"
-                    font="font:SmallSystemFont" color="0x4A4A68FF"
+                    font="font:SmallSystemFont" color="0xAAAAAAFF"
                     translation="[30, 500]" width="580" wrap="true" maxLines="8"
                     text="&quot;Take a moment today to appreciate art and creativity.&quot;" />
             </Group>
@@ -44,13 +44,13 @@
             <Group translation="[680, 0]">
                 <!-- Verse Card -->
                 <Rectangle width="1086" height="526" color="0x0000000A" translation="[3, 3]" />
-                <Rectangle width="1080" height="520" color="0xFFFFFFFF" />
+                <Rectangle width="1080" height="520" color="0x1E1E1EFF" />
                 <Rectangle width="1080" height="5" color="0x00A89DFF" />
 
                 <Label text="Verse of the Day" font="font:SmallBoldSystemFont" color="0x00A89DFF" translation="[40, 25]" />
 
                 <Label id="verseText"
-                    font="font:LargeSystemFont" color="0x1A1A2EFF"
+                    font="font:LargeSystemFont" color="0xFFFFFFFF"
                     translation="[40, 75]" width="1000" wrap="true" maxLines="8"
                     text="&quot;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&quot;" />
 
@@ -61,18 +61,18 @@
                 <!-- Bottom QR Code Card -->
                 <Group translation="[0, 550]">
                     <Rectangle width="1086" height="236" color="0x0000000A" translation="[3, 3]" />
-                    <Rectangle width="1080" height="230" color="0xFFFFFFFF" />
+                    <Rectangle width="1080" height="230" color="0x1E1E1EFF" />
                     <Rectangle width="1080" height="5" color="0x7E57C2FF" />
 
                     <!-- QR Code -->
                     <Group translation="[40, 20]">
-                        <Rectangle width="190" height="190" color="0xF5F7FAFF" />
+                        <Rectangle width="190" height="190" color="0x2A2A2AFF" />
                         <Poster id="qrCode" width="170" height="170" translation="[10, 10]"
                             loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
                     </Group>
 
-                    <Label text="FamilyCare Mobile &amp; TV Sync" font="font:MediumBoldSystemFont" color="0x1A1A2EFF" translation="[260, 40]" />
-                    <Label text="Scan QR code to access your family care dashboard on your mobile phone." font="font:SmallSystemFont" color="0x4A4A68FF" translation="[260, 85]" width="760" wrap="true" />
+                    <Label text="FamilyCare Mobile &amp; TV Sync" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[260, 40]" />
+                    <Label text="Scan QR code to access your family care dashboard on your mobile phone." font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[260, 85]" width="760" wrap="true" />
                     <Label text="Press any remote key to exit screensaver and return to app." font="font:SmallBoldSystemFont" color="0x00A89DFF" translation="[260, 150]" />
                 </Group>
             </Group>

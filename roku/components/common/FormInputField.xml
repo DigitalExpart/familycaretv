@@ -13,14 +13,14 @@
     <children>
         <!-- Field Label -->
         <Label id="fieldLabel" text="Field Name"
-            font="font:SmallBoldSystemFont" color="0x4A4A68FF"
+            font="font:SmallBoldSystemFont" color="0xAAAAAAFF"
             translation="[0, 0]" />
 
         <!-- Input Box Container -->
         <Group translation="[0, 28]">
             <Rectangle id="focusGlow" width="704" height="60" color="0x00A89D50" translation="[-2, -2]" visible="false" />
-            <Rectangle id="boxBg" width="700" height="56" color="0xF5F7FAFF" />
-            <Rectangle id="borderLine" width="700" height="2" color="0xE0E3E8FF" translation="[0, 54]" />
+            <Rectangle id="boxBg" width="700" height="56" color="0x2A2A2AFF" />
+            <Rectangle id="borderLine" width="700" height="2" color="0x444444FF" translation="[0, 54]" />
 
             <!-- Value / Placeholder Text -->
             <Label id="valueLabel" text="Enter value..."

@@ -7,43 +7,49 @@
 
     <children>
         <!-- Background -->
-        <Rectangle width="1920" height="1080" color="0x070B14FF" />
+        <Rectangle width="1920" height="1080" color="0x08080EFF" />
 
         <!-- ========================================== -->
         <!-- SIDEBAR NAVIGATION RAIL                    -->
         <!-- ========================================== -->
         <Group id="sidebarGroup">
-            <Rectangle width="220" height="1080" color="0x0D1220FF" />
+            <Rectangle width="240" height="1080" color="0x040408FF" />
             
+            <!-- Right border -->
+            <Rectangle width="1" height="1080" color="0x0D0D18FF" translation="[239, 0]" />
+
             <!-- Logo area -->
-            <Label text="FamilyCare" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[20, 40]" />
-            <Label text="Health · Wellness" font="font:SmallSystemFont" color="0x6B7280FF" translation="[20, 75]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[24, 40]" />
+            <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallSystemFont" color="0x1E3A34FF" translation="[24, 76]" />
+
+            <Rectangle width="192" height="1" color="0x0D0D18FF" translation="[24, 108]" />
 
             <!-- Nav Items List -->
             <MarkupGrid id="sidebarNav"
-                translation="[10, 140]"
+                translation="[0, 130]"
                 itemComponentName="SidebarNavItem"
-                itemSize="[200, 60]"
-                itemSpacing="[0, 10]"
+                itemSize="[240, 52]"
+                itemSpacing="[0, 4]"
                 numColumns="1"
                 numRows="9"
                 drawFocusFeedback="false" />
 
             <!-- Notification Bell & Profile -->
-            <Group translation="[20, 950]">
-                <Rectangle width="180" height="2" color="0x1E2D40FF" translation="[0, 0]" />
+            <Group translation="[0, 1020]">
+                <Rectangle width="192" height="1" color="0x0D0D18FF" translation="[24, -2]" />
                 
                 <!-- Notification Bell -->
-                <Group id="navBell" translation="[20, 20]">
-                    <Poster width="32" height="32" uri="pkg:/images/icon_notifications.png" blendColor="0x6B7280FF" />
-                    <Rectangle id="navBadge" width="12" height="12" color="0xEF4444FF" translation="[20, 0]" visible="false" />
+                <Group id="navBell" translation="[30, 10]">
+                    <Poster width="28" height="28" uri="pkg:/images/icon_notifications.png" blendColor="0x475569FF" />
+                    <!-- Red dot badge -->
+                    <Rectangle id="navBadge" width="10" height="10" color="0xEF4444FF" translation="[20, -2]" visible="false" />
                 </Group>
 
                 <!-- User Profile -->
-                <Group translation="[20, 70]">
-                    <Rectangle width="36" height="36" color="0x1E2D40FF" />
-                    <Label text="FC" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[8, 6]" />
-                    <Label text="Family Profile" font="font:SmallSystemFont" color="0xF9FAFBFF" translation="[50, 6]" />
+                <Group translation="[172, 6]">
+                    <Rectangle width="38" height="38" color="0x1A3D35FF" translation="[-1, -1]" />
+                    <Rectangle width="36" height="36" color="0x111825FF" />
+                    <Label text="J" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[12, 6]" />
                 </Group>
             </Group>
         </Group>
@@ -51,137 +57,109 @@
         <!-- ========================================== -->
         <!-- MAIN CONTENT AREA                          -->
         <!-- ========================================== -->
-        <Group id="mainContent" translation="[220, 0]">
+        <Group id="mainContent" translation="[240, 0]">
             
-            <!-- HEADER -->
-            <Label id="greetingLabel" text="Good Morning, Family" font="font:LargeBoldSystemFont" color="0xF9FAFBFF" translation="[60, 60]" />
-            <Label id="dateLabel" text="Loading Date..." font="font:MediumSystemFont" color="0x6B7280FF" translation="[60, 110]" />
+            <!-- HEADER ROW -->
+            <Label id="greetingLabel" text="Good morning, Jumat" font="font:LargeBoldSystemFont" color="0xE2E8F0FF" translation="[40, 40]" />
+            <Label id="dateLabel" text="Friday, 31 July 2026" font="font:MediumSystemFont" color="0x334155FF" translation="[40, 94]" />
 
-            <!-- NOTIFICATION BANNER (Hidden by default) -->
-            <Group id="notificationBanner" translation="[60, 150]" visible="false">
-                <Rectangle width="1580" height="40" color="0xF59E0B20" />
-                <Rectangle width="4" height="40" color="0xF59E0BFF" />
-                <Label id="notificationText" text="You have 2 upcoming appointments today" font="font:SmallBoldSystemFont" color="0xF59E0BFF" translation="[20, 8]" />
+            <!-- Clock -->
+            <Label id="clockLabel" text="5:57 AM" font="font:LargeSystemFont" color="0x94A3B8FF" translation="[1480, 40]" width="150" horizAlign="right" />
+            <Label id="clockSuffixLabel" text="EN" font="font:SmallSystemFont" color="0x1E293BFF" translation="[1480, 82]" width="150" horizAlign="right" />
+
+            <!-- APPOINTMENT ALERT BAR -->
+            <Group id="alertBar" translation="[40, 140]">
+                <Rectangle width="1602" height="54" color="0x3D2E09FF" translation="[-1, -1]" />
+                <Rectangle width="1600" height="52" color="0x0D1407FF" />
+                <Poster width="20" height="20" uri="pkg:/images/icon_calendar.png" blendColor="0xF59E0BFF" translation="[18, 17]" />
+                <Label text="Upcoming — Dr. Sarah Johnson (Cardiology) · Today at 2:30 PM" font="font:MediumSystemFont" color="0x64748BFF" translation="[48, 14]" />
+                <Label text="In 4 hours →" font="font:MediumSystemFont" color="0xF59E0BFF" translation="[1480, 14]" />
             </Group>
 
-            <!-- STATS STRIP -->
-            <!-- 4 Cards, available width = 1580. Card width = 380, spacing = 20 (380*4 + 60 = 1580) -->
-            <Group id="statsStrip" translation="[60, 200]">
-                
+            <!-- STATS ROW -->
+            <Group id="statsStrip" translation="[40, 222]">
                 <!-- Stat 1: Patients -->
                 <Group translation="[0, 0]">
-                    <Rectangle width="380" height="120" color="0x111827FF" />
-                    <Rectangle width="380" height="4" color="0x00C9A780" translation="[0, 116]" />
-                    <Poster width="24" height="24" uri="pkg:/images/icon_patients.png" blendColor="0x00C9A7FF" translation="[20, 20]" />
-                    <Label id="statPatients" text="0" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[20, 50]" />
-                    <Label text="Patients" font="font:MediumSystemFont" color="0x6B7280FF" translation="[80, 70]" />
+                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
+                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
+                    <Label id="statPatients" text="3" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[24, 18]" />
+                    <Rectangle width="32" height="3" color="0x00C9A7B3" translation="[24, 76]" />
+                    <Label text="PATIENTS" font="font:SmallSystemFont" color="0x1E3A34FF" translation="[24, 86]" />
                 </Group>
 
                 <!-- Stat 2: Today's Meds -->
-                <Group translation="[400, 0]">
-                    <Rectangle width="380" height="120" color="0x111827FF" />
-                    <Rectangle width="380" height="4" color="0xF59E0B80" translation="[0, 116]" />
-                    <Poster width="24" height="24" uri="pkg:/images/icon_medications.png" blendColor="0xF59E0BFF" translation="[20, 20]" />
-                    <Label id="statMeds" text="0" font="font:LargeBoldSystemFont" color="0xF59E0BFF" translation="[20, 50]" />
-                    <Label text="Today's Meds" font="font:MediumSystemFont" color="0x6B7280FF" translation="[80, 70]" />
+                <Group translation="[393, 0]">
+                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
+                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
+                    <Label id="statMeds" text="2" font="font:LargeBoldSystemFont" color="0xF59E0BFF" translation="[24, 18]" />
+                    <Rectangle width="32" height="3" color="0xF59E0BFF" translation="[24, 76]" />
+                    <Label text="TODAY'S MEDS" font="font:SmallSystemFont" color="0x3D2E09FF" translation="[24, 86]" />
                 </Group>
 
                 <!-- Stat 3: Appointments -->
-                <Group translation="[800, 0]">
-                    <Rectangle width="380" height="120" color="0x111827FF" />
-                    <Rectangle width="380" height="4" color="0x8B5CF680" translation="[0, 116]" />
-                    <Poster width="24" height="24" uri="pkg:/images/icon_calendar.png" blendColor="0x8B5CF6FF" translation="[20, 20]" />
-                    <Label id="statAppts" text="0" font="font:LargeBoldSystemFont" color="0x8B5CF6FF" translation="[20, 50]" />
-                    <Label text="Appointments" font="font:MediumSystemFont" color="0x6B7280FF" translation="[80, 70]" />
+                <Group translation="[786, 0]">
+                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
+                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
+                    <Label id="statAppts" text="1" font="font:LargeBoldSystemFont" color="0x8B5CF6FF" translation="[24, 18]" />
+                    <Rectangle width="32" height="3" color="0x8B5CF6FF" translation="[24, 76]" />
+                    <Label text="APPOINTMENTS" font="font:SmallSystemFont" color="0x2D1B69FF" translation="[24, 86]" />
                 </Group>
 
-                <!-- Stat 4: Tasks -->
-                <Group translation="[1200, 0]">
-                    <Rectangle width="380" height="120" color="0x111827FF" />
-                    <Rectangle width="380" height="4" color="0xEF444480" translation="[0, 116]" />
-                    <Poster width="24" height="24" uri="pkg:/images/icon_notes.png" blendColor="0xEF4444FF" translation="[20, 20]" />
-                    <Label id="statTasks" text="0" font="font:LargeBoldSystemFont" color="0xEF4444FF" translation="[20, 50]" />
-                    <Label text="Pending Tasks" font="font:MediumSystemFont" color="0x6B7280FF" translation="[80, 70]" />
+                <!-- Stat 4: Pending Tasks -->
+                <Group translation="[1179, 0]">
+                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
+                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
+                    <Label id="statTasks" text="0" font="font:LargeBoldSystemFont" color="0xEF4444FF" translation="[24, 18]" />
+                    <Rectangle width="32" height="3" color="0xEF4444FF" translation="[24, 76]" />
+                    <Label text="PENDING TASKS" font="font:SmallSystemFont" color="0x3D0F0FFF" translation="[24, 86]" />
                 </Group>
             </Group>
 
-            <!-- MAIN CONTENT GRID -->
-            <!-- Left: Today's Overview (Width 480) -->
-            <!-- Right: Quick Actions (Width 1060, 4 cols) -->
-            <Group translation="[60, 360]">
+            <!-- LOWER CONTENT -->
+            <!-- Left Column: x:40 y:362 -->
+            <Group translation="[40, 362]">
+                <Label text="VERSE OF THE DAY" font="font:SmallSystemFont" color="0x1E293BFF" translation="[0, 0]" />
                 
-                <!-- Left Section: Today's Overview -->
-                <Group id="overviewGroup" translation="[0, 0]">
-                    <Label text="Today's Overview" font="font:MediumBoldSystemFont" color="0xF9FAFBFF" translation="[0, 0]" />
-                    
-                    <!-- Verse Card -->
-                    <Group translation="[0, 40]">
-                        <Rectangle width="480" height="240" color="0x111827FF" />
-                        <Rectangle width="480" height="3" color="0x00C9A7FF" />
-                        <Label text="Verse of the Day" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[20, 20]" />
-                        <Label id="verseText" font="font:MediumSystemFont" color="0xF9FAFBFF" translation="[20, 60]" width="440" wrap="true" maxLines="4" />
-                        <Label id="verseRef" font="font:SmallSystemFont" color="0x6B7280FF" translation="[20, 190]" />
-                    </Group>
-
-                    <!-- Next Appointment -->
-                    <Group translation="[0, 300]">
-                        <Rectangle width="480" height="140" color="0x111827FF" />
-                        <Rectangle width="480" height="3" color="0x8B5CF6FF" />
-                        <Label text="Next Appointment" font="font:SmallBoldSystemFont" color="0x8B5CF6FF" translation="[20, 20]" />
-                        <Label id="apptName" text="Dr. Smith - General Checkup" font="font:MediumBoldSystemFont" color="0xF9FAFBFF" translation="[20, 55]" />
-                        <Label id="apptTime" text="In 3 hours" font="font:MediumSystemFont" color="0x8B5CF6FF" translation="[20, 95]" />
-                    </Group>
-
-                    <!-- Meds Due -->
-                    <Group translation="[0, 460]">
-                        <Rectangle width="480" height="140" color="0x111827FF" />
-                        <Rectangle width="480" height="3" color="0xF59E0BFF" />
-                        <Label text="Medication Due" font="font:SmallBoldSystemFont" color="0xF59E0BFF" translation="[20, 20]" />
-                        <Label id="medName" text="Lisinopril 10mg" font="font:MediumBoldSystemFont" color="0xF9FAFBFF" translation="[20, 55]" />
-                        <Label id="medTime" text="Due at 8:00 PM" font="font:MediumSystemFont" color="0xF59E0BFF" translation="[20, 95]" />
-                    </Group>
+                <!-- Verse Card -->
+                <Group translation="[0, 24]">
+                    <Rectangle width="434" height="392" color="0x0F0F17FF" translation="[-1, -1]" />
+                    <Rectangle width="432" height="390" color="0x0C0C13FF" />
+                    <Label id="verseText" text="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life." font="font:MediumSystemFont" color="0x94A3B8FF" translation="[12, 20]" width="408" wrap="true" />
+                    <Label id="verseRef" text="— John 3:16" font="font:MediumSystemFont" color="0x00C9A7FF" translation="[12, 354]" />
                 </Group>
 
-                <!-- Right Section: Quick Actions -->
-                <Group id="actionsGroup" translation="[520, 0]">
-                    <Label text="Quick Actions" font="font:MediumBoldSystemFont" color="0xF9FAFBFF" translation="[0, 0]" />
-                    
-                    <MarkupGrid id="quickActionsGrid"
-                        translation="[0, 40]"
-                        itemComponentName="QuickActionCard"
-                        itemSize="[260, 280]"
-                        itemSpacing="[20, 20]"
-                        numColumns="4"
-                        numRows="2"
-                        drawFocusFeedback="false" />
+                <!-- Drawing Card -->
+                <Label text="DRAWING OF THE DAY" font="font:SmallSystemFont" color="0x1E293BFF" translation="[0, 444]" />
+                <Group translation="[0, 468]">
+                    <Rectangle width="434" height="252" color="0x0F0F17FF" translation="[-1, -1]" />
+                    <Rectangle width="432" height="250" color="0x0C0C13FF" />
+                    <Label text="Take a moment to appreciate the beauty around you." font="font:MediumSystemFont" color="0x475569FF" translation="[12, 20]" width="300" wrap="true" />
+                    <Rectangle width="56" height="56" color="0x111120FF" translation="[12, 106]" />
+                    <Label text="Scan to view" font="font:MediumSystemFont" color="0x1E293BFF" translation="[78, 124]" />
                 </Group>
+            </Group>
+
+            <!-- Right Column: x:492 y:362 -->
+            <Group translation="[452, 362]">
+                <Label text="QUICK ACTIONS" font="font:SmallSystemFont" color="0x1E293BFF" translation="[0, 0]" />
+                
+                <MarkupGrid id="quickActionsGrid"
+                    translation="[0, 24]"
+                    itemComponentName="QuickActionCard"
+                    itemSize="[285, 315]"
+                    itemSpacing="[16, 16]"
+                    numColumns="4"
+                    numRows="2"
+                    drawFocusFeedback="false" />
             </Group>
 
         </Group>
 
-        <!-- Notification slide-in overlay -->
-        <Group id="notificationOverlay" translation="[1400, -100]" visible="false">
-            <Rectangle width="460" height="100" color="0x111827F0" />
-            <Rectangle width="6" height="100" color="0xEF4444FF" />
-            <Label id="overlayTitle" font="font:SmallBoldSystemFont" color="0xF9FAFBFF" translation="[20, 15]" />
-            <Label id="overlayMsg" font="font:SmallSystemFont" color="0x6B7280FF" translation="[20, 50]" width="420" wrap="true" />
-            <Animation id="slideInAnim" duration="0.4" easeFunction="outQuad">
-                <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1400, -100], [1400, 40] ]" fieldToInterp="notificationOverlay.translation" />
-            </Animation>
-            <Animation id="slideOutAnim" duration="0.4" easeFunction="inQuad">
-                <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1400, 40], [1400, -100] ]" fieldToInterp="notificationOverlay.translation" />
-            </Animation>
-            <Timer id="notificationTimer" duration="5" repeat="false" />
-        </Group>
-
-        <!-- Services -->
-        <ApiTask id="dashboardTask" />
         <Timer id="clockTimer" duration="30" repeat="true" />
-        <Timer id="idleTimer" duration="300" repeat="false" /> <!-- 5 minutes = 300s -->
-        <Task id="notificationTask" type="NotificationTask" />
-
+        <Timer id="idleTimer" duration="300" repeat="false" />
+        
         <Group id="loadingOverlay" visible="true">
-            <Rectangle width="1920" height="1080" color="0x070B14FF" />
+            <Rectangle width="1920" height="1080" color="0x08080EFF" />
             <LoadingSpinner id="spinner" translation="[930, 450]" />
             <Label text="Loading your dashboard..." font="font:MediumSystemFont" color="0x6B7280FF" horizAlign="center" width="1920" translation="[0, 530]" />
         </Group>

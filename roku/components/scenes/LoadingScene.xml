@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="LoadingScene" extends="Scene">
+    <script type="text/brightscript" uri="pkg:/components/scenes/LoadingScene.brs" />
+
+    <children>
+        <!-- Background -->
+        <Rectangle width="1920" height="1080" color="0x08080EFF" />
+        
+        <!-- Concentric ring decoration -->
+        <!-- Ring 1 (outermost) -->
+        <Rectangle width="160" height="160" color="0x0C1A18FF" cornerRoundingRadius="80" translation="[880, 320]" />
+        <Rectangle width="156" height="156" color="0x08080EFF" cornerRoundingRadius="78" translation="[882, 322]" />
+        
+        <!-- Ring 2 (middle) -->
+        <Rectangle width="124" height="124" color="0x0E2420FF" cornerRoundingRadius="62" translation="[898, 338]" />
+        <Rectangle width="120" height="120" color="0x08080EFF" cornerRoundingRadius="60" translation="[900, 340]" />
+        
+        <!-- Ring 3 (inner filled) -->
+        <Rectangle width="90" height="90" color="0x0A1A18FF" cornerRoundingRadius="45" translation="[915, 355]" />
+        
+        <!-- Icon inside ring 3 -->
+        <Label text="~" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[915, 376]" width="90" horizAlign="center" />
+        
+        <!-- Logo text -->
+        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0xE2E8F0FF" translation="[660, 490]" width="600" horizAlign="center" />
+        
+        <!-- Tagline -->
+        <Label text="HEALTH · WELLNESS · FAMILY" font="font:MediumSystemFont" color="0x1E293BFF" translation="[560, 550]" width="800" horizAlign="center" />
+        
+        <!-- Progress bar track -->
+        <Rectangle width="400" height="3" color="0x0D1A14FF" cornerRoundingRadius="1" translation="[760, 610]" />
+        
+        <!-- Progress bar fill (animated) -->
+        <Rectangle id="progressFill" width="10" height="3" color="0x00C9A7FF" cornerRoundingRadius="1" translation="[760, 610]" />
+        
+        <!-- Loading label -->
+        <Label text="LOADING YOUR HEALTH DASHBOARD..." font="font:MediumSystemFont" color="0x1E293BFF" translation="[560, 628]" width="800" horizAlign="center" />
+    </children>
+</component>

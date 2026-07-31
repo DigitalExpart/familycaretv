@@ -6,45 +6,20 @@ sub init()
     
     m.dateLabel = m.top.findNode("dateLabel")
     m.greetingLabel = m.top.findNode("greetingLabel")
+    m.clockLabel = m.top.findNode("clockLabel")
     
     m.statPatients = m.top.findNode("statPatients")
     m.statMeds = m.top.findNode("statMeds")
     m.statAppts = m.top.findNode("statAppts")
     m.statTasks = m.top.findNode("statTasks")
     
-    m.verseText = m.top.findNode("verseText")
-    m.verseRef = m.top.findNode("verseRef")
-    
-    m.apptName = m.top.findNode("apptName")
-    m.apptTime = m.top.findNode("apptTime")
-    m.medName = m.top.findNode("medName")
-    m.medTime = m.top.findNode("medTime")
-    
     m.quickActionsGrid = m.top.findNode("quickActionsGrid")
-    
-    m.notificationBanner = m.top.findNode("notificationBanner")
-    m.notificationText = m.top.findNode("notificationText")
-    
-    m.notificationOverlay = m.top.findNode("notificationOverlay")
-    m.overlayTitle = m.top.findNode("overlayTitle")
-    m.overlayMsg = m.top.findNode("overlayMsg")
-    m.slideInAnim = m.top.findNode("slideInAnim")
-    m.slideOutAnim = m.top.findNode("slideOutAnim")
-    m.notificationTimer = m.top.findNode("notificationTimer")
-    m.notificationTimer.observeField("fire", "OnNotificationTimeout")
-    
-    m.dashboardTask = m.top.findNode("dashboardTask")
-    m.dashboardTask.observeField("response", "OnDashboardData")
     
     m.clockTimer = m.top.findNode("clockTimer")
     m.clockTimer.observeField("fire", "UpdateClock")
     
     m.idleTimer = m.top.findNode("idleTimer")
     m.idleTimer.observeField("fire", "OnIdleTimeout")
-    
-    m.notificationTask = m.top.findNode("notificationTask")
-    m.notificationTask.observeField("notification", "OnNewNotification")
-    m.notificationTask.control = "RUN"
     
     m.sidebarNav.observeField("itemSelected", "OnSidebarSelected")
     m.quickActionsGrid.observeField("itemSelected", "OnQuickActionSelected")
@@ -53,22 +28,35 @@ sub init()
     SetupQuickActions()
     UpdateClock()
     
-    FetchDashboard()
+    ' Simulating dashboard fetch complete
+    m.loadingOverlay.visible = false
+    m.sidebarNav.setFocus(true)
     
-    ' Reset idle timer on any key press
     m.idleTimer.control = "start"
 end sub
 
 sub UpdateClock()
     date = CreateObject("roDateTime")
     date.ToLocalTime()
-    days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    
-    dayStr = days[date.GetWeekday()]
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    dayStr = date.GetWeekday()
     monthStr = months[date.GetMonth() - 1]
     
-    m.dateLabel.text = dayStr + ", " + monthStr + " " + date.GetDay().ToStr() + ", " + date.GetYear().ToStr()
+    m.dateLabel.text = dayStr + ", " + date.GetDay().ToStr() + " " + monthStr + " " + date.GetYear().ToStr()
+    
+    hour = date.GetHours()
+    minute = date.GetMinutes()
+    ampm = "AM"
+    if hour >= 12
+        ampm = "PM"
+        if hour > 12 then hour = hour - 12
+    end if
+    if hour = 0 then hour = 12
+    
+    minStr = minute.ToStr()
+    if minute < 10 then minStr = "0" + minStr
+    
+    m.clockLabel.text = hour.ToStr() + ":" + minStr + " " + ampm
 end sub
 
 sub SetupSidebar()
@@ -101,13 +89,13 @@ end sub
 sub SetupQuickActions()
     actions = [
         { title: "Patients", desc: "View & manage", icon: "pkg:/images/icon_patients.png", color: "0x00C9A7FF", target: "PatientsScene" },
-        { title: "Calendar", desc: "Events & appts", icon: "pkg:/images/icon_calendar.png", color: "0x8B5CF6FF", target: "CalendarScene" },
-        { title: "Medications", desc: "Reminders", icon: "pkg:/images/icon_medications.png", color: "0xF59E0BFF", target: "MedicationsScene" },
-        { title: "Music", desc: "Relaxing vibes", icon: "pkg:/images/icon_music.png", color: "0xEF4444FF", target: "MusicScene" },
-        { title: "Kids", desc: "Coloring fun", icon: "pkg:/images/icon_kids.png", color: "0x8B5CF6FF", target: "KidsScene" },
-        { title: "Pets", desc: "Care tracker", icon: "pkg:/images/icon_pets.png", color: "0x00C9A7FF", target: "PetsScene" },
-        { title: "Notes", desc: "Personal notes", icon: "pkg:/images/icon_notes.png", color: "0x00C9A7FF", target: "NotesScene" },
-        { title: "Settings", desc: "Preferences", icon: "pkg:/images/icon_settings.png", color: "0x6B7280FF", target: "SettingsScreen" }
+        { title: "Calendar", desc: "Events & appointments", icon: "pkg:/images/icon_calendar.png", color: "0x8B5CF6FF", target: "CalendarScene" },
+        { title: "Medications", desc: "Reminders & dosages", icon: "pkg:/images/icon_medications.png", color: "0xF59E0BFF", target: "MedicationsScene" },
+        { title: "Music", desc: "Relaxing playlists", icon: "pkg:/images/icon_music.png", color: "0xF472B6FF", target: "MusicScene" },
+        { title: "Kids", desc: "Coloring & activities", icon: "pkg:/images/icon_kids.png", color: "0xFB923CFF", target: "KidsScene" },
+        { title: "Pets", desc: "Pet care tracker", icon: "pkg:/images/icon_pets.png", color: "0x4ADE80FF", target: "PetsScene" },
+        { title: "Notes", desc: "Personal notes", icon: "pkg:/images/icon_notes.png", color: "0x60A5FAFF", target: "NotesScene" },
+        { title: "Settings", desc: "App preferences", icon: "pkg:/images/icon_settings.png", color: "0x9CA3AFFF", target: "SettingsScreen" }
     ]
     
     m.actionTargets = []
@@ -124,33 +112,6 @@ sub SetupQuickActions()
     end for
     
     m.quickActionsGrid.content = content
-end sub
-
-sub FetchDashboard()
-    m.loadingOverlay.visible = true
-    m.dashboardTask.request = {
-        endpoint: "/roku/dashboard",
-        method: "GET"
-    }
-    m.dashboardTask.control = "RUN"
-end sub
-
-sub OnDashboardData(event as Object)
-    m.loadingOverlay.visible = false
-    response = event.getData()
-    
-    ' Update stats
-    m.statPatients.text = "4"
-    m.statMeds.text = "2"
-    m.statAppts.text = "1"
-    m.statTasks.text = "0"
-    
-    ' Update Verse
-    m.verseText.text = """For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life."""
-    m.verseRef.text = "- John 3:16"
-    
-    ' Set initial focus to sidebar
-    m.sidebarNav.setFocus(true)
 end sub
 
 sub OnSidebarSelected()
@@ -174,26 +135,9 @@ sub OnIdleTimeout()
     m.top.navigate = "ScreensaverScene"
 end sub
 
-sub OnNewNotification(event as Object)
-    notif = event.getData()
-    if notif <> invalid
-        m.navBadge.visible = true
-        m.overlayTitle.text = notif.title
-        m.overlayMsg.text = notif.message
-        m.notificationOverlay.visible = true
-        m.slideInAnim.control = "start"
-        m.notificationTimer.control = "start"
-    end if
-end sub
-
-sub OnNotificationTimeout()
-    m.slideOutAnim.control = "start"
-end sub
-
 function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
-        ' Reset idle timer on any key press
         m.idleTimer.control = "start"
         
         if key = "right" and m.sidebarNav.hasFocus()

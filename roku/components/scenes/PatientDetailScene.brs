@@ -60,7 +60,6 @@ end sub
 sub UpdateFocus()
     m.editFocusBorder.visible = (m.focusedButton = 0)
     m.deleteFocusBorder.visible = (m.focusedButton = 1)
-    m.backFocusBorder.visible = (m.focusedButton = 2)
 end sub
 
 sub OpenEditForm()
@@ -117,7 +116,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
         if key = "right"
-            if m.focusedButton < 2
+            if m.focusedButton < 1
                 m.focusedButton = m.focusedButton + 1
                 UpdateFocus()
                 handled = true
@@ -134,9 +133,6 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 handled = true
             else if m.focusedButton = 1
                 m.confirmDeleteDialog.show = true
-                handled = true
-            else if m.focusedButton = 2
-                m.top.closeRequest = true
                 handled = true
             end if
         else if key = "back"

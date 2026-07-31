@@ -6,29 +6,26 @@
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/QuickActionCard.brs" />
     <children>
-        <!-- Scaling container for 2.5D pop -->
-        <Group id="scaleContainer" scale="[1.0, 1.0]" translation="[130, 140]">
-            <!-- Shift back by half width/height so scale revolves around center -->
-            <Group translation="[-130, -140]">
-                <!-- Glow ring -->
-                <Rectangle id="glowRing" width="264" height="284" color="0x00C9A7FF" translation="[-2, -2]" visible="false" />
-                
-                <Rectangle id="cardBg" width="260" height="280" color="0x111827FF" />
-                
-                <Rectangle id="topAccent" width="260" height="3" color="0x00C9A7FF" />
-                
-                <Poster id="iconPoster" width="56" height="56" translation="[102, 50]" blendColor="0xF9FAFBFF" />
-                <Label id="titleLabel" font="font:LargeBoldSystemFont" color="0xF9FAFBFF" translation="[0, 130]" width="260" horizAlign="center" />
-                <Label id="descLabel" font="font:MediumSystemFont" color="0x6B7280FF" translation="[20, 180]" width="220" horizAlign="center" wrap="true" maxLines="2" />
-            </Group>
+        <Group id="scaleContainer" scaleRotateCenter="[142.5, 157.5]">
+            <!-- Border rectangle behind it (2px larger) -->
+            <Rectangle id="focusBorder" width="289" height="319" color="0x00C9A7FF" translation="[-2, -2]" visible="false" />
+            
+            <Rectangle id="cardBg" width="285" height="315" color="0x0C0C13FF" />
+            <Rectangle id="topAccent" width="285" height="3" color="0x00C9A7FF" />
+            
+            <!-- Icon size 48x48, centered = (285-48)/2 = 118.5 => 118 -->
+            <Poster id="iconPoster" width="48" height="48" translation="[118, 80]" blendColor="0xFFFFFFFF" />
+            
+            <Label id="titleLabel" font="font:LargeBoldSystemFont" color="0xE2E8F0FF" translation="[0, 180]" width="285" horizAlign="center" />
+            <Label id="descLabel" font="font:MediumSystemFont" color="0x334155FF" translation="[0, 225]" width="285" horizAlign="center" />
         </Group>
 
         <Animation id="focusInAnim" duration="0.2" easeFunction="outQuad">
-            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.0, 1.0], [1.08, 1.08] ]" fieldToInterp="scaleContainer.scale" />
+            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.0, 1.0], [1.04, 1.04] ]" fieldToInterp="scaleContainer.scale" />
         </Animation>
         
         <Animation id="focusOutAnim" duration="0.2" easeFunction="outQuad">
-            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.08, 1.08], [1.0, 1.0] ]" fieldToInterp="scaleContainer.scale" />
+            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.04, 1.04], [1.0, 1.0] ]" fieldToInterp="scaleContainer.scale" />
         </Animation>
     </children>
 </component>

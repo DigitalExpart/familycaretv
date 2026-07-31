@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="NotificationTask" extends="Task">
+    <interface>
+        <field id="notification" type="assocarray" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/tasks/NotificationTask.brs" />
+</component>

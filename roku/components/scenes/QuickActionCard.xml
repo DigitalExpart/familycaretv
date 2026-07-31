@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="QuickActionCard" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="OnContentChange" />
+        <field id="itemHasFocus" type="boolean" onChange="OnFocusChange" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/QuickActionCard.brs" />
+    <children>
+        <!-- Scaling container for 2.5D pop -->
+        <Group id="scaleContainer" scale="[1.0, 1.0]" translation="[130, 140]">
+            <!-- Shift back by half width/height so scale revolves around center -->
+            <Group translation="[-130, -140]">
+                <!-- Glow ring -->
+                <Rectangle id="glowRing" width="264" height="284" color="0x00C9A7FF" translation="[-2, -2]" visible="false" />
+                
+                <Rectangle id="cardBg" width="260" height="280" color="0x111827FF" />
+                
+                <Rectangle id="topAccent" width="260" height="3" color="0x00C9A7FF" />
+                
+                <Poster id="iconPoster" width="56" height="56" translation="[102, 50]" blendColor="0xF9FAFBFF" />
+                <Label id="titleLabel" font="font:LargeBoldSystemFont" color="0xF9FAFBFF" translation="[0, 130]" width="260" horizAlign="center" />
+                <Label id="descLabel" font="font:MediumSystemFont" color="0x6B7280FF" translation="[20, 180]" width="220" horizAlign="center" wrap="true" maxLines="2" />
+            </Group>
+        </Group>
+
+        <Animation id="focusInAnim" duration="0.2" easeFunction="outQuad">
+            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.0, 1.0], [1.08, 1.08] ]" fieldToInterp="scaleContainer.scale" />
+        </Animation>
+        
+        <Animation id="focusOutAnim" duration="0.2" easeFunction="outQuad">
+            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.08, 1.08], [1.0, 1.0] ]" fieldToInterp="scaleContainer.scale" />
+        </Animation>
+    </children>
+</component>

@@ -1,94 +1,61 @@
 sub init()
-    m.clockText = m.top.findNode("clockText")
-    m.dateText = m.top.findNode("dateText")
-
-    m.verseText = m.top.findNode("verseText")
-    m.verseRef = m.top.findNode("verseRef")
-
-    m.drawingPoster = m.top.findNode("drawingPoster")
-    m.drawingThought = m.top.findNode("drawingThought")
-
-    m.qrCode = m.top.findNode("qrCode")
-    m.notificationTicker = m.top.findNode("notificationTicker")
-
-    m.screensaverTask = m.top.findNode("screensaverTask")
-    m.screensaverTask.observeField("response", "onDataReceived")
-
-    m.clockTimer = m.top.findNode("clockTimer")
-    m.clockTimer.observeField("fire", "updateClock")
-
-    updateClock()
-
-    m.screensaverTask.request = { endpoint: "/roku/dashboard", method: "GET" }
-    m.screensaverTask.control = "RUN"
+    m.pulseAnim = m.top.findNode("pulseAnim")
+    m.logoFadeAnim = m.top.findNode("logoFadeAnim")
+    
+    m.tipLabel = m.top.findNode("tipLabel")
+    m.tipTimer = m.top.findNode("tipTimer")
+    m.tipFadeAnim = m.top.findNode("tipFadeAnim")
+    m.tipFader = m.top.findNode("tipFader")
+    
+    m.tipTimer.observeField("fire", "OnTipTimer")
+    
+    m.tips = [
+        "Drink at least 8 glasses of water a day.",
+        "Take a 5-minute walk every hour to stay active.",
+        "Psalm 46:1 - God is our refuge and strength.",
+        "Don't forget to take your evening medications.",
+        "A good laugh and a long sleep are the best cures."
+    ]
+    m.currentTipIndex = 0
+    
+    ' Start animations
+    m.pulseAnim.control = "start"
+    m.logoFadeAnim.control = "start"
+    
+    ' Show first tip
+    ShowNextTip()
+    m.tipTimer.control = "start"
 end sub
 
-sub updateClock()
-    now = CreateObject("roDateTime")
-    now.ToLocalTime()
-    m.clockText.text = GetFormattedTime()
-    m.dateText.text = now.AsDateString("short-month-short-weekday")
-end sub
-
-sub onDataReceived()
-    res = m.screensaverTask.response
-    if res <> invalid and res.code = 200 and res.data <> invalid
-        data = res.data
-
-        ' QR Code
-        if data.qrCodeUrl <> invalid and data.qrCodeUrl <> ""
-            m.qrCode.uri = data.qrCodeUrl
-        end if
-
-        ' Verse of the Day
-        if data.verse <> invalid
-            m.verseText.text = Chr(34) + data.verse.text + Chr(34)
-            m.verseRef.text = "- " + data.verse.reference
-        else if data.verseOfTheDay <> invalid and data.verseOfTheDay.verse <> invalid
-            m.verseText.text = Chr(34) + data.verseOfTheDay.verse + Chr(34)
-            m.verseRef.text = "- " + data.verseOfTheDay.reference
-        end if
-
-        ' Drawing of the Day
-        if data.drawingUrl <> invalid and data.drawingUrl <> ""
-            m.drawingPoster.uri = data.drawingUrl
-        else if data.drawing <> invalid and data.drawing.imageUrl <> invalid
-            m.drawingPoster.uri = data.drawing.imageUrl
-        end if
-
-        if data.drawingThought <> invalid and data.drawingThought <> ""
-            m.drawingThought.text = Chr(34) + data.drawingThought + Chr(34)
-        end if
-
-        ' Notifications & Reminders Ticker
-        reminders = []
-        if data.reminders <> invalid
-            for each r in data.reminders
-                if r.title <> invalid
-                    reminders.push(r.title)
-                end if
-            end for
-        end if
-
-        if data.medications <> invalid
-            for each mItem in data.medications
-                if mItem.name <> invalid
-                    reminders.push("Medication Due: " + mItem.name)
-                end if
-            end for
-        end if
-
-        if m.notificationTicker <> invalid
-            m.notificationTicker.callFunc("setNotifications", reminders)
-        end if
+sub ShowNextTip()
+    m.tipLabel.text = m.tips[m.currentTipIndex]
+    m.currentTipIndex = m.currentTipIndex + 1
+    if m.currentTipIndex >= m.tips.count()
+        m.currentTipIndex = 0
     end if
+    
+    m.tipFader.keyValue = [0.0, 1.0]
+    m.tipFadeAnim.control = "start"
+end sub
+
+sub OnTipTimer()
+    ' Fade out then fade in next
+    ShowNextTip()
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
-    ' Any key press exits screensaver
     if press
-        m.top.closeRequest = true
-        return true
+        ' Any key press exits screensaver
+        m.top.getScene().dialog = invalid ' Close dialogs if any
+        ' We assume MainScene or equivalent will handle returning to HomeScene
+        ' For screensavers, Roku typically handles closing the screensaver automatically 
+        ' if launched natively, but if it's a custom scene we must navigate back.
+        ' However, since this is invoked via navigate field on HomeSceneV2,
+        ' we should tell Main.brs to pop the scene, but wait! We can just close it.
+        ' Better yet, we can tell the app to go back to HomeSceneV2.
+        
+        ' Just let the system handle "back" if we were pushed to the screen stack
+        return false
     end if
     return false
 end function

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="SidebarNavItem" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="OnContentChange" />
+        <field id="itemHasFocus" type="boolean" onChange="OnFocusChange" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/SidebarNavItem.brs" />
+    <children>
+        <Rectangle id="bgRect" width="200" height="50" color="0x0D1220FF" translation="[10, 5]" />
+        <Poster id="iconPoster" width="24" height="24" translation="[30, 18]" blendColor="0x6B7280FF" />
+        <Label id="titleLabel" font="font:MediumBoldSystemFont" color="0x6B7280FF" translation="[70, 15]" />
+    </children>
+</component>

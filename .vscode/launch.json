@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "brightscript",
+      "request": "launch",
+      "name": "Roku Deploy & Debug (Emulator / Device)",
+      "host": "127.0.0.1",
+      "password": "rokudev",
+      "rootDir": "${workspaceFolder}/roku",
+      "outFolder": "${workspaceFolder}/roku/out",
+      "injectRdbOnDeploy": true,
+      "retainStagingDir": true
+    }
+  ]
+}

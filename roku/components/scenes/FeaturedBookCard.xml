@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="FeaturedBookCard" extends="Group">
+    <interface>
+        <field id="itemHasFocus" type="boolean" onChange="OnFocusChange" />
+        <field id="selected" type="boolean" alwaysNotify="true" />
+        <field id="currentBook" type="assocarray" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/scenes/FeaturedBookCard.brs" />
+    <children>
+        <Group id="scaleContainer" scaleRotateCenter="[290, 120]">
+            <!-- Card background: rounded white card with subtle border/elevation -->
+            <Poster id="bgPoster" width="580" height="240" uri="pkg:/images/card_book_bg.png" />
+
+            <!-- Content group (alpha animated during auto-rotation) -->
+            <Group id="contentGroup" translation="[22, 20]">
+                <!-- Left: Book Cover Poster (portrait aspect ratio: 90 x 135) -->
+                <Poster id="coverPoster" width="90" height="135" loadDisplayMode="scaleToFit" uri="pkg:/images/book_cover_mindfulness.png" />
+
+                <!-- Right: Text LayoutGroup ensuring clean vertical stacking and zero button collision -->
+                <LayoutGroup id="textGroup" layoutDirection="vert" translation="[112, 4]" itemSpacings="[4, 4, 10]">
+                    <!-- Book Title (max 2 lines) -->
+                    <Label id="titleLabel" font="font:SmallestBoldSystemFont" color="0x0F172AFF" width="430" wrap="true" maxLines="2" />
+                    <!-- Author (single line) -->
+                    <Label id="authorLabel" font="font:SmallestSystemFont" color="0x00C9A7FF" width="430" wrap="false" maxLines="1" />
+                    <!-- Description (max 2 lines with safe wrap) -->
+                    <Label id="descLabel" font="font:SmallestSystemFont" color="0x475569FF" width="430" wrap="true" maxLines="2" />
+
+                    <!-- Action Button — Red rounded pill button [ Featured Book ] -->
+                    <Group id="actionBadge">
+                        <Poster id="btnPoster" width="136" height="30" uri="pkg:/images/badge_featured_book.png" />
+                        <Label id="btnText" text="Featured Book" font="font:SmallestBoldSystemFont" color="0xFFFFFFFF" translation="[0, 5]" width="136" horizAlign="center" />
+                    </Group>
+                </LayoutGroup>
+            </Group>
+        </Group>
+
+        <!-- Focus Animations -->
+        <Animation id="focusInAnim" duration="0.15" easeFunction="outQuad">
+            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.0, 1.0], [1.03, 1.03] ]" fieldToInterp="scaleContainer.scale" />
+        </Animation>
+
+        <Animation id="focusOutAnim" duration="0.15" easeFunction="outQuad">
+            <Vector2DFieldInterpolator key="[0.0, 1.0]" keyValue="[ [1.03, 1.03], [1.0, 1.0] ]" fieldToInterp="scaleContainer.scale" />
+        </Animation>
+
+        <!-- Rotation Transition Animations -->
+        <Animation id="fadeOutAnim" duration="0.25" easeFunction="linear">
+            <FloatInterpolator key="[0.0, 1.0]" keyValue="[ [1.0], [0.0] ]" fieldToInterp="contentGroup.alpha" />
+        </Animation>
+
+        <Animation id="fadeInAnim" duration="0.25" easeFunction="linear">
+            <FloatInterpolator key="[0.0, 1.0]" keyValue="[ [0.0], [1.0] ]" fieldToInterp="contentGroup.alpha" />
+        </Animation>
+
+        <!-- Auto-rotation Timer (10 seconds) -->
+        <Timer id="rotationTimer" duration="10" repeat="true" />
+    </children>
+</component>

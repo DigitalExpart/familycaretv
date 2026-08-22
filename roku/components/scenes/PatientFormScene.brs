@@ -55,25 +55,21 @@ sub OpenKeyboard(title as String, initialText as String, fieldIndex as Integer)
     m.keyboardDialog.text = initialText
     m.keyboardDialog.visible = true
     m.keyboardDialog.setFocus(true)
-    m.keyboardDialog.observeField("buttonSelected", "OnKeyboardButtonSelected")
+    m.keyboardDialog.observeField("wasClosed", "OnKeyboardClosed")
 end sub
 
-sub OnKeyboardButtonSelected(event as Object)
-    buttonIdx = event.getData()
+sub OnKeyboardClosed(event as Object)
     typedText = m.keyboardDialog.text
     m.keyboardDialog.visible = false
 
-    ' 0 is typically OK / Done in KeyboardDialog
-    if buttonIdx = 0 or buttonIdx = invalid
-        if m.editingFieldIndex = 0
-            m.nameField.value = typedText
-        else if m.editingFieldIndex = 1
-            m.dobField.value = typedText
-        else if m.editingFieldIndex = 2
-            m.genderField.value = typedText
-        else if m.editingFieldIndex = 3
-            m.notesField.value = typedText
-        end if
+    if m.editingFieldIndex = 0
+        m.nameField.value = typedText
+    else if m.editingFieldIndex = 1
+        m.dobField.value = typedText
+    else if m.editingFieldIndex = 2
+        m.genderField.value = typedText
+    else if m.editingFieldIndex = 3
+        m.notesField.value = typedText
     end if
 
     UpdateFocus()
@@ -82,14 +78,16 @@ end sub
 
 sub SavePatient()
     name = m.nameField.value
-    if name = invalid or Trim(name) = ""
+    if name = invalid then name = ""
+    if name.Trim() = ""
         m.errorDialog.message = "Please enter the patient's full name."
         m.errorDialog.show = true
         return
     end if
 
     dob = m.dobField.value
-    if dob = invalid or Trim(dob) = ""
+    if dob = invalid then dob = ""
+    if dob.Trim() = ""
         dob = "1960-01-01"
     end if
 

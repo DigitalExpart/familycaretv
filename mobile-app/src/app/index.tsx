@@ -147,7 +147,7 @@ export default function ConnectRokuScreen() {
         {/* Authentication Card (if login needed) */}
         {!token && (
           <ThemedView style={styles.cardSecondary}>
-            <ThemedText type="defaultSemiBold" style={styles.cardTitle}>Account Authentication</ThemedText>
+            <ThemedText type="default" style={styles.cardTitle}>Account Authentication</ThemedText>
             <ThemedText style={styles.smallText}>Log in to link TV to your profile</ThemedText>
 
             <TextInput

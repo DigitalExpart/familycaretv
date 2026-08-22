@@ -2,10 +2,24 @@
 <component name="AuthScreen" extends="Group">
     <script type="text/brightscript" uri="pkg:/components/screens/AuthScreen.brs" />
     <children>
-        <Rectangle id="bg" width="1920" height="1080" color="0x121212FF" />
-        <Label id="title" translation="[760, 200]" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" text="Link Your TV" />
-        <Label id="instructions" translation="[660, 300]" font="font:MediumSystemFont" color="0xCCCCCCFF" text="Enter this code in your FamilyCare Mobile App:" />
-        <Label id="codeLabel" translation="[810, 400]" font="font:LargeBoldSystemFont" color="0x00FF00FF" text="LOADING..." />
+        <Rectangle id="bg" width="1920" height="1080" color="0xF0F2F5FF" />
+        
+        <Group translation="[460, 240]">
+            <Rectangle width="1004" height="484" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="14" />
+            <Rectangle width="1000" height="480" color="0xFFFFFFFF" cornerRoundingRadius="14" />
+            <Rectangle width="1000" height="4" color="0x00C9A7FF" />
+            
+            <Label id="title" translation="[0, 50]" font="font:LargeBoldSystemFont" color="0x0F172AFF" text="Link Your TV" horizAlign="center" width="1000" />
+            <Label id="instructions" translation="[0, 120]" font="font:MediumSystemFont" color="0x64748BFF" text="Enter this code in your FamilyCare Mobile App:" horizAlign="center" width="1000" />
+            
+            <!-- Code display box -->
+            <Group translation="[200, 200]">
+                <Rectangle width="604" height="124" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="10" />
+                <Rectangle width="600" height="120" color="0xF8FAFCFF" cornerRoundingRadius="10" />
+                <Label id="codeLabel" translation="[0, 30]" font="font:LargeBoldSystemFont" color="0x00C9A7FF" text="LOADING..." horizAlign="center" width="600" />
+            </Group>
+        </Group>
+        
         <ApiTask id="authTask" />
     </children>
 </component>

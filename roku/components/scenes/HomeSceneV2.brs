@@ -1,18 +1,25 @@
 sub init()
+    print "[HOME] init"
     m.loadingOverlay = m.top.findNode("loadingOverlay")
     
     m.sidebarNav = m.top.findNode("sidebarNav")
     m.navBadge = m.top.findNode("navBadge")
     
     m.dateLabel = m.top.findNode("dateLabel")
+    m.timeLabel = m.top.findNode("timeLabel")
     m.greetingLabel = m.top.findNode("greetingLabel")
-    m.clockLabel = m.top.findNode("clockLabel")
     
     m.statPatients = m.top.findNode("statPatients")
-    m.statMeds = m.top.findNode("statMeds")
     m.statAppts = m.top.findNode("statAppts")
-    m.statTasks = m.top.findNode("statTasks")
+    m.statMeds = m.top.findNode("statMeds")
+    m.statNotes = m.top.findNode("statNotes")
     
+    m.alertText = m.top.findNode("alertText")
+    m.alertCountdown = m.top.findNode("alertCountdown")
+    m.verseText = m.top.findNode("verseText")
+    m.verseRef = m.top.findNode("verseRef")
+    
+    m.featuredBookCard = m.top.findNode("featuredBookCard")
     m.quickActionsGrid = m.top.findNode("quickActionsGrid")
     
     m.clockTimer = m.top.findNode("clockTimer")
@@ -24,25 +31,174 @@ sub init()
     m.sidebarNav.observeField("itemSelected", "OnSidebarSelected")
     m.quickActionsGrid.observeField("itemSelected", "OnQuickActionSelected")
     
+    if m.featuredBookCard <> invalid
+        m.featuredBookCard.observeField("selected", "OnFeaturedBookSelected")
+    end if
+    
+    m.dashboardTask = m.top.findNode("dashboardTask")
+    if m.dashboardTask <> invalid
+        m.dashboardTask.observeField("response", "OnDashboardResponse")
+    end if
+    
     SetupSidebar()
     SetupQuickActions()
     UpdateClock()
     
-    ' Simulating dashboard fetch complete
+    m.idleTimer.control = "start"
+    
+    FetchDashboard()
+end sub
+
+function FormatCount(val as Dynamic) as String
+    if val = invalid return "0"
+    if type(val) = "roInt" or type(val) = "Integer" or type(val) = "roInteger"
+        return StrI(val).Trim()
+    else if type(val) = "roFloat" or type(val) = "Float" or type(val) = "Double"
+        return StrI(Int(val)).Trim()
+    else if type(val) = "roString" or type(val) = "String"
+        return val
+    end if
+    return "0"
+end function
+
+sub FetchDashboard()
+    token = getToken()
+    hasToken = (token <> "" and token <> invalid)
+    print "[AUTH] Token present = "; hasToken
+    if not hasToken
+        print "[HOME] No token found -> Route to DeviceLinkScene"
+        m.top.navigate = "DeviceLinkScene"
+        return
+    end if
+
+    print "[HOME] starting dashboard fetch"
+    m.loadingOverlay.visible = true
+    if m.dashboardTask <> invalid
+        m.dashboardTask.request = {
+            endpoint: "/roku/dashboard",
+            method: "GET"
+        }
+        m.dashboardTask.control = "RUN"
+    end if
+end sub
+
+sub OnDashboardResponse(event as Object)
+    print "[HOME] dashboard result observer fired = true"
     m.loadingOverlay.visible = false
     m.sidebarNav.setFocus(true)
-    
-    m.idleTimer.control = "start"
+
+    response = event.getData()
+    if response = invalid
+        print "[HOME] result success = false (null response)"
+        m.alertText.text = "Unable to refresh FamilyCare data. Press * to retry."
+        return
+    end if
+
+    print "[API] HTTP status = "; response.code
+    resultSuccess = (response.code = 200 and response.data <> invalid)
+    print "[HOME] result success = "; resultSuccess
+
+    if response.code = 401 or response.code = 403
+        print "[AUTH] Unauthorized response (401/403) -> Clear tokens and navigate to DeviceLinkScene"
+        clearAllTokens()
+        m.top.navigate = "DeviceLinkScene"
+        return
+    end if
+
+    if resultSuccess
+        data = response.data
+
+        ' 1. User Greeting
+        if data.userName <> invalid and data.userName <> ""
+            m.greetingLabel.text = "Welcome, " + data.userName
+        else if data.user <> invalid and data.user.firstName <> invalid
+            m.greetingLabel.text = "Welcome, " + data.user.firstName
+        else
+            m.greetingLabel.text = "Welcome Home"
+        end if
+
+        ' 2. Quick Stats: Patients, Appointments, Medications, Notes
+        if data.stats <> invalid
+            stats = data.stats
+            print "[HOME] applying stats"
+            if stats.patients <> invalid then m.statPatients.text = FormatCount(stats.patients)
+            if stats.appointments <> invalid then m.statAppts.text = FormatCount(stats.appointments)
+            if stats.medications <> invalid then m.statMeds.text = FormatCount(stats.medications)
+            if stats.notes <> invalid then m.statNotes.text = FormatCount(stats.notes)
+            print "[API] stats.patients="; m.statPatients.text; " appointments="; m.statAppts.text; " medications="; m.statMeds.text; " notes="; m.statNotes.text
+        else
+            if data.patientCount <> invalid then m.statPatients.text = FormatCount(data.patientCount)
+            if data.eventsCount <> invalid then m.statAppts.text = FormatCount(data.eventsCount)
+            if data.medsCount <> invalid then m.statMeds.text = FormatCount(data.medsCount)
+            if data.notesCount <> invalid then m.statNotes.text = FormatCount(data.notesCount)
+            print "[HOME] applying fallback counts (patients="; m.statPatients.text; ")"
+        end if
+
+        ' 3. Upcoming Appointment Alert Bar
+        if data.upcomingAppointment <> invalid and data.upcomingAppointment <> ""
+            appt = data.upcomingAppointment
+            if appt.displayTitle <> invalid and appt.displayTime <> invalid
+                m.alertText.text = appt.displayTitle + " · " + appt.displayTime
+            else if appt.title <> invalid
+                m.alertText.text = "Upcoming — " + appt.title
+            end if
+
+            if appt.relativeTime <> invalid and appt.relativeTime <> ""
+                m.alertCountdown.text = appt.relativeTime
+            else
+                m.alertCountdown.text = ""
+            end if
+        else
+            m.alertText.text = "No upcoming appointments scheduled"
+            m.alertCountdown.text = ""
+        end if
+
+        ' 4. Verse of the Day
+        if data.verseOfTheDay <> invalid
+            v = data.verseOfTheDay
+            if v.verse <> invalid and v.verse <> ""
+                m.verseText.text = Chr(34) + v.verse + Chr(34)
+            else if v.text <> invalid and v.text <> ""
+                m.verseText.text = Chr(34) + v.text + Chr(34)
+            end if
+
+            if v.reference <> invalid and v.reference <> ""
+                m.verseRef.text = "— " + v.reference
+            end if
+        end if
+
+        ' 5. Featured Book Auto-Populate
+        if data.books <> invalid and type(data.books) = "roArray" and data.books.count() > 0
+            if m.featuredBookCard <> invalid
+                m.featuredBookCard.currentBook = data.books[0]
+            end if
+        end if
+
+        ' 6. Device Status Badge
+        if m.navBadge <> invalid
+            m.navBadge.text = "Account Connected"
+        end if
+    else
+        print "[API ERROR] Failed to fetch /roku/dashboard (code: "; response.code; ")"
+        m.alertText.text = "Unable to refresh FamilyCare data. Press * to retry."
+        m.alertCountdown.text = ""
+        m.statPatients.text = "—"
+        m.statAppts.text = "—"
+        m.statMeds.text = "—"
+        m.statNotes.text = "—"
+    end if
 end sub
 
 sub UpdateClock()
     date = CreateObject("roDateTime")
     date.ToLocalTime()
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    dayStr = date.GetWeekday()
+    weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    
+    dayStr = weekdays[date.GetDayOfWeek()]
     monthStr = months[date.GetMonth() - 1]
     
-    m.dateLabel.text = dayStr + ", " + date.GetDay().ToStr() + " " + monthStr + " " + date.GetYear().ToStr()
+    formattedDate = dayStr + ", " + StrI(date.GetDayOfMonth()).Trim() + " " + monthStr + " " + StrI(date.GetYear()).Trim()
     
     hour = date.GetHours()
     minute = date.GetMinutes()
@@ -53,10 +209,18 @@ sub UpdateClock()
     end if
     if hour = 0 then hour = 12
     
-    minStr = minute.ToStr()
+    minStr = StrI(minute).Trim()
     if minute < 10 then minStr = "0" + minStr
     
-    m.clockLabel.text = hour.ToStr() + ":" + minStr + " " + ampm
+    timeStr = StrI(hour).Trim() + ":" + minStr + " " + ampm
+    
+    if m.dateLabel <> invalid
+        m.dateLabel.text = formattedDate
+    end if
+    
+    if m.timeLabel <> invalid
+        m.timeLabel.text = timeStr
+    end if
 end sub
 
 sub SetupSidebar()
@@ -77,6 +241,7 @@ sub SetupSidebar()
     content = CreateObject("roSGNode", "ContentNode")
     for each item in navItems
         node = CreateObject("roSGNode", "ContentNode")
+        node.addFields({ isActive: (item.title = "Home") })
         node.title = item.title
         node.HDPosterUrl = item.icon
         content.appendChild(node)
@@ -131,6 +296,10 @@ sub OnQuickActionSelected()
     end if
 end sub
 
+sub OnFeaturedBookSelected()
+    m.top.navigate = "BooksScreen"
+end sub
+
 sub OnIdleTimeout()
     m.top.navigate = "ScreensaverScene"
 end sub
@@ -140,14 +309,34 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     if press
         m.idleTimer.control = "start"
         
-        if key = "right" and m.sidebarNav.hasFocus()
-            m.quickActionsGrid.setFocus(true)
-            handled = true
-        else if key = "left" and m.quickActionsGrid.hasFocus()
-            m.sidebarNav.setFocus(true)
-            handled = true
-        else if key = "back"
-            if m.quickActionsGrid.hasFocus()
+        if key = "options" ' * button pressed
+            FetchDashboard()
+            return true
+        end if
+
+        if m.sidebarNav.hasFocus()
+            if key = "right"
+                m.quickActionsGrid.setFocus(true)
+                handled = true
+            end if
+        else if m.featuredBookCard <> invalid and m.featuredBookCard.hasFocus()
+            if key = "right"
+                m.quickActionsGrid.setFocus(true)
+                handled = true
+            else if key = "left" or key = "back" or key = "up"
+                m.sidebarNav.setFocus(true)
+                handled = true
+            end if
+        else if m.quickActionsGrid.hasFocus()
+            if key = "left"
+                itemFocused = m.quickActionsGrid.itemFocused
+                if itemFocused MOD 4 = 0 and itemFocused >= 4 and m.featuredBookCard <> invalid
+                    m.featuredBookCard.setFocus(true)
+                else
+                    m.sidebarNav.setFocus(true)
+                end if
+                handled = true
+            else if key = "back"
                 m.sidebarNav.setFocus(true)
                 handled = true
             end if

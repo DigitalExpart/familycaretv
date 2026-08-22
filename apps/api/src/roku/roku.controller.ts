@@ -90,6 +90,18 @@ export class RokuController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('notes')
+  async getNotes(@Request() req: any) {
+    return this.rokuService.getNotes(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('medications')
+  async getMedications(@Request() req: any) {
+    return this.rokuService.getMedications(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('tasks')
   async getTasks(@Request() req: any) {
     return this.rokuService.getTasks(req.user.id);

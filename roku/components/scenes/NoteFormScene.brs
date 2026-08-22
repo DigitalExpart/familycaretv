@@ -45,15 +45,14 @@ sub OpenKeyboard(title as String, initialText as String, fieldIndex as Integer)
     m.keyboardDialog.text = initialText
     m.keyboardDialog.visible = true
     m.keyboardDialog.setFocus(true)
-    m.keyboardDialog.observeField("buttonSelected", "OnKeyboardButtonSelected")
+    m.keyboardDialog.observeField("wasClosed", "OnKeyboardClosed")
 end sub
 
-sub OnKeyboardButtonSelected(event as Object)
-    buttonIdx = event.getData()
+sub OnKeyboardClosed(event as Object)
     typedText = m.keyboardDialog.text
     m.keyboardDialog.visible = false
 
-    if buttonIdx = 0 or buttonIdx = invalid
+    if true
         if m.editingFieldIndex = 0
             m.titleField.value = typedText
         else if m.editingFieldIndex = 1
@@ -67,14 +66,16 @@ end sub
 
 sub SaveNote()
     title = m.titleField.value
-    if title = invalid or Trim(title) = ""
+    if title = invalid then title = ""
+    if title.Trim() = ""
         m.errorDialog.message = "Please enter a note title."
         m.errorDialog.show = true
         return
     end if
 
     content = m.contentField.value
-    if content = invalid or Trim(content) = ""
+    if content = invalid then content = ""
+    if content.Trim() = ""
         m.errorDialog.message = "Please enter note content."
         m.errorDialog.show = true
         return

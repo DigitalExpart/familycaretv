@@ -51,15 +51,14 @@ sub OpenKeyboard(title as String, initialText as String, fieldIndex as Integer)
     m.keyboardDialog.text = initialText
     m.keyboardDialog.visible = true
     m.keyboardDialog.setFocus(true)
-    m.keyboardDialog.observeField("buttonSelected", "OnKeyboardButtonSelected")
+    m.keyboardDialog.observeField("wasClosed", "OnKeyboardClosed")
 end sub
 
-sub OnKeyboardButtonSelected(event as Object)
-    buttonIdx = event.getData()
+sub OnKeyboardClosed(event as Object)
     typedText = m.keyboardDialog.text
     m.keyboardDialog.visible = false
 
-    if buttonIdx = 0 or buttonIdx = invalid
+    if true
         if m.editingFieldIndex = 0
             m.nameField.value = typedText
         else if m.editingFieldIndex = 1
@@ -77,7 +76,8 @@ end sub
 
 sub SaveMedication()
     name = m.nameField.value
-    if name = invalid or Trim(name) = ""
+    if name = invalid then name = ""
+    if name.Trim() = ""
         m.errorDialog.message = "Please enter the medication name."
         m.errorDialog.show = true
         return

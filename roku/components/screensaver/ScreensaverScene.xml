@@ -3,28 +3,28 @@
     <script type="text/brightscript" uri="pkg:/components/screensaver/ScreensaverScene.brs" />
 
     <children>
-        <!-- Deep dark background -->
-        <Rectangle width="1920" height="1080" color="0x070B14FF" />
+        <!-- Pale neutral background -->
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
         
-        <!-- Gradient Pulse Background -->
-        <Rectangle id="pulseBg" width="1920" height="1080" color="0x0D1220FF" opacity="0.0" />
+        <!-- Soft Mint Pulse Background -->
+        <Rectangle id="pulseBg" width="1920" height="1080" color="0xE6F7F4FF" opacity="0.0" />
         <Animation id="pulseAnim" duration="8" repeat="true">
-            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.0, 1.0, 0.0]" fieldToInterp="pulseBg.opacity" />
+            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.0, 0.7, 0.0]" fieldToInterp="pulseBg.opacity" />
         </Animation>
 
         <!-- Center Logo -->
         <Group id="logoGroup" translation="[760, 440]">
-            <Label text="FamilyCare" font="font:LargeBoldSystemFont" color="0x00C9A7FF" />
-            <Label text="Health · Wellness" font="font:MediumSystemFont" color="0x6B7280FF" translation="[0, 50]" />
+            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00C9A7FF" />
+            <Label text="HEALTH · WELLNESS · FAMILY" font="font:MediumSystemFont" color="0x64748BFF" translation="[0, 50]" />
         </Group>
 
         <!-- Logo Fade Animation -->
         <Animation id="logoFadeAnim" duration="10" repeat="true">
-            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.3, 1.0, 0.3]" fieldToInterp="logoGroup.opacity" />
+            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.4, 1.0, 0.4]" fieldToInterp="logoGroup.opacity" />
         </Animation>
 
         <!-- Rotating text at bottom -->
-        <Label id="tipLabel" text="" font="font:MediumSystemFont" color="0xF9FAFBFF" translation="[0, 900]" width="1920" horizAlign="center" />
+        <Label id="tipLabel" text="" font="font:MediumSystemFont" color="0x0F172AFF" translation="[0, 900]" width="1920" horizAlign="center" />
         
         <!-- Timer to rotate tips every 15 seconds -->
         <Timer id="tipTimer" duration="15" repeat="true" />

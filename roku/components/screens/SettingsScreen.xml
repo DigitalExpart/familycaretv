@@ -8,66 +8,82 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0x121212FF" />
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
-            <Rectangle width="1920" height="3" color="0x607D8BFF" translation="[0, 87]" />
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-            <Label text="App Settings &amp; Device Pairing" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
+            <Rectangle width="1920" height="3" color="0x64748BFF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
+            <Label text="App Settings &amp; Device Pairing" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
         </Group>
 
         <!-- Settings Options Grid -->
         <Group translation="[80, 140]">
             <!-- Card 1: Language Settings -->
             <Group id="cardLang" translation="[0, 0]">
-                <Rectangle id="langFocusBorder" width="844" height="164" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="840" height="160" color="0x1E1E1EFF" />
-                <Rectangle width="5" height="160" color="0x00A89DFF" />
+                <Rectangle id="langFocusBorder" width="844" height="164" color="0x00C9A7FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="10" />
+                <Rectangle width="842" height="162" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="10" />
+                <Rectangle width="840" height="160" color="0xFFFFFFFF" cornerRoundingRadius="10" />
+                <Rectangle width="4" height="160" color="0x00C9A7FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Language / Idioma" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[95, 25]" />
-                <Label id="langStatusText" text="Current Language: English (EN) • Click OK to switch to Spanish" font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="700" wrap="true" />
+                <LayoutGroup layoutDirection="vert" translation="[95, 25]" itemSpacings="[6]">
+                    <Label text="Language / Idioma" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="720" />
+                    <Label id="langStatusText" text="Current Language: English (EN) • Click OK to switch to Spanish" font="font:SmallSystemFont" color="0x64748BFF" width="720" wrap="true" maxLines="3" />
+                </LayoutGroup>
             </Group>
 
             <!-- Card 2: Account & Device Info -->
             <Group id="cardDevice" translation="[880, 0]">
-                <Rectangle id="deviceFocusBorder" width="884" height="164" color="0x42A5F5FF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="880" height="160" color="0x1E1E1EFF" />
-                <Rectangle width="5" height="160" color="0x42A5F5FF" />
+                <Rectangle id="deviceFocusBorder" width="884" height="164" color="0x42A5F5FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="10" />
+                <Rectangle width="882" height="162" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="10" />
+                <Rectangle width="880" height="160" color="0xFFFFFFFF" cornerRoundingRadius="10" />
+                <Rectangle width="4" height="160" color="0x42A5F5FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Device Pairing &amp; Account Status" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[95, 25]" />
-                <Label id="accountInfoLabel" text="Paired Device • Status: Active • App Version: 2.1.0 Premium" font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="740" wrap="true" />
+                <LayoutGroup layoutDirection="vert" translation="[95, 25]" itemSpacings="[6]">
+                    <Label text="Device Pairing &amp; Account Status" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="760" />
+                    <Label id="accountInfoLabel" text="Paired Device • Status: Active • App Version: 2.1.0 Premium" font="font:SmallSystemFont" color="0x64748BFF" width="760" wrap="true" maxLines="3" />
+                </LayoutGroup>
             </Group>
 
             <!-- Card 3: Screensaver & Display Settings -->
             <Group id="cardScreensaver" translation="[0, 190]">
-                <Rectangle id="saverFocusBorder" width="844" height="164" color="0x7E57C2FF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="840" height="160" color="0x1E1E1EFF" />
-                <Rectangle width="5" height="160" color="0x7E57C2FF" />
+                <Rectangle id="saverFocusBorder" width="844" height="164" color="0x7E57C2FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="10" />
+                <Rectangle width="842" height="162" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="10" />
+                <Rectangle width="840" height="160" color="0xFFFFFFFF" cornerRoundingRadius="10" />
+                <Rectangle width="4" height="160" color="0x7E57C2FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Screensaver &amp; Idle Timeout" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[95, 25]" />
-                <Label text="Displays Drawing of the Day &amp; Scripture when TV is idle." font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="700" wrap="true" />
+                <LayoutGroup layoutDirection="vert" translation="[95, 25]" itemSpacings="[6]">
+                    <Label text="Screensaver &amp; Idle Timeout" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="720" />
+                    <Label text="Displays Drawing of the Day &amp; Scripture when TV is idle." font="font:SmallSystemFont" color="0x64748BFF" width="720" wrap="true" maxLines="3" />
+                </LayoutGroup>
             </Group>
 
             <!-- Card 4: Unlink Device / Logout -->
             <Group id="cardUnlink" translation="[880, 190]">
-                <Rectangle id="unlinkFocusBorder" width="884" height="164" color="0xFF5252FF" translation="[-2, -2]" visible="false" />
-                <Rectangle width="880" height="160" color="0x1E1E1EFF" />
-                <Rectangle width="5" height="160" color="0xFF5252FF" />
+                <Rectangle id="unlinkFocusBorder" width="884" height="164" color="0xEF4444FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="10" />
+                <Rectangle width="882" height="162" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="10" />
+                <Rectangle width="880" height="160" color="0xFFFFFFFF" cornerRoundingRadius="10" />
+                <Rectangle width="4" height="160" color="0xEF4444FF" />
                 <Poster width="48" height="48" translation="[30, 30]" loadDisplayMode="scaleToFit" uri="pkg:/images/icon_settings.png" />
-                <Label text="Unlink Device / Logout" font="font:MediumBoldSystemFont" color="0xFF5252FF" translation="[95, 25]" />
-                <Label text="Disconnect this Roku TV from your FamilyCare account and clear stored authentication." font="font:SmallSystemFont" color="0xAAAAAAFF" translation="[95, 65]" width="740" wrap="true" />
+                <LayoutGroup layoutDirection="vert" translation="[95, 25]" itemSpacings="[6]">
+                    <Label text="Unlink Device / Logout" font="font:MediumBoldSystemFont" color="0xEF4444FF" width="760" />
+                    <Label text="Disconnect this Roku TV from your FamilyCare account and clear stored authentication." font="font:SmallSystemFont" color="0x64748BFF" width="760" wrap="true" maxLines="3" />
+                </LayoutGroup>
             </Group>
         </Group>
 
         <!-- Unlink Confirmation Dialog -->
         <ConfirmDialog id="confirmUnlinkDialog" title="Unlink Device" message="Are you sure you want to unlink this Roku TV? You will need a new 6-digit pairing code from the FamilyCare mobile/web app to re-pair." confirmText="Yes, Unlink" cancelText="Cancel" />
 
-        <!-- Footer -->
-        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
-        <Label text="Back Return to Dashboard  |  OK Select Setting Option"
-            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+        <!-- Safe-Area Footer Bar -->
+        <Group id="footerGroup" translation="[0, 1008]">
+            <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
+            <Label text="Back Return to Dashboard  |  OK Select Setting Option"
+                font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
+        </Group>
 
         <!-- Services -->
         <ApiTask id="settingsTask" />

@@ -7,3 +7,10 @@ build/
 coverage/
 *.log
 .DS_Store
+roku/test_unzip/
+roku/curl_*.json
+hs_err_*.log
+replay_pid*.log
+*.exe
+*.zip
+

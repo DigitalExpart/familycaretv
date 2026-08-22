@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MusicTrackTile" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="OnItemContentChange" />
+        <field id="itemHasFocus" type="boolean" value="false" onChange="OnItemFocusChange" />
+        <field id="width" type="float" value="485" />
+        <field id="height" type="float" value="175" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/MusicTrackTile.brs" />
+    <children>
+        <Group id="scaleContainer" scaleRotateCenter="[242.5, 87.5]">
+            <!-- Focus glow (behind card) -->
+            <Rectangle id="focusGlow" width="489" height="179" color="0x00C9A750"
+                translation="[-2, -2]" visible="false" cornerRoundingRadius="10" />
+
+            <!-- Card border -->
+            <Rectangle id="cardBorder" width="485" height="175" color="0xE2E8F0FF"
+                cornerRoundingRadius="10" />
+
+            <!-- Card background -->
+            <Rectangle id="cardBg" width="481" height="171" color="0xFFFFFFFF"
+                translation="[2, 2]" cornerRoundingRadius="10" />
+
+            <!-- Left accent bar -->
+            <Rectangle id="accentBar" width="5" height="171" color="0xFF6B6BFF"
+                translation="[2, 2]" />
+
+            <!-- Bounded Dynamic Vertical Flow (No horizAlignment=center on LayoutGroup) -->
+            <LayoutGroup id="contentStack" layoutDirection="vert"
+                translation="[24, 18]" itemSpacings="[8, 6]">
+
+                <!-- Track Icon: Centered in 437px content width: (437 - 36) / 2 = 200 -->
+                <Poster id="icon" width="36" height="36" translation="[200, 0]"
+                    uri="pkg:/images/icon_music.png" loadDisplayMode="scaleToFit" />
+
+                <!-- Track Title (Centered via Label horizAlign inside 437px bounded width) -->
+                <Label id="titleLabel"
+                    font="font:MediumBoldSystemFont"
+                    color="0x0F172AFF"
+                    horizAlign="center"
+                    width="437"
+                    wrap="true"
+                    maxLines="2" />
+
+                <!-- Artist and Duration Metadata (Centered via Label horizAlign inside 437px) -->
+                <Label id="metaLabel"
+                    font="font:SmallSystemFont"
+                    color="0x64748BFF"
+                    horizAlign="center"
+                    width="437"
+                    wrap="false"
+                    maxLines="1" />
+            </LayoutGroup>
+        </Group>
+
+        <!-- Focus scale animation -->
+        <Animation id="focusInAnim" duration="0.15" repeat="false" easeFunction="outCubic">
+            <Vector2DFieldInterpolator
+                key="[0.0, 1.0]"
+                keyValue="[ [1.0, 1.0], [1.03, 1.03] ]"
+                fieldToInterp="scaleContainer.scale" />
+        </Animation>
+
+        <Animation id="focusOutAnim" duration="0.15" repeat="false" easeFunction="outCubic">
+            <Vector2DFieldInterpolator
+                key="[0.0, 1.0]"
+                keyValue="[ [1.03, 1.03], [1.0, 1.0] ]"
+                fieldToInterp="scaleContainer.scale" />
+        </Animation>
+    </children>
+</component>

@@ -1,34 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="SplashScene" extends="Scene">
+    <interface>
+        <field id="navigate" type="string" alwaysNotify="true" />
+    </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/SplashScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Config.brs" />
 
     <children>
         <!-- Background -->
-        <Rectangle width="1920" height="1080" color="0x08080EFF" />
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
         
-        <!-- Ring 1 (outermost) -->
-        <Rectangle width="190" height="190" color="0x0C1A18FF" cornerRoundingRadius="95" translation="[865, 350]" />
-        <Rectangle width="186" height="186" color="0x08080EFF" cornerRoundingRadius="93" translation="[867, 352]" />
+        <!-- Outer decorative ring -->
+        <Rectangle width="190" height="190" color="0xCCFBF1FF" cornerRoundingRadius="95" translation="[865, 350]" />
+        <Rectangle width="186" height="186" color="0xF0F2F5FF" cornerRoundingRadius="93" translation="[867, 352]" />
         
-        <!-- Ring 2 (middle) -->
-        <Rectangle width="148" height="148" color="0x0E2420FF" cornerRoundingRadius="74" translation="[886, 371]" />
-        <Rectangle width="144" height="144" color="0x08080EFF" cornerRoundingRadius="72" translation="[888, 373]" />
+        <!-- Middle decorative ring -->
+        <Rectangle width="148" height="148" color="0xCCFBF1FF" cornerRoundingRadius="74" translation="[886, 371]" />
+        <Rectangle width="144" height="144" color="0xF0F2F5FF" cornerRoundingRadius="72" translation="[888, 373]" />
         
-        <!-- Ring 3 (inner filled) -->
-        <Rectangle width="104" height="104" color="0x0A1A18FF" cornerRoundingRadius="52" translation="[908, 393]" />
+        <!-- Inner filled circle -->
+        <Rectangle width="104" height="104" color="0xE6F7F4FF" cornerRoundingRadius="52" translation="[908, 393]" />
         
         <!-- Icon -->
         <Label text="~" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[932, 420]" />
         
         <!-- Logo text -->
-        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0xE2E8F0FF" translation="[660, 510]" width="600" horizAlign="center" />
+        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[660, 510]" width="600" horizAlign="center" />
         
         <!-- Thin accent line -->
         <Rectangle width="80" height="3" color="0x00C9A78C" cornerRoundingRadius="1" translation="[920, 582]" />
         
         <!-- Tagline -->
-        <Label text="HEALTH · WELLNESS · FAMILY" font="font:MediumSystemFont" color="0x1E293BFF" translation="[560, 600]" width="800" horizAlign="center" />
+        <Label text="HEALTH · WELLNESS · FAMILY" font="font:MediumSystemFont" color="0x64748BFF" translation="[560, 600]" width="800" horizAlign="center" />
         
         <Timer id="timer" />
+        <ApiTask id="validateTask" />
     </children>
 </component>

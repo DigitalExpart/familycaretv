@@ -6,22 +6,23 @@
     <script type="text/brightscript" uri="pkg:/components/scenes/HomeScene.brs" />
     
     <children>
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
         <TopNavBar id="topNavBar" title="Home" />
             
         <Label id="careSummaryLabel" 
             text="Today's Care Summary" 
             font="font:MediumBoldSystemFont" 
-            color="0xFFFFFFFF" 
+            color="0x0F172AFF" 
             translation="[100, 200]" />
             
-        <Label id="patientsLabel" text="Patient Count: Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 250]" />
-        <Label id="eventsLabel" text="Upcoming Appointments: Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 300]" />
-        <Label id="medsLabel" text="Medication Reminders: Loading..." font="font:MediumSystemFont" color="0xCCCCCCFF" translation="[100, 350]" />
+        <Label id="patientsLabel" text="Patient Count: Loading..." font="font:MediumSystemFont" color="0x64748BFF" translation="[100, 250]" width="800" />
+        <Label id="eventsLabel" text="Upcoming Appointments: Loading..." font="font:MediumSystemFont" color="0x64748BFF" translation="[100, 300]" width="800" />
+        <Label id="medsLabel" text="Medication Reminders: Loading..." font="font:MediumSystemFont" color="0x64748BFF" translation="[100, 350]" width="800" />
             
         <Label id="verseLabel" 
             text="Verse of the Day: Loading..." 
             font="font:MediumSystemFont" 
-            color="0xCCCCCCFF" 
+            color="0x334155FF" 
             translation="[100, 450]" 
             wrap="true" width="800" />
             

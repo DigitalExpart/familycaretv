@@ -162,15 +162,31 @@ export class RokuService {
 
     const patients = await this.prisma.patient.findMany({
       where: { userId },
-      select: { id: true, fullName: true, avatarUrl: true, condition: true }
+      select: { id: true, fullName: true, dateOfBirth: true, gender: true, notes: true }
+    });
+    const patientIds = patients.map(p => p.id);
+
+    const appointmentsCount = await this.prisma.event.count({
+      where: { patientId: { in: patientIds }, type: 'APPOINTMENT' }
     });
 
     const medications = await this.prisma.medication.findMany({
-      where: { patient: { userId } }
+      where: { 
+        patientId: { in: patientIds },
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
+      },
+      include: { patient: { select: { fullName: true } } }
+    });
+
+    const notes = await this.prisma.patientNote.findMany({
+      where: { patientId: { in: patientIds } },
+      include: { patient: { select: { fullName: true } } },
+      orderBy: { createdAt: 'desc' }
     });
 
     const events = await this.prisma.event.findMany({
-      where: { patient: { userId } },
+      where: { patientId: { in: patientIds } },
+      include: { patient: { select: { fullName: true } } },
       orderBy: { startDateTime: 'asc' }
     });
 
@@ -204,7 +220,42 @@ export class RokuService {
       orderBy: { displayOrder: 'asc' }
     });
 
-    const combinedEvents = events.length > 0 ? events : reminders;
+    // Find the next upcoming appointment from now
+    const now = new Date();
+    const futureAppointments = events.filter(e => e.type === 'APPOINTMENT' && new Date(e.startDateTime) >= now);
+    const nextAppt = futureAppointments.length > 0 ? futureAppointments[0] : (events.length > 0 ? events[0] : null);
+
+    let upcomingAppointment: any = null;
+    if (nextAppt) {
+      const apptDate = new Date(nextAppt.startDateTime);
+      const isToday = apptDate.toDateString() === now.toDateString();
+      const timeStr = apptDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const dateStr = isToday ? `Today at ${timeStr}` : `${apptDate.toLocaleDateString([], { month: 'short', day: 'numeric' })} at ${timeStr}`;
+      
+      const diffMs = apptDate.getTime() - now.getTime();
+      const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+      let relativeTime = "";
+      if (diffHours > 0 && diffHours <= 24) {
+        relativeTime = `In ${diffHours} hour${diffHours === 1 ? '' : 's'} →`;
+      } else if (diffHours > 24) {
+        const diffDays = Math.round(diffHours / 24);
+        relativeTime = `In ${diffDays} day${diffDays === 1 ? '' : 's'} →`;
+      } else if (diffHours <= 0 && isToday) {
+        relativeTime = "Happening now →";
+      }
+
+      upcomingAppointment = {
+        id: nextAppt.id,
+        title: nextAppt.title,
+        patientName: nextAppt.patient?.fullName || "Family Member",
+        displayTitle: `Upcoming — ${nextAppt.title} (${nextAppt.patient?.fullName || 'Family'})`,
+        displayTime: dateStr,
+        relativeTime: relativeTime,
+        startDateTime: nextAppt.startDateTime,
+        description: nextAppt.description
+      };
+    }
+
     const userName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Family Member';
 
     return {
@@ -218,20 +269,53 @@ export class RokuService {
           renewal: user?.currentPeriodEnd
         }
       },
+      stats: {
+        patients: patients.length,
+        appointments: appointmentsCount,
+        medications: medications.length,
+        notes: notes.length,
+        tasks: tasks.length
+      },
       patientCount: patients.length,
       patients,
       medsCount: medications.length,
       medications,
-      eventsCount: combinedEvents.length,
-      events: combinedEvents,
-      reminders: combinedEvents,
+      eventsCount: appointmentsCount,
+      events,
+      notesCount: notes.length,
+      notes,
+      reminders: events.length > 0 ? events : reminders,
       tasksCount: tasks.length,
       tasks,
       notifications,
       verseOfTheDay,
       books,
+      upcomingAppointment,
       timestamp: new Date().toISOString()
     };
+  }
+
+  async getNotes(userId: string) {
+    const patients = await this.prisma.patient.findMany({ where: { userId }, select: { id: true } });
+    const patientIds = patients.map(p => p.id);
+    return this.prisma.patientNote.findMany({
+      where: { patientId: { in: patientIds } },
+      include: { patient: { select: { fullName: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async getMedications(userId: string) {
+    const patients = await this.prisma.patient.findMany({ where: { userId }, select: { id: true } });
+    const patientIds = patients.map(p => p.id);
+    return this.prisma.medication.findMany({
+      where: { 
+        patientId: { in: patientIds },
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }]
+      },
+      include: { patient: { select: { fullName: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
   }
 
   async getUpdates(userId: string, sinceStr: string) {

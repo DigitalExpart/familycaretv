@@ -6,10 +6,14 @@
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/SidebarNavItem.brs" />
     <children>
-        <Rectangle id="bgRect" width="240" height="52" color="0x040408FF" />
-        <Rectangle id="accentBar" width="3" height="52" color="0x00C9A7FF" visible="false" />
-        
-        <Poster id="iconPoster" width="22" height="22" translation="[24, 15]" blendColor="0x475569FF" />
-        <Label id="titleLabel" font="font:MediumSystemFont" color="0x475569FF" translation="[56, 12]" />
+        <!-- Full-width transparent hit area -->
+        <Rectangle id="bgRect" width="260" height="48" color="0x00000000" />
+        <!-- Soft rounded mint highlight — inset 14px horizontally -->
+        <Poster id="highlightPoster" width="232" height="42" uri="pkg:/images/sidebar_active_bg.png" translation="[14, 3]" visible="false" />
+        <!-- Left accent bar — thin teal indicator on far-left edge -->
+        <Rectangle id="accentBar" width="3" height="38" color="0x00C9A7FF" translation="[0, 5]" visible="false" />
+
+        <Poster id="iconPoster" width="20" height="20" translation="[30, 14]" blendColor="0x64748BFF" />
+        <Label id="titleLabel" font="font:SmallestSystemFont" color="0x64748BFF" translation="[62, 14]" width="170" />
     </children>
 </component>

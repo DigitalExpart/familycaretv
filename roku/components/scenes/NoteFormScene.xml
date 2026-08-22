@@ -9,47 +9,50 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0x121212FF" />
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
             <Rectangle width="1920" height="3" color="0x008F86FF" translation="[0, 87]" />
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[60, 20]" />
-            <Label id="formTitle" text="Add Personal Note" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
+            <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
+            <Label id="formTitle" text="Add Personal Note" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1100" />
         </Group>
 
         <!-- Form Card Container -->
-        <Group translation="[460, 140]">
-            <Rectangle width="1006" height="846" color="0x0000000A" translation="[3, 3]" />
-            <Rectangle width="1000" height="840" color="0x1E1E1EFF" />
-            <Rectangle width="1000" height="5" color="0x008F86FF" />
+        <Group translation="[460, 130]">
+            <Rectangle width="1004" height="854" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
+            <Rectangle width="1000" height="850" color="0xFFFFFFFF" cornerRoundingRadius="12" />
+            <Rectangle width="1000" height="4" color="0x008F86FF" />
 
-            <Label id="formSubtitle" text="Type your note content below using the remote control keyboard."
-                font="font:MediumSystemFont" color="0xAAAAAAFF"
-                translation="[50, 30]" />
+            <Label id="formSubtitle" text="Create personal care notes, doctor instructions, and reminders."
+                font="font:MediumSystemFont" color="0x64748BFF"
+                translation="[50, 30]" width="900" wrap="true" maxLines="2" />
 
             <!-- Input Fields -->
-            <Group translation="[150, 110]">
-                <FormInputField id="titleField" label="Note Title *" placeholder="e.g. Doctor's Visit Summary, Caregiver Reminder" translation="[0, 0]" />
-                <FormInputField id="contentField" label="Note Content *" placeholder="e.g. Dr. Smith recommended increasing daily water intake..." translation="[0, 140]" />
+            <Group translation="[150, 90]">
+                <FormInputField id="titleField" label="Note Title *" placeholder="e.g. Dr. Johnson Follow-up Notes" translation="[0, 0]" />
+                <FormInputField id="categoryField" label="Category (MEDICAL, GENERAL, TASK)" placeholder="e.g. MEDICAL" translation="[0, 110]" />
+                <FormInputField id="contentField" label="Note Content / Details *" placeholder="e.g. Blood pressure 120/80, reduce sodium intake" translation="[0, 220]" />
             </Group>
 
             <!-- Buttons Row -->
             <Group id="buttonsGroup" translation="[150, 680]">
                 <Group id="saveBtnGroup" translation="[0, 0]">
-                    <Rectangle id="saveFocusBorder" width="344" height="64" color="0x008F86FF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="saveBg" width="340" height="60" color="0x008F86FF" />
+                    <Rectangle id="saveFocusBorder" width="344" height="64" color="0x008F86FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
+                    <Rectangle id="saveBg" width="340" height="60" color="0x008F86FF" cornerRoundingRadius="8" />
                     <Label id="saveLabel" text="Save Note"
                         font="font:MediumBoldSystemFont" color="0xFFFFFFFF"
                         horizAlign="center" width="340" translation="[0, 15]" />
                 </Group>
 
                 <Group id="cancelBtnGroup" translation="[360, 0]">
-                    <Rectangle id="cancelFocusBorder" width="224" height="64" color="0x607D8BFF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="cancelBg" width="220" height="60" color="0x444444FF" />
+                    <Rectangle id="cancelFocusBorder" width="224" height="64" color="0x64748BFF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
+                    <Rectangle id="cancelBorder" width="222" height="52" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
+                    <Rectangle id="cancelBg" width="220" height="60" color="0xF1F5F9FF" cornerRoundingRadius="8" />
                     <Label id="cancelLabel" text="Cancel"
-                        font="font:MediumBoldSystemFont" color="0xFFFFFFFF"
+                        font="font:MediumBoldSystemFont" color="0x0F172AFF"
                         horizAlign="center" width="220" translation="[0, 15]" />
                 </Group>
             </Group>

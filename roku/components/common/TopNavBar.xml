@@ -5,10 +5,12 @@
     </interface>
     <script type="text/brightscript" uri="pkg:/components/common/TopNavBar.brs" />
     <children>
-        <Rectangle width="1920" height="120" color="0x1A1A24FF" />
+        <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+        <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
+        <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[60, 28]" />
         <Label id="titleLabel" 
-            font="font:LargeBoldSystemFont" 
-            color="0xFFFFFFFF" 
-            translation="[100, 40]" />
+            font="font:MediumBoldSystemFont" 
+            color="0x0F172AFF" 
+            translation="[320, 28]" />
     </children>
 </component>

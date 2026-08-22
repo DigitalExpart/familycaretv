@@ -7,51 +7,61 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0x121212FF" />
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
             <Rectangle width="1920" height="3" color="0x7E57C2FF" translation="[0, 87]" />
-            <Label text="Kids Activities &amp; Coloring Gallery" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
+            <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
+            <Label text="Kids Activities &amp; Coloring Gallery" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
         </Group>
 
-        <!-- Gallery Grid -->
+        <!-- Gallery Grid (Substantial 270px cards with vertical flow) -->
         <MarkupGrid id="kidsGrid"
-            translation="[80, 140]"
-            itemComponentName="QuickActionTile"
-            itemSize="[415, 175]"
-            itemSpacing="[20, 20]"
+            translation="[80, 130]"
+            itemComponentName="KidsActivityTile"
+            itemSize="[415, 270]"
+            itemSpacing="[24, 24]"
             numColumns="4"
-            numRows="5"
+            numRows="2"
             drawFocusFeedback="false" />
 
         <!-- Fullscreen Artwork Preview Overlay -->
         <Group id="previewOverlay" visible="false">
-            <Rectangle width="1920" height="1080" color="0x121212F0" />
+            <Rectangle width="1920" height="1080" color="0x00000066" />
 
-            <Group translation="[260, 100]">
-                <Rectangle width="1400" height="880" color="0x1E1E1EFF" />
-                <Poster id="previewImage" width="900" height="600" translation="[250, 40]" loadDisplayMode="scaleToFit" />
+            <Group translation="[260, 70]">
+                <Rectangle width="1404" height="884" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
+                <Rectangle width="1400" height="880" color="0xFFFFFFFF" cornerRoundingRadius="12" />
+                <Poster id="previewImage" width="900" height="560" translation="[250, 25]" loadDisplayMode="scaleToFit" />
 
-                <Label id="previewTitle" text="Activity Title" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" translation="[60, 660]" />
-                <Label id="previewDesc" text="Activity description and instructions." font="font:MediumSystemFont" color="0xAAAAAAFF" translation="[60, 710]" width="1000" wrap="true" />
+                <!-- Dynamic Preview Text Stack -->
+                <LayoutGroup layoutDirection="vert" translation="[60, 615]" itemSpacings="[10]">
+                    <Label id="previewTitle" text="Activity Title" font="font:LargeBoldSystemFont" color="0x0F172AFF" width="1050" wrap="true" maxLines="1" />
+                    <Label id="previewDesc" text="Activity description and instructions." font="font:MediumSystemFont" color="0x64748BFF" width="1050" wrap="true" maxLines="3" />
+                </LayoutGroup>
 
                 <!-- QR Overlay -->
-                <Group translation="[1160, 680]">
-                    <Rectangle width="200" height="160" color="0x2A2A2AFF" />
+                <Group translation="[1160, 645]">
+                    <Rectangle width="202" height="162" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
+                    <Rectangle width="200" height="160" color="0xF8FAFCFF" cornerRoundingRadius="8" />
                     <Poster width="110" height="110" translation="[45, 10]" loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
                     <Label text="Scan to Print" font="font:SmallBoldSystemFont" color="0x7E57C2FF" translation="[0, 125]" width="200" horizAlign="center" />
                 </Group>
 
-                <Label text="Press BACK or OK to close preview" font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[60, 820]" />
+                <Label text="Press BACK or OK to close preview" font="font:SmallSystemFont" color="0x94A3B8FF" translation="[60, 810]" width="1000" />
             </Group>
         </Group>
 
-        <!-- Footer -->
-        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
-        <Label text="Back Return to Dashboard  |  OK View Full Screen Activity Card"
-            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+        <!-- Safe-Area Footer Bar -->
+        <Group id="footerGroup" translation="[0, 1008]">
+            <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
+            <Label text="Back Return to Dashboard  |  OK View Full Screen Activity Card"
+                font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
+        </Group>
 
         <!-- Services -->
         <ApiTask id="kidsTask" />

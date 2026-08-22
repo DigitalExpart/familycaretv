@@ -7,59 +7,48 @@
     <script type="text/brightscript" uri="pkg:/source/Config.brs" />
     <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
     <children>
-        <!-- ═══ FULL DARK BACKGROUND ═══ -->
-        <Rectangle width="1920" height="1080" color="0x0D1B2AFF" />
+        <!-- ═══ PALE NEUTRAL BACKGROUND ═══ -->
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
 
         <!-- ═══ TOP BRANDING ═══ -->
         <Label text="FamilyCare TV"
-            font="font:LargeBoldSystemFont" color="0x00C9B8FF"
+            font="font:LargeBoldSystemFont" color="0x00C9A7FF"
             horizAlign="center" width="1920"
             translation="[0, 80]" />
-        <Label text="Health  ·  Wellness  ·  Family"
-            font="font:SmallSystemFont" color="0x66A8A0FF"
+        <Label text="HEALTH · WELLNESS · FAMILY"
+            font="font:SmallSystemFont" color="0x94A3B8FF"
             horizAlign="center" width="1920"
             translation="[0, 130]" />
 
-        <!-- ═══ CENTER CARD (dark card on dark bg) ═══ -->
-        <Group translation="[460, 220]">
-            <!-- Card shadow -->
-            <Rectangle width="1004" height="504" color="0x00000044" translation="[4, 4]" />
-            <!-- Card background -->
-            <Rectangle width="1000" height="500" color="0x162A3DFF" />
-            <!-- Teal top accent -->
-            <Rectangle width="1000" height="4" color="0x00C9B8FF" />
-
-            <!-- Icon area -->
-            <Label text="📺"
-                font="font:LargeBoldSystemFont" color="0xFFFFFFFF"
-                horizAlign="center" width="1000"
-                translation="[0, 30]" />
+        <!-- ═══ CENTER CARD (White Card on Pale Bg) ═══ -->
+        <Group translation="[460, 200]">
+            <Rectangle width="1004" height="524" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="14" />
+            <Rectangle width="1000" height="520" color="0xFFFFFFFF" cornerRoundingRadius="14" />
+            <Rectangle width="1000" height="4" color="0x00C9A7FF" />
 
             <!-- Instruction text -->
             <Label id="instructionLabel" 
-                text="" 
+                text="To link this TV to your FamilyCare account, enter the code below:" 
                 font="font:MediumSystemFont" 
-                color="0xCCE5E2FF" 
+                color="0x0F172AFF" 
                 horizAlign="center" 
                 width="1000"
                 wrap="true"
                 maxLines="2"
-                translation="[0, 100]" />
+                translation="[0, 40]" />
 
             <!-- Code display area -->
-            <Group translation="[200, 190]">
+            <Group translation="[200, 110]">
                 <!-- Code background -->
-                <Rectangle width="600" height="120" color="0x0D1B2AFF" />
-                <!-- Code border -->
-                <Rectangle width="600" height="4" color="0x00C9B8FF" />
-                <Rectangle width="600" height="4" color="0x00C9B8FF" translation="[0, 116]" />
-                <Rectangle width="4" height="120" color="0x00C9B8FF" />
-                <Rectangle width="4" height="120" color="0x00C9B8FF" translation="[596, 0]" />
+                <Rectangle width="604" height="124" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="10" />
+                <Rectangle width="600" height="120" color="0xF8FAFCFF" cornerRoundingRadius="10" />
+                <Rectangle width="600" height="3" color="0x00C9A7FF" translation="[0, 0]" />
+                <Rectangle width="600" height="3" color="0x00C9A7FF" translation="[0, 117]" />
                 <!-- Code text -->
                 <Label id="codeLabel" 
                     text="" 
                     font="font:LargeBoldSystemFont" 
-                    color="0x00FFEDFF" 
+                    color="0x00C9A7FF" 
                     horizAlign="center" 
                     vertAlign="center"
                     width="600"
@@ -70,29 +59,28 @@
             <Label id="expiresLabel" 
                 text="" 
                 font="font:SmallSystemFont" 
-                color="0x66A8A0FF" 
+                color="0x64748BFF" 
                 horizAlign="center" 
                 width="1000"
-                translation="[0, 340]" />
+                translation="[0, 260]" />
 
-            <!-- Steps instructions -->
-            <Label text="Step 1: Open FamilyCare Mobile App"
-                font="font:SmallSystemFont" color="0x99B8B3FF"
-                horizAlign="center" width="1000"
-                translation="[0, 390]" />
-            <Label text="Step 2: Go to Profile → Connect Roku TV"
-                font="font:SmallSystemFont" color="0x99B8B3FF"
-                horizAlign="center" width="1000"
-                translation="[0, 420]" />
-            <Label text="Step 3: Enter the code shown above"
-                font="font:SmallSystemFont" color="0x99B8B3FF"
-                horizAlign="center" width="1000"
-                translation="[0, 450]" />
+            <!-- Steps instructions in LayoutGroup -->
+            <LayoutGroup layoutDirection="vert" translation="[0, 305]" itemSpacings="[10]">
+                <Label text="Step 1: Open FamilyCare Mobile or Web App"
+                    font="font:SmallSystemFont" color="0x334155FF"
+                    horizAlign="center" width="1000" />
+                <Label text="Step 2: Go to Profile → Connect Roku TV"
+                    font="font:SmallSystemFont" color="0x334155FF"
+                    horizAlign="center" width="1000" />
+                <Label text="Step 3: Enter the 6-digit code shown above"
+                    font="font:SmallSystemFont" color="0x334155FF"
+                    horizAlign="center" width="1000" />
+            </LayoutGroup>
         </Group>
 
         <!-- ═══ FOOTER ═══ -->
-        <Label text="Waiting for activation..."
-            font="font:SmallSystemFont" color="0x4D7A73FF"
+        <Label text="Waiting for device activation..."
+            font="font:SmallSystemFont" color="0x94A3B8FF"
             horizAlign="center" width="1920"
             translation="[0, 780]" />
 

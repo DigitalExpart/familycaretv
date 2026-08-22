@@ -26,13 +26,22 @@ sub OnEventDataChange()
         m.eventId = data.id
         m.formTitle.text = "Edit Event: " + data.title
         if data.title <> invalid then m.titleField.value = data.title
-        if data.startDateTime <> invalid then m.dateField.value = Left(data.startDateTime, 16)
+        if data.startDateTime <> invalid
+            dVal = data.startDateTime
+            dVal = dVal.Replace("T", " ")
+            m.dateField.value = Left(dVal, 16)
+        end if
         if data.type <> invalid then m.typeField.value = data.type
         if data.description <> invalid then m.descField.value = data.description
     else
         m.eventId = ""
         m.formTitle.text = "Add Calendar Event"
         m.typeField.value = "APPOINTMENT"
+        if data <> invalid and data.startDateTime <> invalid
+            dVal = data.startDateTime
+            dVal = dVal.Replace("T", " ")
+            m.dateField.value = Left(dVal, 10) + " 09:00"
+        end if
     end if
 end sub
 
@@ -52,15 +61,14 @@ sub OpenKeyboard(title as String, initialText as String, fieldIndex as Integer)
     m.keyboardDialog.text = initialText
     m.keyboardDialog.visible = true
     m.keyboardDialog.setFocus(true)
-    m.keyboardDialog.observeField("buttonSelected", "OnKeyboardButtonSelected")
+    m.keyboardDialog.observeField("wasClosed", "OnKeyboardClosed")
 end sub
 
-sub OnKeyboardButtonSelected(event as Object)
-    buttonIdx = event.getData()
+sub OnKeyboardClosed(event as Object)
     typedText = m.keyboardDialog.text
     m.keyboardDialog.visible = false
 
-    if buttonIdx = 0 or buttonIdx = invalid
+    if true
         if m.editingFieldIndex = 0
             m.titleField.value = typedText
         else if m.editingFieldIndex = 1
@@ -78,14 +86,16 @@ end sub
 
 sub SaveEvent()
     title = m.titleField.value
-    if title = invalid or Trim(title) = ""
+    if title = invalid then title = ""
+    if title.Trim() = ""
         m.errorDialog.message = "Please enter an event title."
         m.errorDialog.show = true
         return
     end if
 
     dateStr = m.dateField.value
-    if dateStr = invalid or Trim(dateStr) = ""
+    if dateStr = invalid then dateStr = ""
+    if dateStr.Trim() = ""
         now = CreateObject("roDateTime")
         dateStr = now.ToISOString()
     else if Len(dateStr) = 16

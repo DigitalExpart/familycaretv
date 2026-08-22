@@ -6,11 +6,12 @@
         <function name="setMessages" />
     </interface>
     <children>
-        <Rectangle width="1920" height="80" color="0x222222FF" />
-        <Label id="tickerText" translation="[1920, 20]" font="font:MediumSystemFont" color="0xFFFFFFFF" />
+        <Rectangle width="1920" height="80" color="0xFFFFFFFF" />
+        <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
+        <Label id="tickerText" translation="[1920, 24]" font="font:MediumBoldSystemFont" color="0x0F172AFF" />
         
         <Animation id="scrollAnim" duration="20" easeFunction="linear" repeat="true">
-            <Vector2DFieldInterpolator id="scrollInterp" key="[0, 1]" keyValue="[[1920, 20], [-2000, 20]]" fieldToInterp="tickerText.translation" />
+            <Vector2DFieldInterpolator id="scrollInterp" key="[0, 1]" keyValue="[[1920, 24], [-2000, 24]]" fieldToInterp="tickerText.translation" />
         </Animation>
     </children>
 </component>

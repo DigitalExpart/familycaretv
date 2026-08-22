@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="CalendarDayTile" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="OnItemContentChange" />
+        <field id="focusPercent" type="float" onChange="OnFocusChange" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/CalendarDayTile.brs" />
+
+    <children>
+        <Rectangle id="focusGlow" width="226" height="146" color="0x42A5F5FF" translation="[-3, -3]" visible="false" />
+        <Rectangle id="cardBorder" width="222" height="142" color="0xE2E8F0FF" translation="[-1, -1]" />
+        <Rectangle id="cardBg" width="220" height="140" color="0xFFFFFFFF" />
+
+        <Label id="dayLabel" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[15, 10]" />
+
+        <Group id="eventsGroup" translation="[15, 50]" visible="false">
+            <Rectangle width="8" height="8" color="0x42A5F5FF" translation="[0, 10]" />
+            <Label id="eventsLabel" font="font:SmallSystemFont" color="0x42A5F5FF" translation="[15, 0]" width="180" wrap="true" />
+        </Group>
+    </children>
+</component>

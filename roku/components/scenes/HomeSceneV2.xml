@@ -1,167 +1,183 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="HomeSceneV2" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
+
     <script type="text/brightscript" uri="pkg:/components/scenes/HomeSceneV2.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Config.brs" />
 
     <children>
-        <!-- Background -->
-        <Rectangle width="1920" height="1080" color="0x08080EFF" />
+        <!-- Canvas Background: Clean warm light gray (#F0F2F5) -->
+        <Rectangle id="canvasBg" width="1920" height="1080" color="0xF0F2F5FF" />
 
-        <!-- ========================================== -->
-        <!-- SIDEBAR NAVIGATION RAIL                    -->
-        <!-- ========================================== -->
-        <Group id="sidebarGroup">
-            <Rectangle width="240" height="1080" color="0x040408FF" />
-            
-            <!-- Right border -->
-            <Rectangle width="1" height="1080" color="0x0D0D18FF" translation="[239, 0]" />
+        <!-- ======================================================== -->
+        <!-- DASHBOARD CONTAINER PANEL (Floating centered shell)      -->
+        <!-- Width: 1620, Height: 960, Centered at [150, 50]          -->
+        <!-- ======================================================== -->
+        <Group id="dashboardShell" translation="[150, 50]">
 
-            <!-- Logo area -->
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[24, 40]" />
-            <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallSystemFont" color="0x1E3A34FF" translation="[24, 76]" />
+            <!-- Shell Card Background: Pure White with rounded corners -->
+            <Rectangle id="shellBg" width="1620" height="960" color="0xFFFFFFFF" cornerRoundingRadius="14" />
 
-            <Rectangle width="192" height="1" color="0x0D0D18FF" translation="[24, 108]" />
+            <!-- ==================================================== -->
+            <!-- 1. SIDEBAR (Left column, 260px wide)                 -->
+            <!-- ==================================================== -->
+            <Group id="sidebarGroup" translation="[0, 0]">
+                <!-- Sidebar background panel -->
+                <Poster width="260" height="960" uri="pkg:/images/sidebar_bg.png" />
 
-            <!-- Nav Items List -->
-            <MarkupGrid id="sidebarNav"
-                translation="[0, 130]"
-                itemComponentName="SidebarNavItem"
-                itemSize="[240, 52]"
-                itemSpacing="[0, 4]"
-                numColumns="1"
-                numRows="9"
-                drawFocusFeedback="false" />
+                <!-- Sidebar right subtle border line -->
+                <Rectangle width="1" height="960" color="0xE2E8F0FF" translation="[259, 0]" />
 
-            <!-- Notification Bell & Profile -->
-            <Group translation="[0, 1020]">
-                <Rectangle width="192" height="1" color="0x0D0D18FF" translation="[24, -2]" />
-                
-                <!-- Notification Bell -->
-                <Group id="navBell" translation="[30, 10]">
-                    <Poster width="28" height="28" uri="pkg:/images/icon_notifications.png" blendColor="0x475569FF" />
-                    <!-- Red dot badge -->
-                    <Rectangle id="navBadge" width="10" height="10" color="0xEF4444FF" translation="[20, -2]" visible="false" />
+                <!-- Brand / Logo Area bounded strictly inside sidebar (width 228) -->
+                <Group id="brandHeader" translation="[16, 24]">
+                    <Poster width="22" height="22" uri="pkg:/images/icon_settings.png" blendColor="0x00C9A7FF" translation="[0, 2]" />
+                    <Label text="FamilyCare TV" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[28, 0]" width="200" />
+                    <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 26]" width="228" />
                 </Group>
 
-                <!-- User Profile -->
-                <Group translation="[172, 6]">
-                    <Rectangle width="38" height="38" color="0x1A3D35FF" translation="[-1, -1]" />
-                    <Rectangle width="36" height="36" color="0x111825FF" />
-                    <Label text="J" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[12, 6]" />
-                </Group>
-            </Group>
-        </Group>
-
-        <!-- ========================================== -->
-        <!-- MAIN CONTENT AREA                          -->
-        <!-- ========================================== -->
-        <Group id="mainContent" translation="[240, 0]">
-            
-            <!-- HEADER ROW -->
-            <Label id="greetingLabel" text="Good morning, Jumat" font="font:LargeBoldSystemFont" color="0xE2E8F0FF" translation="[40, 40]" />
-            <Label id="dateLabel" text="Friday, 31 July 2026" font="font:MediumSystemFont" color="0x334155FF" translation="[40, 94]" />
-
-            <!-- Clock -->
-            <Label id="clockLabel" text="5:57 AM" font="font:LargeSystemFont" color="0x94A3B8FF" translation="[1480, 40]" width="150" horizAlign="right" />
-            <Label id="clockSuffixLabel" text="EN" font="font:SmallSystemFont" color="0x1E293BFF" translation="[1480, 82]" width="150" horizAlign="right" />
-
-            <!-- APPOINTMENT ALERT BAR -->
-            <Group id="alertBar" translation="[40, 140]">
-                <Rectangle width="1602" height="54" color="0x3D2E09FF" translation="[-1, -1]" />
-                <Rectangle width="1600" height="52" color="0x0D1407FF" />
-                <Poster width="20" height="20" uri="pkg:/images/icon_calendar.png" blendColor="0xF59E0BFF" translation="[18, 17]" />
-                <Label text="Upcoming — Dr. Sarah Johnson (Cardiology) · Today at 2:30 PM" font="font:MediumSystemFont" color="0x64748BFF" translation="[48, 14]" />
-                <Label text="In 4 hours →" font="font:MediumSystemFont" color="0xF59E0BFF" translation="[1480, 14]" />
-            </Group>
-
-            <!-- STATS ROW -->
-            <Group id="statsStrip" translation="[40, 222]">
-                <!-- Stat 1: Patients -->
-                <Group translation="[0, 0]">
-                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
-                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
-                    <Label id="statPatients" text="3" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[24, 18]" />
-                    <Rectangle width="32" height="3" color="0x00C9A7B3" translation="[24, 76]" />
-                    <Label text="PATIENTS" font="font:SmallSystemFont" color="0x1E3A34FF" translation="[24, 86]" />
-                </Group>
-
-                <!-- Stat 2: Today's Meds -->
-                <Group translation="[393, 0]">
-                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
-                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
-                    <Label id="statMeds" text="2" font="font:LargeBoldSystemFont" color="0xF59E0BFF" translation="[24, 18]" />
-                    <Rectangle width="32" height="3" color="0xF59E0BFF" translation="[24, 76]" />
-                    <Label text="TODAY'S MEDS" font="font:SmallSystemFont" color="0x3D2E09FF" translation="[24, 86]" />
-                </Group>
-
-                <!-- Stat 3: Appointments -->
-                <Group translation="[786, 0]">
-                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
-                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
-                    <Label id="statAppts" text="1" font="font:LargeBoldSystemFont" color="0x8B5CF6FF" translation="[24, 18]" />
-                    <Rectangle width="32" height="3" color="0x8B5CF6FF" translation="[24, 76]" />
-                    <Label text="APPOINTMENTS" font="font:SmallSystemFont" color="0x2D1B69FF" translation="[24, 86]" />
-                </Group>
-
-                <!-- Stat 4: Pending Tasks -->
-                <Group translation="[1179, 0]">
-                    <Rectangle width="382" height="112" color="0x0F0F17FF" translation="[-1, -1]" />
-                    <Rectangle width="380" height="110" color="0x0C0C13FF" />
-                    <Label id="statTasks" text="0" font="font:LargeBoldSystemFont" color="0xEF4444FF" translation="[24, 18]" />
-                    <Rectangle width="32" height="3" color="0xEF4444FF" translation="[24, 76]" />
-                    <Label text="PENDING TASKS" font="font:SmallSystemFont" color="0x3D0F0FFF" translation="[24, 86]" />
-                </Group>
-            </Group>
-
-            <!-- LOWER CONTENT -->
-            <!-- Left Column: x:40 y:362 -->
-            <Group translation="[40, 362]">
-                <Label text="VERSE OF THE DAY" font="font:SmallSystemFont" color="0x1E293BFF" translation="[0, 0]" />
-                
-                <!-- Verse Card -->
-                <Group translation="[0, 24]">
-                    <Rectangle width="434" height="392" color="0x0F0F17FF" translation="[-1, -1]" />
-                    <Rectangle width="432" height="390" color="0x0C0C13FF" />
-                    <Label id="verseText" text="For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life." font="font:MediumSystemFont" color="0x94A3B8FF" translation="[12, 20]" width="408" wrap="true" />
-                    <Label id="verseRef" text="— John 3:16" font="font:MediumSystemFont" color="0x00C9A7FF" translation="[12, 354]" />
-                </Group>
-
-                <!-- Drawing Card -->
-                <Label text="DRAWING OF THE DAY" font="font:SmallSystemFont" color="0x1E293BFF" translation="[0, 444]" />
-                <Group translation="[0, 468]">
-                    <Rectangle width="434" height="252" color="0x0F0F17FF" translation="[-1, -1]" />
-                    <Rectangle width="432" height="250" color="0x0C0C13FF" />
-                    <Label text="Take a moment to appreciate the beauty around you." font="font:MediumSystemFont" color="0x475569FF" translation="[12, 20]" width="300" wrap="true" />
-                    <Rectangle width="56" height="56" color="0x111120FF" translation="[12, 106]" />
-                    <Label text="Scan to view" font="font:MediumSystemFont" color="0x1E293BFF" translation="[78, 124]" />
-                </Group>
-            </Group>
-
-            <!-- Right Column: x:492 y:362 -->
-            <Group translation="[452, 362]">
-                <Label text="QUICK ACTIONS" font="font:SmallSystemFont" color="0x1E293BFF" translation="[0, 0]" />
-                
-                <MarkupGrid id="quickActionsGrid"
-                    translation="[0, 24]"
-                    itemComponentName="QuickActionCard"
-                    itemSize="[285, 315]"
-                    itemSpacing="[16, 16]"
-                    numColumns="4"
-                    numRows="2"
+                <!-- Navigation Items -->
+                <MarkupGrid id="sidebarNav"
+                    translation="[16, 88]"
+                    itemComponentName="SidebarNavItem"
+                    itemSize="[228, 46]"
+                    itemSpacing="[0, 4]"
+                    numColumns="1"
+                    numRows="9"
                     drawFocusFeedback="false" />
+
+                <!-- Sidebar Footer Status Pill -->
+                <Group id="sidebarFooter" translation="[16, 904]">
+                    <Rectangle width="228" height="36" color="0xE6F7F4FF" cornerRoundingRadius="6" />
+                    <Rectangle width="8" height="8" color="0x00C9A7FF" cornerRoundingRadius="4" translation="[12, 14]" />
+                    <Label id="navBadge" text="Account Connected" font="font:SmallestSystemFont" color="0x00A89DFF" translation="[26, 9]" width="194" />
+                </Group>
             </Group>
 
+            <!-- ==================================================== -->
+            <!-- 2. MAIN CONTENT AREA (Right of sidebar, starts x=292) -->
+            <!-- Width: 1328, padded 32px from sidebar, ends at 1588   -->
+            <!-- ==================================================== -->
+            <Group id="mainContent" translation="[292, 0]">
+
+                <!-- ====== TOP BAR ====== -->
+                <!-- Greeting left, Date/Time right, 70px height -->
+                <Group id="topBar" translation="[0, 20]">
+                    <!-- Left: Personalized Greeting Stack -->
+                    <LayoutGroup id="greetingStack" layoutDirection="vert" itemSpacings="[4]" translation="[0, 0]">
+                        <Label id="greetingLabel" text="Welcome Home" font="font:LargeBoldSystemFont" color="0x0F172AFF" width="620" />
+                        <Label id="greetingSub" text="Here is your family's daily wellness summary" font="font:SmallestSystemFont" color="0x64748BFF" width="620" />
+                    </LayoutGroup>
+
+                    <!-- Right: Date and Live Clock Stack -->
+                    <LayoutGroup id="dateTimeStack" layoutDirection="vert" itemSpacings="[2]" translation="[828, 2]">
+                        <Label id="dateLabel" text="" font="font:SmallestSystemFont" color="0x64748BFF" width="500" horizAlign="right" />
+                        <Label id="timeLabel" text="" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="500" horizAlign="right" />
+                    </LayoutGroup>
+                </Group>
+
+                <!-- ====== APPOINTMENT ALERT BAR ====== -->
+                <!-- Contained within main content, rounded, 56px height -->
+                <Group id="alertBar" translation="[0, 98]">
+                    <Poster width="1328" height="56" uri="pkg:/images/announcement_bg.png" />
+                    <Poster width="20" height="20" uri="pkg:/images/icon_calendar.png" blendColor="0xB45309FF" translation="[22, 18]" />
+                    <Label id="alertText" text="Loading your FamilyCare data..." font="font:SmallestBoldSystemFont" color="0x78350FFF" translation="[52, 17]" width="1020" wrap="false" maxLines="1" />
+                    <Label id="alertCountdown" text="" font="font:SmallestBoldSystemFont" color="0x78350FFF" translation="[1088, 17]" width="216" horizAlign="right" />
+                </Group>
+
+                <!-- ====== STATS ROW (Matching Mobile Quick Stats: Patients, Appointments, Meds, Notes) ====== -->
+                <LayoutGroup layoutDirection="horiz" translation="[0, 178]" itemSpacings="[18]">
+                    <!-- Stat 1: Patients -->
+                    <Group>
+                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statPatients" text="—" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[0, 10]" width="310" horizAlign="center" />
+                        <Label text="PATIENTS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                    </Group>
+
+                    <!-- Stat 2: Appointments -->
+                    <Group>
+                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statAppts" text="—" font="font:MediumBoldSystemFont" color="0x8B5CF6FF" translation="[0, 10]" width="310" horizAlign="center" />
+                        <Label text="APPOINTMENTS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                    </Group>
+
+                    <!-- Stat 3: Medications -->
+                    <Group>
+                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statMeds" text="—" font="font:MediumBoldSystemFont" color="0xF59E0BFF" translation="[0, 10]" width="310" horizAlign="center" />
+                        <Label text="MEDICATIONS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                    </Group>
+
+                    <!-- Stat 4: Notes -->
+                    <Group>
+                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statNotes" text="—" font="font:MediumBoldSystemFont" color="0x60A5FAFF" translation="[0, 10]" width="310" horizAlign="center" />
+                        <Label text="NOTES" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                    </Group>
+                </LayoutGroup>
+
+                <!-- ====== LOWER CONTENT REGION ====== -->
+
+                <!-- LEFT COLUMN: Verse + Featured Book (580px wide) -->
+                <Group id="leftColumn" translation="[0, 288]">
+                    <!-- Section label: Verse of the Day -->
+                    <Label text="VERSE OF THE DAY" font="font:SmallestSystemFont" color="0x94A3B8FF" />
+
+                    <!-- Verse Card (580 × 260) — rounded floating card -->
+                    <Group translation="[0, 28]">
+                        <Poster width="580" height="260" uri="pkg:/images/card_verse_bg.png" />
+                        <Group translation="[26, 24]">
+                            <Label id="verseText"
+                                text="&quot;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&quot;"
+                                font="font:SmallestSystemFont"
+                                color="0x334155FF"
+                                width="528"
+                                wrap="true"
+                                maxLines="5" />
+                            <Label id="verseRef"
+                                text="— John 3:16"
+                                font="font:SmallestBoldSystemFont"
+                                color="0x00C9A7FF"
+                                translation="[0, 178]" />
+                        </Group>
+                    </Group>
+
+                    <!-- Section label: Featured Book -->
+                    <Label text="FEATURED BOOK" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 314]" />
+
+                    <!-- Featured Book Promotional Card (580 × 240) -->
+                    <FeaturedBookCard id="featuredBookCard" translation="[0, 342]" />
+                </Group>
+
+                <!-- RIGHT COLUMN: Quick Actions (starts at x=616, 712px wide) -->
+                <Group id="rightColumn" translation="[616, 288]">
+                    <!-- Section label: Quick Actions -->
+                    <Label text="QUICK ACTIONS" font="font:SmallestSystemFont" color="0x94A3B8FF" />
+
+                    <!-- Grid of Quick Action Cards (336×112, 2 cols × 4 rows) -->
+                    <MarkupGrid id="quickActionsGrid"
+                        translation="[0, 28]"
+                        itemComponentName="QuickActionCard"
+                        itemSize="[336, 112]"
+                        itemSpacing="[20, 16]"
+                        numColumns="2"
+                        numRows="4"
+                        drawFocusFeedback="false" />
+                </Group>
+
+            </Group>
         </Group>
 
         <Timer id="clockTimer" duration="30" repeat="true" />
         <Timer id="idleTimer" duration="300" repeat="false" />
-        
+        <ApiTask id="dashboardTask" />
+
         <Group id="loadingOverlay" visible="true">
-            <Rectangle width="1920" height="1080" color="0x08080EFF" />
+            <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
             <LoadingSpinner id="spinner" translation="[930, 450]" />
-            <Label text="Loading your dashboard..." font="font:MediumSystemFont" color="0x6B7280FF" horizAlign="center" width="1920" translation="[0, 530]" />
+            <Label text="Loading your dashboard..." font="font:SmallSystemFont" color="0x64748BFF" horizAlign="center" width="1920" translation="[0, 530]" />
         </Group>
     </children>
 </component>

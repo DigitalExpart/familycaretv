@@ -7,47 +7,56 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <Rectangle width="1920" height="1080" color="0x121212FF" />
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
             <Rectangle width="1920" height="3" color="0x66BB6AFF" translation="[0, 87]" />
             
-            <Label text="Pet Care &amp; Vet Records" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[340, 30]" />
+            <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
+            <Label text="Pet Care &amp; Vet Records" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1220" />
 
             <!-- [+] Add Pet Button -->
             <Group id="addBtnGroup" translation="[1600, 18]">
-                <Rectangle id="addBtnFocusBorder" width="264" height="54" color="0x66BB6AFF" translation="[-2, -2]" visible="false" />
-                <Rectangle id="addBtnBg" width="260" height="50" color="0x66BB6AFF" />
+                <Rectangle id="addBtnFocusBorder" width="264" height="54" color="0x66BB6AFF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
+                <Rectangle id="addBtnBg" width="260" height="50" color="0x66BB6AFF" cornerRoundingRadius="8" />
                 <Label text="✚ Add Pet" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="260" translation="[0, 12]" />
             </Group>
         </Group>
 
         <!-- Pets Grid -->
         <MarkupGrid id="petsGrid"
-            translation="[80, 140]"
+            translation="[80, 130]"
             itemComponentName="QuickActionTile"
             itemSize="[415, 175]"
             itemSpacing="[20, 20]"
             numColumns="4"
-            numRows="5"
+            numRows="4"
             drawFocusFeedback="false"
             visible="false" />
 
-        <!-- Empty State -->
-        <Group id="emptyState" visible="false" translation="[560, 360]">
-            <Rectangle width="800" height="260" color="0x1E1E1EFF" />
+        <!-- Empty State (Fully Contained) -->
+        <Group id="emptyState" visible="false" translation="[560, 340]">
+            <Rectangle width="804" height="274" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
+            <Rectangle width="800" height="270" color="0xFFFFFFFF" cornerRoundingRadius="12" />
             <Rectangle width="800" height="4" color="0x66BB6AFF" />
-            <Label text="No Pet Profiles Found" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" translation="[40, 40]" />
-            <Label text="Keep track of pet feeding schedules, vet contacts, and care instructions." font="font:MediumSystemFont" color="0xAAAAAAFF" translation="[40, 95]" />
-            <Label text="Click [+ Add Pet] to create your family pet profile." font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[40, 150]" />
+
+            <LayoutGroup layoutDirection="vert" translation="[40, 36]" itemSpacings="[14, 12, 16]">
+                <Label text="No Pet Profiles Found" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="720" />
+                <Label text="Keep track of pet feeding schedules, vet contacts, and care instructions." font="font:SmallSystemFont" color="0x64748BFF" width="720" wrap="true" maxLines="3" />
+                <Label text="Click [+ Add Pet] above to create your family pet profile." font="font:SmallestSystemFont" color="0x94A3B8FF" width="720" wrap="true" maxLines="2" />
+            </LayoutGroup>
         </Group>
 
-        <!-- Footer -->
-        <Rectangle width="1920" height="36" color="0xE8EBF0FF" translation="[0, 1044]" />
-        <Label text="Back Return  |  OK Edit Pet Profile  |  * Options Delete  |  ▲ Up to Add Button"
-            font="font:SmallSystemFont" color="0x8E8EA0FF" translation="[80, 1050]" />
+        <!-- Safe-Area Footer -->
+        <Group id="footerGroup" translation="[0, 1008]">
+            <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
+            <Label text="Back Return  |  OK Edit Pet Profile  |  * Options Delete  |  ▲ Up to Add Button"
+                font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
+        </Group>
 
         <!-- Services -->
         <ApiTask id="petsTask" />
@@ -58,7 +67,7 @@
 
         <Group id="loadingOverlay" visible="true">
             <LoadingSpinner translation="[930, 480]" />
-            <Label text="Loading pet profiles..." font="font:MediumSystemFont" color="0xAAAAAAFF" horizAlign="center" width="1920" translation="[0, 560]" />
+            <Label text="Loading pet profiles..." font="font:MediumSystemFont" color="0x64748BFF" horizAlign="center" width="1920" translation="[0, 560]" />
         </Group>
     </children>
 </component>

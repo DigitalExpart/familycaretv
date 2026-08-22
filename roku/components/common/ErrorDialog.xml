@@ -7,11 +7,17 @@
     </interface>
     <script type="text/brightscript" uri="pkg:/components/common/ErrorDialog.brs" />
     <children>
-        <Rectangle id="overlay" width="1920" height="1080" color="0x000000AA" visible="false" />
-        <Rectangle id="dialogBox" width="800" height="400" color="0x2C2C35FF" translation="[560, 340]" visible="false">
-            <Label id="titleLabel" text="Error" font="font:LargeSystemFont" color="0xFF5555FF" translation="[40, 40]" />
-            <Label id="messageLabel" font="font:MediumSystemFont" color="0xFFFFFFFF" translation="[40, 120]" width="720" wrap="true" />
-            <Label text="Press OK to dismiss" font="font:SmallSystemFont" color="0x888888FF" translation="[40, 320]" />
-        </Rectangle>
+        <Rectangle id="overlay" width="1920" height="1080" color="0x00000066" visible="false" />
+        <Group id="dialogBox" translation="[560, 340]" visible="false">
+            <Rectangle width="804" height="404" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
+            <Rectangle width="800" height="400" color="0xFFFFFFFF" cornerRoundingRadius="12" />
+            <Rectangle width="800" height="4" color="0xEF4444FF" />
+            
+            <LayoutGroup layoutDirection="vert" translation="[40, 35]" itemSpacings="[14, 20]">
+                <Label id="titleLabel" text="Error" font="font:LargeBoldSystemFont" color="0xEF4444FF" width="720" />
+                <Label id="messageLabel" font="font:MediumSystemFont" color="0x0F172AFF" width="720" wrap="true" maxLines="6" />
+                <Label text="Press OK to dismiss" font="font:SmallSystemFont" color="0x64748BFF" width="720" />
+            </LayoutGroup>
+        </Group>
     </children>
 </component>

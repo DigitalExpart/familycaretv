@@ -6,9 +6,9 @@ build_version=1
 ui_resolutions=fhd
 bs_const=debug_mode=false
 screensaver_title=FamilyCare TV Screensaver
-splash_screen_sd=pkg:/images/fallback_artwork.png
-splash_screen_hd=pkg:/images/fallback_artwork.png
-splash_screen_fhd=pkg:/images/fallback_artwork.png
+splash_screen_sd=pkg:/images/splash_screen_sd.jpg
+splash_screen_hd=pkg:/images/splash_screen_hd.jpg
+splash_screen_fhd=pkg:/images/splash_screen_fhd.jpg
 mm_icon_focus_sd=pkg:/images/fallback_artwork.png
 mm_icon_focus_hd=pkg:/images/fallback_artwork.png
 mm_icon_focus_fhd=pkg:/images/fallback_artwork.png

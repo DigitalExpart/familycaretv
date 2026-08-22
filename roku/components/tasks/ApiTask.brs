@@ -4,8 +4,11 @@ end sub
 
 sub executeRequest()
     req = m.top.request
+    if req = invalid return
 
     url = GetApiBaseUrl() + req.endpoint
+    print "[CONFIG] API base URL = " + GetApiBaseUrl()
+    print "[API] endpoint = " + req.endpoint
 
     http = CreateObject("roUrlTransfer")
     http.SetUrl(url)
@@ -14,14 +17,25 @@ sub executeRequest()
     http.RetainBodyOnError(true)
     http.SetMessagePort(CreateObject("roMessagePort"))
 
-    ' Set 30-second timeout to avoid hanging forever
     http.EnableEncodings(true)
     http.AddHeader("Content-Type", "application/json")
     http.AddHeader("Accept", "application/json")
 
-    token = getToken()
-    if token <> "" and token <> invalid
+    token = ""
+    if req.DoesExist("token") and req.token <> invalid and req.token <> ""
+        token = req.token
+    else
+        token = getToken()
+    end if
+
+    hasToken = (token <> "" and token <> invalid)
+    print "[AUTH] Token present = "; hasToken
+
+    if hasToken
         http.AddHeader("Authorization", "Bearer " + token)
+        print "[API] Authorization header attached = true"
+    else
+        print "[API] Authorization header attached = false"
     end if
 
     result = {}
@@ -34,6 +48,8 @@ sub executeRequest()
     if req.method <> invalid and req.method <> ""
         method = UCase(req.method)
     end if
+
+    print "[API] " + method + " " + url
 
     if method = "POST" or method = "PUT" or method = "PATCH" or method = "DELETE"
         http.SetRequest(method)
@@ -70,10 +86,11 @@ sub executeRequest()
         responseStr = ""
     end if
 
-    ' Safely handle network failure (-1, -2, etc.)
     if responseCode = invalid
         responseCode = -1
     end if
+
+    print "[API] HTTP status = "; responseCode
 
     result.code = responseCode
     result.success = (responseCode >= 200 and responseCode < 300)
@@ -86,15 +103,37 @@ sub executeRequest()
         if responseCode = -2
             result.error = "Connection timed out. Please try again."
         else
-            result.error = "Network error. Please check your internet connection. (Code: " + responseCode.toStr() + ")"
+            result.error = "Network error. (Code: " + responseCode.toStr() + ")"
         end if
     else if responseStr <> ""
         parsed = ParseJson(responseStr)
-        if parsed <> invalid and type(parsed) = "roAssociativeArray" and parsed.DoesExist("data")
-            ' Handle wrapped { success: true, data: [...] } responses
-            result.data = parsed.data
+        if parsed <> invalid and type(parsed) = "roAssociativeArray"
+            print "[API] JSON parsed = true"
+            if parsed.DoesExist("stats") and parsed.stats <> invalid
+                print "[API] has stats = true"
+            else
+                print "[API] has stats = false"
+            end if
+
+            if parsed.DoesExist("upcomingAppointment") and parsed.upcomingAppointment <> invalid
+                print "[API] has upcomingAppointment = true"
+            else
+                print "[API] has upcomingAppointment = false"
+            end if
+
+            if parsed.DoesExist("verseOfTheDay") and parsed.verseOfTheDay <> invalid
+                print "[API] has verseOfTheDay = true"
+            else
+                print "[API] has verseOfTheDay = false"
+            end if
+
+            if parsed.DoesExist("data") and parsed.data <> invalid
+                result.data = parsed.data
+            else
+                result.data = parsed
+            end if
         else
-            ' Handle raw array/object responses
+            print "[API] JSON parsed = false"
             result.data = parsed
         end if
     else
@@ -103,3 +142,4 @@ sub executeRequest()
 
     m.top.response = result
 end sub
+

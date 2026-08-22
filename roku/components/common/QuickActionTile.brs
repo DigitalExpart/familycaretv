@@ -1,8 +1,8 @@
 sub init()
     m.scaleContainer = m.top.findNode("scaleContainer")
     m.cardBg = m.top.findNode("cardBg")
+    m.cardBorder = m.top.findNode("cardBorder")
     m.focusGlow = m.top.findNode("focusGlow")
-    m.shadow = m.top.findNode("shadow")
     m.accentBar = m.top.findNode("accentBar")
     m.icon = m.top.findNode("icon")
     m.titleLabel = m.top.findNode("titleLabel")
@@ -26,7 +26,7 @@ sub OnItemContentChange()
         ' Assign accent color per category
         title = content.title
         if title = "Patients"
-            m.accentBar.color = "0x00A89DFF"
+            m.accentBar.color = "0x00C9A7FF"
         else if title = "Calendar"
             m.accentBar.color = "0x42A5F5FF"
         else if title = "Medications"
@@ -40,7 +40,7 @@ sub OnItemContentChange()
         else if title = "Notes"
             m.accentBar.color = "0x008F86FF"
         else if title = "Settings"
-            m.accentBar.color = "0x607D8BFF"
+            m.accentBar.color = "0x64748BFF"
         end if
     end if
 end sub
@@ -48,11 +48,13 @@ end sub
 sub OnItemFocusChange()
     if m.top.itemHasFocus
         m.focusGlow.visible = true
-        m.cardBg.color = "0x323232FF"       ' Darker pop out tint
+        m.cardBg.color = "0xF0FDFBFF"       ' Soft mint tint on focus
+        m.cardBorder.color = "0x00C9A7FF"   ' Teal border on focus
         m.focusInAnim.control = "start"
     else
         m.focusGlow.visible = false
-        m.cardBg.color = "0x242424FF"        ' Dark gray base
+        m.cardBg.color = "0xFFFFFFFF"       ' White base
+        m.cardBorder.color = "0xE2E8F0FF"   ' Subtle gray border
         m.focusOutAnim.control = "start"
     end if
 end sub

@@ -10,79 +10,94 @@
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
-        <!-- Light warm gray background -->
-        <Rectangle width="1920" height="1080" color="0x121212FF" />
+        <!-- Pale neutral page background -->
+        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
 
         <!-- Header -->
         <Group id="headerGroup">
-            <Rectangle width="1920" height="90" color="0x1E1E1EFF" />
-            <Rectangle width="1920" height="3" color="0x00A89DFF" translation="[0, 87]" />
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00A89DFF" translation="[320, 20]" />
-
-                <!-- Back Button -->
-            
-            <Label text="Patient Detail" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[600, 30]" />
+            <Rectangle width="1920" height="90" color="0xFFFFFFFF" />
+            <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
+            <Rectangle width="1920" height="3" color="0x00C9A7FF" translation="[0, 87]" />
+            <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
+            <Label text="Patient Detail" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
         </Group>
 
         <!-- Main Card Container -->
-        <Group translation="[360, 140]">
-            <Rectangle width="1206" height="846" color="0x0000000A" translation="[3, 3]" />
-            <Rectangle width="1200" height="840" color="0x1E1E1EFF" />
-            <Rectangle width="1200" height="5" color="0x00A89DFF" />
+        <Group translation="[360, 110]">
+            <Rectangle width="1204" height="874" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
+            <Rectangle width="1200" height="870" color="0xFFFFFFFF" cornerRoundingRadius="12" />
+            <Rectangle width="1200" height="4" color="0x00C9A7FF" />
 
-            <!-- Avatar & Header -->
-            <Poster id="avatarIcon" width="100" height="100" translation="[60, 40]"
+            <!-- Avatar -->
+            <Poster id="avatarIcon" width="90" height="90" translation="[60, 35]"
                 loadDisplayMode="scaleToFit" uri="pkg:/images/icon_patients.png" />
 
-            <Label id="nameLabel" text="Patient Name"
-                font="font:LargeBoldSystemFont" color="0xFFFFFFFF"
-                translation="[180, 45]" />
+            <!-- Dynamic Patient Info Stack -->
+            <LayoutGroup layoutDirection="vert" translation="[170, 35]" itemSpacings="[6]">
+                <Label id="nameLabel" text="Patient Name"
+                    font="font:LargeBoldSystemFont" color="0x0F172AFF"
+                    width="970" wrap="true" maxLines="1" />
 
-            <Label id="dobLabel" text="DOB: —"
-                font="font:MediumSystemFont" color="0xAAAAAAFF"
-                translation="[180, 95]" />
+                <Label id="dobLabel" text="DOB: —"
+                    font="font:MediumSystemFont" color="0x64748BFF"
+                    width="970" />
+            </LayoutGroup>
 
-            <!-- Action Buttons Bar (Edit, Delete, Back) -->
-            <Group id="actionsRow" translation="[180, 150]">
+            <!-- Action Buttons Bar (Edit, Delete) -->
+            <Group id="actionsRow" translation="[170, 140]">
                 <!-- Edit Button -->
                 <Group id="editBtn" translation="[0, 0]">
-                    <Rectangle id="editFocusBorder" width="224" height="54" color="0x00A89DFF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="editBg" width="220" height="50" color="0x00A89DFF" />
+                    <Rectangle id="editFocusBorder" width="224" height="54" color="0x00C9A7FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
+                    <Rectangle id="editBg" width="220" height="50" color="0x00C9A7FF" cornerRoundingRadius="8" />
                     <Label text="✎ Edit Patient" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
                 </Group>
 
                 <!-- Delete Button -->
                 <Group id="deleteBtn" translation="[240, 0]">
-                    <Rectangle id="deleteFocusBorder" width="224" height="54" color="0xFF5252FF" translation="[-2, -2]" visible="false" />
-                    <Rectangle id="deleteBg" width="220" height="50" color="0xFF5252FF" />
+                    <Rectangle id="deleteFocusBorder" width="224" height="54" color="0xEF4444FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
+                    <Rectangle id="deleteBg" width="220" height="50" color="0xEF4444FF" cornerRoundingRadius="8" />
                     <Label text="🗑 Delete" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="220" translation="[0, 12]" />
-                </Group></Group>
+                </Group>
+            </Group>
 
             <!-- Divider line -->
-            <Rectangle width="1080" height="2" color="0x444444FF" translation="[60, 230]" />
+            <Rectangle width="1080" height="1" color="0xE2E8F0FF" translation="[60, 210]" />
 
             <!-- Summary Stat Cards -->
-            <Group translation="[60, 260]">
-                <Rectangle width="330" height="110" color="0x2A2A2AFF" translation="[0, 0]" />
-                <Rectangle width="5" height="110" color="0x00A89DFF" translation="[0, 0]" />
-                <Label id="doctorsLabel" text="Doctors: 0" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[20, 35]" />
+            <Group translation="[60, 230]">
+                <!-- Stat 1: Doctors -->
+                <Group translation="[0, 0]">
+                    <Rectangle width="332" height="92" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
+                    <Rectangle width="330" height="90" color="0xF8FAFCFF" cornerRoundingRadius="8" />
+                    <Rectangle width="4" height="90" color="0x00C9A7FF" />
+                    <Label id="doctorsLabel" text="Doctors: 0" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[20, 28]" width="290" />
+                </Group>
 
-                <Rectangle width="330" height="110" color="0x2A2A2AFF" translation="[360, 0]" />
-                <Rectangle width="5" height="110" color="0xFFA726FF" translation="[360, 0]" />
-                <Label id="medsLabel" text="Medications: 0" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[380, 35]" />
+                <!-- Stat 2: Medications -->
+                <Group translation="[375, 0]">
+                    <Rectangle width="332" height="92" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
+                    <Rectangle width="330" height="90" color="0xF8FAFCFF" cornerRoundingRadius="8" />
+                    <Rectangle width="4" height="90" color="0xF59E0BFF" />
+                    <Label id="medsLabel" text="Medications: 0" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[20, 28]" width="290" />
+                </Group>
 
-                <Rectangle width="330" height="110" color="0x2A2A2AFF" translation="[720, 0]" />
-                <Rectangle width="5" height="110" color="0x7E57C2FF" translation="[720, 0]" />
-                <Label id="notesCountLabel" text="Notes: 0" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" translation="[740, 35]" />
+                <!-- Stat 3: Notes -->
+                <Group translation="[750, 0]">
+                    <Rectangle width="332" height="92" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
+                    <Rectangle width="330" height="90" color="0xF8FAFCFF" cornerRoundingRadius="8" />
+                    <Rectangle width="4" height="90" color="0x7E57C2FF" />
+                    <Label id="notesCountLabel" text="Notes: 0" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[20, 28]" width="290" />
+                </Group>
             </Group>
 
             <!-- Medical Notes & Instructions Section -->
-            <Group translation="[60, 410]">
-                <Label text="Medical Notes &amp; Care Instructions" font="font:MediumBoldSystemFont" color="0x00A89DFF" translation="[0, 0]" />
-                <Rectangle width="1080" height="340" color="0x2A2A2AFF" translation="[0, 35]" />
+            <Group translation="[60, 345]">
+                <Label text="Medical Notes &amp; Care Instructions" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[0, 0]" width="1080" />
+                <Rectangle width="1082" height="492" color="0xE2E8F0FF" translation="[-1, 34]" cornerRoundingRadius="8" />
+                <Rectangle width="1080" height="490" color="0xF8FAFCFF" translation="[0, 35]" cornerRoundingRadius="8" />
                 <Label id="notesTextLabel" text="No medical notes recorded."
-                    font="font:MediumSystemFont" color="0xFFFFFFFF"
-                    translation="[20, 55]" width="1040" wrap="true" maxLines="10" />
+                    font="font:MediumSystemFont" color="0x334155FF"
+                    translation="[24, 55]" width="1032" wrap="true" maxLines="14" />
             </Group>
         </Group>
 

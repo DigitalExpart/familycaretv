@@ -1,75 +1,74 @@
 ' Theme.brs - FamilyCare TV Design System
-' Centralized color palette, spacing, and utility functions
-' Used across all V2 premium components
+' Centralized light-theme color palette and utility functions
 ' ═══════════════════════════════════════════════════════════
 
-' ─── COLOR PALETTE ───
 function ThemeColor(name as String) as String
     colors = {
-        bgPage:         "0xF2F4F7FF"
+        ' Surfaces & Backgrounds
+        bgPage:         "0xF0F2F5FF"
         bgWhite:        "0xFFFFFFFF"
         bgCard:         "0xFFFFFFFF"
         bgHeader:       "0xFFFFFFFF"
         bgFooter:       "0xE8EBF0FF"
         bgOverlay:      "0x00000066"
-        bgInput:        "0xF5F7FAFF"
+        bgInput:        "0xFFFFFFFF"
         bgFocusTint:    "0xF0FDFBFF"
+        bgActiveNav:    "0xE6F7F4FF"
 
-        textPrimary:    "0x1A1A2EFF"
-        textSecondary:  "0x4A4A68FF"
-        textMuted:      "0x8E8EA0FF"
+        ' Typography
+        textPrimary:    "0x0F172AFF"
+        textSecondary:  "0x64748BFF"
+        textMuted:      "0x94A3B8FF"
         textWhite:      "0xFFFFFFFF"
 
-        accentTeal:     "0x00A89DFF"
-        accentTealLight:"0xE0F7F5FF"
-        accentCoral:    "0xFF6B6BFF"
+        ' Primary Branding & Focus
+        accentTeal:     "0x00C9A7FF"
+        accentTealLight:"0xE6F7F4FF"
+        focusGlow:      "0x00C9A750"
+        focusBorder:    "0x00C9A7FF"
+        border:         "0xE2E8F0FF"
+        divider:        "0xE2E8F0FF"
+
+        ' Semantic Colors
+        accentAmber:    "0xF59E0BFF"
         accentOrange:   "0xFFA726FF"
         accentBlue:     "0x42A5F5FF"
         accentGreen:    "0x66BB6AFF"
         accentPurple:   "0x7E57C2FF"
-        accentGray:     "0x607D8BFF"
-
-        shadow:         "0x0000000D"
-        shadowDark:     "0x00000020"
-        border:         "0xE0E3E8FF"
-        focusGlow:      "0x00A89D50"
-        focusBorder:    "0x00A89DFF"
-        divider:        "0xE0E3E8FF"
-
-        statusOnline:   "0x66BB6AFF"
-        statusOffline:  "0xFF5252FF"
-        danger:         "0xFF5252FF"
+        accentPink:     "0xFF6B6BFF"
+        accentCoral:    "0xFF6B6BFF"
+        accentGray:     "0x64748BFF"
+        danger:         "0xEF4444FF"
+        statusOnline:   "0x22C55EFF"
+        statusOffline:  "0xEF4444FF"
     }
 
     if colors.DoesExist(name)
         return colors[name]
     end if
-    return "0x000000FF"
+    return "0x0F172AFF"
 end function
 
-' ─── TIME-BASED GREETING ───
 function GetGreeting() as String
     now = CreateObject("roDateTime")
     now.ToLocalTime()
     hour = now.GetHours()
 
     if hour < 12
-        return "Good Morning"
+        return "Good morning"
     else if hour < 17
-        return "Good Afternoon"
+        return "Good afternoon"
     else
-        return "Good Evening"
+        return "Good evening"
     end if
 end function
 
-' ─── FORMATTED DATE ───
 function GetFormattedDate() as String
     now = CreateObject("roDateTime")
     now.ToLocalTime()
     return now.AsDateString("long-date")
 end function
 
-' ─── FORMATTED TIME ───
 function GetFormattedTime() as String
     now = CreateObject("roDateTime")
     now.ToLocalTime()
@@ -94,7 +93,6 @@ function GetFormattedTime() as String
     return hours.toStr() + ":" + minsStr + ":" + secsStr + " " + ampm
 end function
 
-' ─── SHORT DATE ───
 function GetShortDate() as String
     now = CreateObject("roDateTime")
     now.ToLocalTime()

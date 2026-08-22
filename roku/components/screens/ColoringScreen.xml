@@ -2,9 +2,9 @@
 <component name="ColoringScreen" extends="Group">
     <script type="text/brightscript" uri="pkg:/components/screens/ColoringScreen.brs" />
     <children>
-        <Rectangle id="bg" width="1920" height="1080" color="0x121212FF" />
-        <Label id="titleText" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0xFFFFFFFF" text="Coloring" />
-        <RowList id="dataList" translation="[100, 150]" itemComponentName="PremiumCard" numRows="1" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0xFFFFFFFF" />
+        <Rectangle id="bg" width="1920" height="1080" color="0xF0F2F5FF" />
+        <Label id="titleText" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0x0F172AFF" text="Coloring" />
+        <RowList id="dataList" translation="[100, 150]" itemComponentName="PremiumCard" numRows="1" rowItemSize="[[300, 200]]" itemSize="[320, 260]" rowItemSpacing="[[20, 0]]" showRowLabel="true" rowLabelFont="font:MediumBoldSystemFont" rowLabelColor="0x0F172AFF" />
         <ApiTask id="fetchTask" />
     </children>
 </component>

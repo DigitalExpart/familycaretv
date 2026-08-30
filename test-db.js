@@ -12,7 +12,9 @@ const testConn = async (url, name) => {
 };
 
 (async () => {
-  await testConn("postgresql://postgres.qmwwvvgntkluaxbcyokv:FAMILYCARETV%40123@aws-0-us-east-1.pooler.supabase.com:6543/postgres", "Pooler Port 6543");
-  await testConn("postgresql://postgres.qmwwvvgntkluaxbcyokv:FAMILYCARETV%40123@aws-0-us-east-1.pooler.supabase.com:5432/postgres", "Pooler Port 5432");
-  await testConn("postgresql://postgres:FAMILYCARETV%40123@db.qmwwvvgntkluaxbcyokv.supabase.co:5432/postgres", "Direct Port 5432");
+  if (process.env.DATABASE_URL) {
+    await testConn(process.env.DATABASE_URL, "DATABASE_URL");
+  } else {
+    console.log("No DATABASE_URL environment variable provided.");
+  }
 })();

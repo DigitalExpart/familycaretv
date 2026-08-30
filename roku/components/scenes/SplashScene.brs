@@ -37,7 +37,7 @@ end sub
 
 sub onValidateResponse(event as Object)
     response = event.getData()
-    if response <> invalid and response.code = 200 and response.data <> invalid and response.data.valid = true
+    if response <> invalid and (response.code = 200 or response.code = 201) and response.data <> invalid and response.data.valid = true
         print "=== [AUTH] Token validated successfully -> Navigate to HomeScene ==="
         m.top.navigate = "HomeScene"
     else

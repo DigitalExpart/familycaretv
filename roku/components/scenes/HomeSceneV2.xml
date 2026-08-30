@@ -31,11 +31,11 @@
                 <!-- Sidebar right subtle border line -->
                 <Rectangle width="1" height="960" color="0xE2E8F0FF" translation="[259, 0]" />
 
-                <!-- Brand / Logo Area bounded strictly inside sidebar (width 228) -->
-                <Group id="brandHeader" translation="[16, 24]">
+                <!-- Brand / Logo Area bounded strictly inside sidebar (width 236) -->
+                <Group id="brandHeader" translation="[14, 24]">
                     <Poster width="22" height="22" uri="pkg:/images/icon_settings.png" blendColor="0x00C9A7FF" translation="[0, 2]" />
-                    <Label text="FamilyCare TV" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[28, 0]" width="200" />
-                    <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 26]" width="228" />
+                    <Label text="FamilyCare TV" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[26, 0]" width="210" />
+                    <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 26]" width="232" />
                 </Group>
 
                 <!-- Navigation Items -->
@@ -52,7 +52,7 @@
                 <Group id="sidebarFooter" translation="[16, 904]">
                     <Rectangle width="228" height="36" color="0xE6F7F4FF" cornerRoundingRadius="6" />
                     <Rectangle width="8" height="8" color="0x00C9A7FF" cornerRoundingRadius="4" translation="[12, 14]" />
-                    <Label id="navBadge" text="Account Connected" font="font:SmallestSystemFont" color="0x00A89DFF" translation="[26, 9]" width="194" />
+                    <Label id="navBadge" text="Account Connected" font="font:SmallestSystemFont" color="0x00A89DFF" translation="[24, 9]" width="200" />
                 </Group>
             </Group>
 

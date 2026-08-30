@@ -135,7 +135,7 @@ sub OnDashboardResponse(event as Object)
         end if
 
         ' 3. Upcoming Appointment Alert Bar
-        if data.upcomingAppointment <> invalid and data.upcomingAppointment <> ""
+        if data.upcomingAppointment <> invalid and type(data.upcomingAppointment) = "roAssociativeArray"
             appt = data.upcomingAppointment
             if appt.displayTitle <> invalid and appt.displayTime <> invalid
                 m.alertText.text = appt.displayTitle + " · " + appt.displayTime

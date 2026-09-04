@@ -44,7 +44,6 @@
     "react-native-screens": "4.25.2",
     "react-native-svg": "^15.15.4",
     "react-native-web": "~0.21.0",
-    "shared-types": "*",
     "typescript": "~6.0.3",
     "zod": "^4.4.3",
     "zustand": "^5.0.14"

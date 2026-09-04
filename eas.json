@@ -14,6 +14,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
         "EAS_PROJECT_ROOT": "./apps/mobile",
         "EXPO_PUBLIC_API_URL": "https://carefree-endurance-production-7621.up.railway.app"

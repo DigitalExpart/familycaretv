@@ -10,6 +10,7 @@ interface AnimatedButtonProps {
   textStyle?: TextStyle;
   variant?: 'primary' | 'secondary' | 'danger' | 'outline';
   disabled?: boolean;
+  loading?: boolean;
 }
 
 export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
@@ -19,6 +20,7 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   textStyle,
   variant = 'primary',
   disabled = false,
+  loading = false,
 }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const { isDark } = useTheme();

@@ -42,6 +42,9 @@ sub OnMedsResponse(event as Object)
 
     medsList = []
     if response <> invalid and response.code = 200 and response.data <> invalid
+        if response.data.patients <> invalid and response.data.patients.count() > 0
+            m.defaultPatientId = response.data.patients[0].id
+        end if
         if response.data.medications <> invalid
             medsList = response.data.medications
         else if type(response.data) = "roArray"
@@ -86,10 +89,13 @@ sub SetFocusZone(zone as Integer)
 
     if zone = 0
         m.addBtnBg.color = "0xFFF3E0FF"
+        m.top.setFocus(true)
     else
         m.addBtnBg.color = "0xFFA726FF"
         if m.medsGrid.visible
             m.medsGrid.setFocus(true)
+        else
+            m.top.setFocus(true)
         end if
     end if
 end sub
@@ -98,6 +104,8 @@ sub OpenAddMedForm(existingData = invalid)
     formScene = CreateObject("roSGNode", "MedicationFormScene")
     if existingData <> invalid
         formScene.medicationData = existingData
+    else if m.defaultPatientId <> invalid and m.defaultPatientId <> ""
+        formScene.medicationData = { patientId: m.defaultPatientId }
     end if
     m.activeSubScene = formScene
     m.top.appendChild(m.activeSubScene)

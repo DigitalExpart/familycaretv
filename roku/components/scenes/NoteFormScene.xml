@@ -21,24 +21,24 @@
         </Group>
 
         <!-- Form Card Container -->
-        <Group translation="[460, 130]">
-            <Rectangle width="1004" height="854" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
-            <Rectangle width="1000" height="850" color="0xFFFFFFFF" cornerRoundingRadius="12" />
+        <Group translation="[460, 110]">
+            <Rectangle width="1004" height="904" color="0xE2E8F0FF" translation="[-2, -2]" cornerRoundingRadius="12" />
+            <Rectangle width="1000" height="900" color="0xFFFFFFFF" cornerRoundingRadius="12" />
             <Rectangle width="1000" height="4" color="0x008F86FF" />
 
             <Label id="formSubtitle" text="Create personal care notes, doctor instructions, and reminders."
-                font="font:MediumSystemFont" color="0x64748BFF"
-                translation="[50, 30]" width="900" wrap="true" maxLines="2" />
+                font="font:SmallSystemFont" color="0x64748BFF"
+                translation="[50, 28]" width="900" wrap="true" maxLines="2" />
 
             <!-- Input Fields -->
-            <Group translation="[150, 90]">
+            <Group translation="[150, 185]">
                 <FormInputField id="titleField" label="Note Title *" placeholder="e.g. Dr. Johnson Follow-up Notes" translation="[0, 0]" />
-                <FormInputField id="categoryField" label="Category (MEDICAL, GENERAL, TASK)" placeholder="e.g. MEDICAL" translation="[0, 110]" />
-                <FormInputField id="contentField" label="Note Content / Details *" placeholder="e.g. Blood pressure 120/80, reduce sodium intake" translation="[0, 220]" />
+                <FormInputField id="categoryField" label="Category (MEDICAL, GENERAL, TASK)" placeholder="e.g. MEDICAL" translation="[0, 135]" />
+                <FormInputField id="contentField" label="Note Content / Details *" placeholder="e.g. Blood pressure 120/80, reduce sodium intake" translation="[0, 270]" />
             </Group>
 
             <!-- Buttons Row -->
-            <Group id="buttonsGroup" translation="[150, 680]">
+            <Group id="buttonsGroup" translation="[150, 740]">
                 <Group id="saveBtnGroup" translation="[0, 0]">
                     <Rectangle id="saveFocusBorder" width="344" height="64" color="0x008F86FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
                     <Rectangle id="saveBg" width="340" height="60" color="0x008F86FF" cornerRoundingRadius="8" />

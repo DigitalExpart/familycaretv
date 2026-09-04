@@ -33,9 +33,9 @@
             <!-- Input Fields -->
             <Group translation="[150, 90]">
                 <FormInputField id="nameField" label="Pet Name *" placeholder="e.g. Max, Bella, Milo" translation="[0, 0]" />
-                <FormInputField id="speciesField" label="Species *" placeholder="e.g. Dog, Cat, Bird" translation="[0, 110]" />
-                <FormInputField id="breedField" label="Breed / Color" placeholder="e.g. Golden Retriever, Tabby" translation="[0, 220]" />
-                <FormInputField id="notesField" label="Care Notes &amp; Vet Info" placeholder="e.g. Vet: Dr. Williams 555-0192, Eats twice daily" translation="[0, 330]" />
+                <FormInputField id="speciesField" label="Species *" placeholder="e.g. Dog, Cat, Bird" translation="[0, 125]" />
+                <FormInputField id="breedField" label="Breed / Color" placeholder="e.g. Golden Retriever, Tabby" translation="[0, 250]" />
+                <FormInputField id="notesField" label="Care Notes &amp; Vet Info" placeholder="e.g. Vet: Dr. Williams 555-0192, Eats twice daily" translation="[0, 375]" />
             </Group>
 
             <!-- Buttons Row -->

@@ -17,31 +17,35 @@ sub init()
 
     m.focusedItem = 0
     m.eventId = ""
+    m.patientId = ""
     UpdateFocus()
 end sub
 
 sub OnEventDataChange()
     data = m.top.eventData
-    if data <> invalid and data.id <> invalid
-        m.eventId = data.id
-        m.formTitle.text = "Edit Event: " + data.title
-        if data.title <> invalid then m.titleField.value = data.title
-        if data.startDateTime <> invalid
-            dVal = data.startDateTime
-            dVal = dVal.Replace("T", " ")
-            m.dateField.value = Left(dVal, 16)
+    if data <> invalid
+        if data.patientId <> invalid then m.patientId = data.patientId
+        if data.id <> invalid
+            m.eventId = data.id
+            m.formTitle.text = "Edit Event: " + data.title
+            if data.title <> invalid then m.titleField.value = data.title
+            if data.startDateTime <> invalid
+                dVal = data.startDateTime
+                dVal = dVal.Replace("T", " ")
+                m.dateField.value = Left(dVal, 16)
+            end if
+            if data.type <> invalid then m.typeField.value = data.type
+            if data.description <> invalid then m.descField.value = data.description
+            return
         end if
-        if data.type <> invalid then m.typeField.value = data.type
-        if data.description <> invalid then m.descField.value = data.description
-    else
-        m.eventId = ""
-        m.formTitle.text = "Add Calendar Event"
-        m.typeField.value = "APPOINTMENT"
-        if data <> invalid and data.startDateTime <> invalid
-            dVal = data.startDateTime
-            dVal = dVal.Replace("T", " ")
-            m.dateField.value = Left(dVal, 10) + " 09:00"
-        end if
+    end if
+    m.eventId = ""
+    m.formTitle.text = "Add Calendar Event"
+    m.typeField.value = "APPOINTMENT"
+    if data <> invalid and data.startDateTime <> invalid
+        dVal = data.startDateTime
+        dVal = dVal.Replace("T", " ")
+        m.dateField.value = Left(dVal, 10) + " 09:00"
     end if
 end sub
 
@@ -113,6 +117,10 @@ sub SaveEvent()
         type: eventType,
         description: m.descField.value
     }
+
+    if m.patientId <> invalid and m.patientId <> ""
+        body.patientId = m.patientId
+    end if
 
     m.loadingOverlay.visible = true
 

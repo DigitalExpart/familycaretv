@@ -40,6 +40,9 @@ sub OnNotesResponse(event as Object)
 
     notesList = []
     if response <> invalid and response.code = 200 and response.data <> invalid
+        if response.data.patients <> invalid and response.data.patients.count() > 0
+            m.defaultPatientId = response.data.patients[0].id
+        end if
         if response.data.notes <> invalid
             notesList = response.data.notes
         else if type(response.data) = "roArray"
@@ -79,10 +82,13 @@ sub SetFocusZone(zone as Integer)
 
     if zone = 0
         m.addBtnBg.color = "0xE0F2F1FF"
+        m.top.setFocus(true)
     else
         m.addBtnBg.color = "0x008F86FF"
         if m.notesGrid.visible
             m.notesGrid.setFocus(true)
+        else
+            m.top.setFocus(true)
         end if
     end if
 end sub
@@ -91,6 +97,8 @@ sub OpenAddNoteForm(existingData = invalid)
     formScene = CreateObject("roSGNode", "NoteFormScene")
     if existingData <> invalid
         formScene.noteData = existingData
+    else if m.defaultPatientId <> invalid and m.defaultPatientId <> ""
+        formScene.noteData = { patientId: m.defaultPatientId }
     end if
     m.activeSubScene = formScene
     m.top.appendChild(m.activeSubScene)

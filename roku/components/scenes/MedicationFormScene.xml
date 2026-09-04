@@ -33,9 +33,9 @@
             <!-- Input Fields -->
             <Group translation="[150, 90]">
                 <FormInputField id="nameField" label="Medication Name *" placeholder="e.g. Lisinopril, Metformin" translation="[0, 0]" />
-                <FormInputField id="dosageField" label="Dosage" placeholder="e.g. 10mg, 500mg" translation="[0, 110]" />
-                <FormInputField id="frequencyField" label="Frequency / Schedule" placeholder="e.g. Once daily in morning" translation="[0, 220]" />
-                <FormInputField id="purposeField" label="Purpose / Reason" placeholder="e.g. Blood pressure management" translation="[0, 330]" />
+                <FormInputField id="dosageField" label="Dosage" placeholder="e.g. 10mg, 500mg" translation="[0, 125]" />
+                <FormInputField id="frequencyField" label="Frequency / Schedule" placeholder="e.g. Once daily in morning" translation="[0, 250]" />
+                <FormInputField id="purposeField" label="Purpose / Reason" placeholder="e.g. Blood pressure management" translation="[0, 375]" />
             </Group>
 
             <!-- Buttons Row -->

@@ -17,22 +17,26 @@ sub init()
 
     m.focusedItem = 0
     m.medicationId = ""
+    m.patientId = ""
     UpdateFocus()
 end sub
 
 sub OnMedDataChange()
     data = m.top.medicationData
-    if data <> invalid and data.id <> invalid
-        m.medicationId = data.id
-        m.formTitle.text = "Edit Medication: " + data.name
-        if data.name <> invalid then m.nameField.value = data.name
-        if data.dosage <> invalid then m.dosageField.value = data.dosage
-        if data.frequency <> invalid then m.frequencyField.value = data.frequency
-        if data.purpose <> invalid then m.purposeField.value = data.purpose
-    else
-        m.medicationId = ""
-        m.formTitle.text = "Add Medication"
+    if data <> invalid
+        if data.patientId <> invalid then m.patientId = data.patientId
+        if data.id <> invalid
+            m.medicationId = data.id
+            m.formTitle.text = "Edit Medication: " + data.name
+            if data.name <> invalid then m.nameField.value = data.name
+            if data.dosage <> invalid then m.dosageField.value = data.dosage
+            if data.frequency <> invalid then m.frequencyField.value = data.frequency
+            if data.purpose <> invalid then m.purposeField.value = data.purpose
+            return
+        end if
     end if
+    m.medicationId = ""
+    m.formTitle.text = "Add Medication"
 end sub
 
 sub UpdateFocus()
@@ -89,6 +93,10 @@ sub SaveMedication()
         frequency: m.frequencyField.value,
         purpose: m.purposeField.value
     }
+
+    if m.patientId <> invalid and m.patientId <> ""
+        body.patientId = m.patientId
+    end if
 
     m.loadingOverlay.visible = true
 

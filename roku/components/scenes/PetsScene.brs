@@ -84,10 +84,13 @@ sub SetFocusZone(zone as Integer)
 
     if zone = 0
         m.addBtnBg.color = "0xE8F5E9FF"
+        m.top.setFocus(true)
     else
         m.addBtnBg.color = "0x66BB6AFF"
         if m.petsGrid.visible
             m.petsGrid.setFocus(true)
+        else
+            m.top.setFocus(true)
         end if
     end if
 end sub

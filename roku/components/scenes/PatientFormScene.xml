@@ -48,13 +48,13 @@
                 <FormInputField id="nameField" label="Full Name *" placeholder="e.g. Maria Rodriguez" translation="[0, 0]" />
 
                 <!-- Field 2: Date of Birth -->
-                <FormInputField id="dobField" label="Date of Birth (YYYY-MM-DD)" placeholder="e.g. 1954-08-15" translation="[0, 110]" />
+                <FormInputField id="dobField" label="Date of Birth (YYYY-MM-DD)" placeholder="e.g. 1954-08-15" translation="[0, 125]" />
 
                 <!-- Field 3: Gender -->
-                <FormInputField id="genderField" label="Gender" placeholder="e.g. Female, Male" translation="[0, 220]" />
+                <FormInputField id="genderField" label="Gender" placeholder="e.g. Female, Male" translation="[0, 250]" />
 
                 <!-- Field 4: Notes -->
-                <FormInputField id="notesField" label="Medical Notes / Care Instructions" placeholder="e.g. Requires wheelchair assistance, prefers Spanish" translation="[0, 330]" />
+                <FormInputField id="notesField" label="Medical Notes / Care Instructions" placeholder="e.g. Requires wheelchair assistance, prefers Spanish" translation="[0, 375]" />
             </Group>
 
             <!-- Buttons Row -->

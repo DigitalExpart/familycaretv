@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-$root = "c:\Users\Shilley Pc\FamilyCare TV Full Platform Build\roku"
+$root = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
 $zipPath = Join-Path $root "FamilyCareTV_Roku.zip"
 
 # Remove old zip

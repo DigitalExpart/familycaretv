@@ -5,7 +5,7 @@
         <field id="value" type="string" value="" onChange="OnDataChange" />
         <field id="placeholder" type="string" value="Enter value..." onChange="OnDataChange" />
         <field id="width" type="float" value="700" />
-        <field id="height" type="float" value="90" />
+        <field id="height" type="float" value="100" />
         <field id="isFocused" type="boolean" value="false" onChange="OnFocusChange" />
         <field id="clicked" type="boolean" value="false" alwaysNotify="true" />
     </interface>
@@ -17,7 +17,7 @@
             translation="[0, 0]" />
 
         <!-- Input Box Container -->
-        <Group translation="[0, 28]">
+        <Group translation="[0, 40]">
             <Rectangle id="focusGlow" width="704" height="60" color="0x00C9A750" translation="[-2, -2]" visible="false" />
             <Rectangle id="borderLine" width="702" height="58" color="0xE2E8F0FF" translation="[-1, -1]" />
             <Rectangle id="boxBg" width="700" height="56" color="0xFFFFFFFF" />

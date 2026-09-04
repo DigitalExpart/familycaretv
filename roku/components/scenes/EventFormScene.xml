@@ -33,9 +33,9 @@
             <!-- Input Fields -->
             <Group translation="[150, 90]">
                 <FormInputField id="titleField" label="Event Title *" placeholder="e.g. Cardiology Appointment, Physical Therapy" translation="[0, 0]" />
-                <FormInputField id="dateField" label="Date &amp; Time (YYYY-MM-DD HH:MM) *" placeholder="e.g. 2026-08-01 10:30" translation="[0, 110]" />
-                <FormInputField id="typeField" label="Event Type (APPOINTMENT, MEDICATION, TASK)" placeholder="e.g. APPOINTMENT" translation="[0, 220]" />
-                <FormInputField id="descField" label="Description / Location" placeholder="e.g. St. Jude Hospital, Suite 402" translation="[0, 330]" />
+                <FormInputField id="dateField" label="Date &amp; Time (YYYY-MM-DD HH:MM) *" placeholder="e.g. 2026-08-01 10:30" translation="[0, 125]" />
+                <FormInputField id="typeField" label="Event Type (APPOINTMENT, MEDICATION, TASK)" placeholder="e.g. APPOINTMENT" translation="[0, 250]" />
+                <FormInputField id="descField" label="Description / Location" placeholder="e.g. St. Jude Hospital, Suite 402" translation="[0, 375]" />
             </Group>
 
             <!-- Buttons Row -->

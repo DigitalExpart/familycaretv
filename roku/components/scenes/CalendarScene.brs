@@ -85,6 +85,9 @@ sub OnEventsResponse(event as Object)
 
     eventsList = []
     if response <> invalid and response.code = 200 and response.data <> invalid
+        if response.data.patients <> invalid and response.data.patients.count() > 0
+            m.defaultPatientId = response.data.patients[0].id
+        end if
         if response.data.upcomingEvents <> invalid
             eventsList = response.data.upcomingEvents
         else if response.data.reminders <> invalid
@@ -103,67 +106,50 @@ sub OnEventsResponse(event as Object)
 end sub
 
 sub BuildCalendarGrid()
+    content = CreateObject("roSGNode", "ContentNode")
     daysInMonth = GetDaysInMonth(m.currentYear, m.currentMonth)
     
-    firstDay = CreateObject("roDateTime")
+    firstDayDate = CreateObject("roDateTime")
     monthStr = StrI(m.currentMonth).Trim()
     if m.currentMonth < 10 then monthStr = "0" + monthStr
-    firstDay.FromISO8601String(StrI(m.currentYear).Trim() + "-" + monthStr + "-01T12:00:00Z")
-    startDayOfWeek = firstDay.GetDayOfWeek() ' 0 = Sunday
+    firstDayDate.FromISO8601String(StrI(m.currentYear).Trim() + "-" + monthStr + "-01T00:00:00Z")
+    startDayOfWeek = firstDayDate.GetDayOfWeek() ' 0 = Sunday, 1 = Monday...
     
-    content = CreateObject("roSGNode", "ContentNode")
-    
-    for i = 0 to 41
+    ' Leading empty days
+    for i = 0 to startDayOfWeek - 1
         item = CreateObject("roSGNode", "ContentNode")
+        item.title = ""
+        item.shortDescriptionLine1 = "inactive"
+        content.appendChild(item)
+    end for
+
+    ' Active days of the month
+    for d = 1 to daysInMonth
+        item = CreateObject("roSGNode", "ContentNode")
+        item.title = StrI(d).Trim()
+        item.shortDescriptionLine1 = "active"
         
-        if i < startDayOfWeek
-            item.title = ""
-            item.shortDescriptionLine1 = "dimmed"
-        else if i >= startDayOfWeek + daysInMonth
-            item.title = ""
-            item.shortDescriptionLine1 = "dimmed"
+        ' Check if there are events for this day
+        hasEvents = false
+        evtTitle = ""
+        for each evt in m.rawEventsData
+            if evt.startDateTime <> invalid
+                evtDay = Val(Mid(evt.startDateTime, 9, 2))
+                evtMonth = Val(Mid(evt.startDateTime, 6, 2))
+                evtYear = Val(Left(evt.startDateTime, 4))
+                
+                if evtDay = d and evtMonth = m.currentMonth and evtYear = m.currentYear
+                    hasEvents = true
+                    evtTitle = evt.title
+                    exit for
+                end if
+            end if
+        end for
+        
+        if hasEvents
+            item.shortDescriptionLine2 = evtTitle
         else
-            dayNum = i - startDayOfWeek + 1
-            item.title = StrI(dayNum).Trim()
-            item.shortDescriptionLine1 = "active"
-            
-            eventsText = ""
-            eventCount = 0
-            if m.rawEventsData <> invalid
-                for each ev in m.rawEventsData
-                    evDay = -1
-                    evMonth = -1
-                    evYear = -1
-                    
-                    dateVal = ""
-                    if ev.startDateTime <> invalid and ev.startDateTime <> ""
-                        dateVal = ev.startDateTime
-                    else if ev.date <> invalid and ev.date <> ""
-                        dateVal = ev.date
-                    end if
-                    
-                    if dateVal <> "" and Len(dateVal) >= 10
-                        evYear = Val(Left(dateVal, 4))
-                        evMonth = Val(Mid(dateVal, 6, 2))
-                        evDay = Val(Mid(dateVal, 9, 2))
-                    end if
-                    
-                    if evDay = dayNum and evMonth = m.currentMonth and evYear = m.currentYear
-                        eventCount = eventCount + 1
-                        if eventsText = ""
-                            eventsText = ev.title
-                        end if
-                    end if
-                end for
-            end if
-            
-            if eventCount > 1
-                item.shortDescriptionLine2 = StrI(eventCount).Trim() + " Events"
-            else if eventCount = 1
-                item.shortDescriptionLine2 = eventsText
-            else
-                item.shortDescriptionLine2 = ""
-            end if
+            item.shortDescriptionLine2 = ""
         end if
         
         content.appendChild(item)
@@ -192,9 +178,12 @@ sub SetFocusZone(zone as Integer, headerIdx as Integer)
         else if headerIdx = 2
             m.addBtnBg.color = "0x1E88E5FF"
         end if
+        m.top.setFocus(true)
     else
         if m.eventsGrid.visible
             m.eventsGrid.setFocus(true)
+        else
+            m.top.setFocus(true)
         end if
     end if
 end sub
@@ -218,24 +207,31 @@ sub OpenAddEventFormForDay(dayNum as Integer)
     if dayNum < 10 then dayStr = "0" + dayStr
     isoDate = StrI(m.currentYear).Trim() + "-" + monthStr + "-" + dayStr + "T09:00:00Z"
     
-    formScene.eventData = { startDateTime: isoDate }
+    initData = { startDateTime: isoDate }
+    if m.defaultPatientId <> invalid and m.defaultPatientId <> ""
+        initData.patientId = m.defaultPatientId
+    end if
+    formScene.eventData = initData
     
     m.activeSubScene = formScene
     m.top.appendChild(m.activeSubScene)
     m.activeSubScene.setFocus(true)
 
     m.activeSubScene.observeField("saved", "OnSubSceneSaved")
-    m.activeSubScene.observeField("closed", "OnSubSceneClosed")
+    m.activeSubScene.observeField("closeRequest", "OnSubSceneClosed")
 end sub
 
 sub OpenAddEventForm()
     formScene = CreateObject("roSGNode", "EventFormScene")
+    if m.defaultPatientId <> invalid and m.defaultPatientId <> ""
+        formScene.eventData = { patientId: m.defaultPatientId }
+    end if
     m.activeSubScene = formScene
     m.top.appendChild(m.activeSubScene)
     m.activeSubScene.setFocus(true)
 
     m.activeSubScene.observeField("saved", "OnSubSceneSaved")
-    m.activeSubScene.observeField("closed", "OnSubSceneClosed")
+    m.activeSubScene.observeField("closeRequest", "OnSubSceneClosed")
 end sub
 
 sub OnSubSceneSaved()
@@ -252,7 +248,7 @@ sub OnSubSceneClosed()
         m.top.removeChild(m.activeSubScene)
         m.activeSubScene = invalid
     end if
-    SetFocusZone(1, m.headerFocusIndex)
+    SetFocusZone(m.focusZone, m.headerFocusIndex)
 end sub
 
 sub OnConfirmDelete()

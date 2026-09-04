@@ -83,10 +83,13 @@ sub SetFocusZone(zone as Integer)
 
     if zone = 0
         m.addBtnBg.color = "0xF0FDFBFF"
+        m.top.setFocus(true)
     else
         m.addBtnBg.color = "0x00A89DFF"
         if m.patientsGrid.visible
             m.patientsGrid.setFocus(true)
+        else
+            m.top.setFocus(true)
         end if
     end if
 end sub

@@ -1,6 +1,7 @@
 sub init()
     m.formTitle = m.top.findNode("formTitle")
     m.titleField = m.top.findNode("titleField")
+    m.categoryField = m.top.findNode("categoryField")
     m.contentField = m.top.findNode("contentField")
 
     m.saveFocusBorder = m.top.findNode("saveFocusBorder")
@@ -15,28 +16,36 @@ sub init()
 
     m.focusedItem = 0
     m.noteId = ""
+    m.patientId = ""
     UpdateFocus()
 end sub
 
 sub OnNoteDataChange()
     data = m.top.noteData
-    if data <> invalid and data.id <> invalid
-        m.noteId = data.id
-        m.formTitle.text = "Edit Note: " + data.title
-        if data.title <> invalid then m.titleField.value = data.title
-        if data.content <> invalid then m.contentField.value = data.content
-    else
-        m.noteId = ""
-        m.formTitle.text = "Add Personal Note"
+    if data <> invalid
+        if data.patientId <> invalid then m.patientId = data.patientId
+        if data.id <> invalid
+            m.noteId = data.id
+            m.formTitle.text = "Edit Note: " + data.title
+            if data.title <> invalid then m.titleField.value = data.title
+            if data.category <> invalid and m.categoryField <> invalid then m.categoryField.value = data.category
+            if data.content <> invalid then m.contentField.value = data.content
+            return
+        end if
     end if
+    m.noteId = ""
+    m.formTitle.text = "Add Personal Note"
 end sub
 
 sub UpdateFocus()
     m.titleField.isFocused = (m.focusedItem = 0)
-    m.contentField.isFocused = (m.focusedItem = 1)
+    if m.categoryField <> invalid
+        m.categoryField.isFocused = (m.focusedItem = 1)
+    end if
+    m.contentField.isFocused = (m.focusedItem = 2)
 
-    m.saveFocusBorder.visible = (m.focusedItem = 2)
-    m.cancelFocusBorder.visible = (m.focusedItem = 3)
+    m.saveFocusBorder.visible = (m.focusedItem = 3)
+    m.cancelFocusBorder.visible = (m.focusedItem = 4)
 end sub
 
 sub OpenKeyboard(title as String, initialText as String, fieldIndex as Integer)
@@ -52,12 +61,12 @@ sub OnKeyboardClosed(event as Object)
     typedText = m.keyboardDialog.text
     m.keyboardDialog.visible = false
 
-    if true
-        if m.editingFieldIndex = 0
-            m.titleField.value = typedText
-        else if m.editingFieldIndex = 1
-            m.contentField.value = typedText
-        end if
+    if m.editingFieldIndex = 0
+        m.titleField.value = typedText
+    else if m.editingFieldIndex = 1
+        if m.categoryField <> invalid then m.categoryField.value = typedText
+    else if m.editingFieldIndex = 2
+        m.contentField.value = typedText
     end if
 
     UpdateFocus()
@@ -85,6 +94,10 @@ sub SaveNote()
         title: title,
         content: content
     }
+
+    if m.patientId <> invalid and m.patientId <> ""
+        body.patientId = m.patientId
+    end if
 
     m.loadingOverlay.visible = true
 
@@ -125,7 +138,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
         if key = "down"
-            if m.focusedItem < 3
+            if m.focusedItem < 4
                 m.focusedItem = m.focusedItem + 1
                 UpdateFocus()
                 handled = true
@@ -137,14 +150,14 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 handled = true
             end if
         else if key = "right"
-            if m.focusedItem = 2
-                m.focusedItem = 3
+            if m.focusedItem = 3
+                m.focusedItem = 4
                 UpdateFocus()
                 handled = true
             end if
         else if key = "left"
-            if m.focusedItem = 3
-                m.focusedItem = 2
+            if m.focusedItem = 4
+                m.focusedItem = 3
                 UpdateFocus()
                 handled = true
             end if
@@ -153,12 +166,19 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 OpenKeyboard("Note Title", m.titleField.value, 0)
                 handled = true
             else if m.focusedItem = 1
-                OpenKeyboard("Note Content", m.contentField.value, 1)
+                catVal = ""
+                if m.categoryField <> invalid and m.categoryField.value <> invalid
+                    catVal = m.categoryField.value
+                end if
+                OpenKeyboard("Category", catVal, 1)
                 handled = true
             else if m.focusedItem = 2
-                SaveNote()
+                OpenKeyboard("Note Content", m.contentField.value, 2)
                 handled = true
             else if m.focusedItem = 3
+                SaveNote()
+                handled = true
+            else if m.focusedItem = 4
                 m.top.closeRequest = true
                 handled = true
             end if

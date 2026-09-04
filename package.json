@@ -14,6 +14,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "eas-cli": "^23.2.0",
     "prettier": "latest",
     "turbo": "latest"
   },

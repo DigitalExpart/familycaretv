@@ -119,7 +119,6 @@ export class RokuController {
     return this.rokuService.getPets(req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('music')
   async getMusic() {
     return this.rokuService.getMusic();

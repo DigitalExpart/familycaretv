@@ -614,6 +614,12 @@ export class RokuService {
   }
 
   async getMusic() {
+    // 1. Fetch tracks uploaded in Admin Dashboard (AudioTrack)
+    const adminAudioTracks = await this.prisma.audioTrack.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // 2. Fetch tracks in MusicTrack
     let tracks = await this.prisma.musicTrack.findMany({
       where: { enabled: true },
       include: { category: true },
@@ -623,7 +629,7 @@ export class RokuService {
       ],
     });
 
-    if (tracks.length === 0) {
+    if (tracks.length === 0 && adminAudioTracks.length === 0) {
       await this.musicLibraryService.seedDefaultTracksIfEmpty();
       tracks = await this.prisma.musicTrack.findMany({
         where: { enabled: true },
@@ -635,8 +641,25 @@ export class RokuService {
       });
     }
 
-    return {
-      tracks: tracks.map((t) => ({
+    const allTracks: any[] = [];
+
+    // Prioritize admin uploaded audio tracks
+    for (const a of adminAudioTracks) {
+      allTracks.push({
+        id: a.id,
+        title: a.title,
+        artist: 'Admin Library',
+        duration: '04:00',
+        audioUrl: a.audioUrl || '',
+        artworkUrl: 'pkg:/images/icon_music.png',
+        category: 'Uploaded Music',
+        description: 'Uploaded from Admin Audio Dashboard',
+      });
+    }
+
+    // Include music library tracks
+    for (const t of tracks) {
+      allTracks.push({
         id: t.id,
         title: t.title,
         artist: t.category?.name || 'FamilyCare Music',
@@ -645,7 +668,11 @@ export class RokuService {
         artworkUrl: 'pkg:/images/icon_music.png',
         category: t.category?.name || 'General',
         description: t.description || '',
-      })),
+      });
+    }
+
+    return {
+      tracks: allTracks,
     };
   }
 

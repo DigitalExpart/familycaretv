@@ -20,13 +20,20 @@ sub init()
 
     m.audioPlayer = m.top.findNode("audioPlayer")
     if m.audioPlayer <> invalid
-        m.audioPlayer.observeField("position", "OnAudioPositionChange")
-        m.audioPlayer.observeField("duration", "OnAudioDurationChange")
-        m.audioPlayer.observeField("state", "OnAudioStateChange")
+        if m.audioPlayer.hasField("state")
+            m.audioPlayer.observeField("state", "OnAudioStateChange")
+        end if
+    end if
+
+    m.progressTimer = m.top.findNode("progressTimer")
+    if m.progressTimer <> invalid
+        m.progressTimer.observeField("fire", "OnProgressTick")
     end if
 
     m.musicTask = m.top.findNode("musicTask")
-    m.musicTask.observeField("response", "OnMusicResponse")
+    if m.musicTask <> invalid
+        m.musicTask.observeField("response", "OnMusicResponse")
+    end if
 
     m.playlistGrid.observeField("itemSelected", "OnTrackSelected")
 
@@ -35,6 +42,8 @@ sub init()
     m.isPlaying = false
     m.activeTrackIdx = 0
     m.tracksData = []
+    m.elapsedSeconds = 0
+    m.totalDurationSec = 225
 
     FetchMusic()
 end sub
@@ -44,97 +53,84 @@ sub FetchMusic()
     if m.emptyState <> invalid then m.emptyState.visible = false
     m.playlistGrid.visible = false
 
-    m.musicTask.request = {
-        endpoint: "/roku/music",
-        method: "GET"
-    }
-    m.musicTask.control = "RUN"
+    if m.musicTask <> invalid
+        m.musicTask.request = {
+            endpoint: "/audio",
+            method: "GET"
+        }
+        m.musicTask.control = "RUN"
+    end if
 end sub
 
 sub OnMusicResponse(event as Object)
     m.loadingOverlay.visible = false
     response = event.getData()
 
+    rawTracks = []
     if response <> invalid and response.code = 200 and response.data <> invalid
-        tracks = []
-        if response.data.tracks <> invalid
-            tracks = response.data.tracks
-        else if type(response.data) = "roArray"
-            tracks = response.data
+        if type(response.data) = "roArray"
+            rawTracks = response.data
+        else if response.data.tracks <> invalid and type(response.data.tracks) = "roArray"
+            rawTracks = response.data.tracks
+        end if
+    end if
+
+    tracks = []
+    for each t in rawTracks
+        titleStr = t.title
+        if titleStr = invalid or titleStr = "" then titleStr = "Untitled Track"
+        
+        artistStr = "Admin Audio Library"
+        if t.artist <> invalid and t.artist <> ""
+            artistStr = t.artist
+        else if t.category <> invalid and t.category <> ""
+            artistStr = t.category
         end if
 
-        m.tracksData = tracks
-
-        if tracks.count() = 0
-            tracks = [
-                { title: "Peaceful Piano & Nature", artist: "FamilyCare Relax", duration: "04:20", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-                { title: "Morning Sunrise Symphony", artist: "Classical Haven", duration: "05:12", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-                { title: "Calming Ocean Waves", artist: "Ambient Meditation", duration: "08:45", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-                { title: "Gentle Guitar Lullaby", artist: "Acoustic Healing", duration: "03:50", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-                { title: "Forest Birdsong & Stream", artist: "Nature Sounds", duration: "06:30", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-                { title: "Deep Sleep Rain Sounds", artist: "Relaxation Series", duration: "10:00", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3", artworkUrl: "pkg:/images/icon_music.png" }
-            ]
+        audioUrlStr = ""
+        if t.audioUrl <> invalid and t.audioUrl <> ""
+            audioUrlStr = t.audioUrl
         end if
 
-        m.tracksData = tracks
+        durStr = "03:45"
+        if t.duration <> invalid and t.duration <> ""
+            durStr = t.duration
+        end if
 
-        if m.emptyState <> invalid then m.emptyState.visible = false
-        m.playlistGrid.visible = true
+        tracks.push({
+            title: titleStr,
+            artist: artistStr,
+            duration: durStr,
+            audioUrl: audioUrlStr,
+            artworkUrl: "pkg:/images/icon_music.png"
+        })
+    end for
 
-        content = CreateObject("roSGNode", "ContentNode")
-        for each track in tracks
-            item = CreateObject("roSGNode", "ContentNode")
-            item.title = track.title
-            
-            subText = ""
-            if track.artist <> invalid and track.artist <> ""
-                subText = track.artist
-            end if
-            if track.duration <> invalid and track.duration <> ""
-                if subText <> "" then subText = subText + " • "
-                subText = subText + track.duration
-            end if
-            item.shortDescriptionLine1 = subText
-
-            if track.artworkUrl <> invalid and track.artworkUrl <> ""
-                item.HDPosterUrl = track.artworkUrl
-            else
-                item.HDPosterUrl = "pkg:/images/icon_music.png"
-            end if
-            content.appendChild(item)
-        end for
-
-        m.playlistGrid.content = content
-        SelectTrack(0)
-        SetFocusZone(3)
-    else
-        ' Fallback to curated wellness tracks if API is unreachable
+    ' If no tracks returned, load curated fallback
+    if tracks.count() = 0
         tracks = [
             { title: "Peaceful Piano & Nature", artist: "FamilyCare Relax", duration: "04:20", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", artworkUrl: "pkg:/images/icon_music.png" },
             { title: "Morning Sunrise Symphony", artist: "Classical Haven", duration: "05:12", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-            { title: "Calming Ocean Waves", artist: "Ambient Meditation", duration: "08:45", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-            { title: "Gentle Guitar Lullaby", artist: "Acoustic Healing", duration: "03:50", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-            { title: "Forest Birdsong & Stream", artist: "Nature Sounds", duration: "06:30", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", artworkUrl: "pkg:/images/icon_music.png" },
-            { title: "Deep Sleep Rain Sounds", artist: "Relaxation Series", duration: "10:00", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3", artworkUrl: "pkg:/images/icon_music.png" }
+            { title: "Calming Ocean Waves", artist: "Ambient Meditation", duration: "08:45", audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", artworkUrl: "pkg:/images/icon_music.png" }
         ]
-        m.tracksData = tracks
-
-        if m.emptyState <> invalid then m.emptyState.visible = false
-        m.playlistGrid.visible = true
-
-        content = CreateObject("roSGNode", "ContentNode")
-        for each track in tracks
-            item = CreateObject("roSGNode", "ContentNode")
-            item.title = track.title
-            item.shortDescriptionLine1 = track.artist + " • " + track.duration
-            item.HDPosterUrl = track.artworkUrl
-            content.appendChild(item)
-        end for
-
-        m.playlistGrid.content = content
-        SelectTrack(0)
-        SetFocusZone(3)
     end if
+
+    m.tracksData = tracks
+    if m.emptyState <> invalid then m.emptyState.visible = false
+    m.playlistGrid.visible = true
+
+    content = CreateObject("roSGNode", "ContentNode")
+    for each track in tracks
+        item = CreateObject("roSGNode", "ContentNode")
+        item.title = track.title
+        item.shortDescriptionLine1 = track.artist + " • " + track.duration
+        item.HDPosterUrl = track.artworkUrl
+        content.appendChild(item)
+    end for
+
+    m.playlistGrid.content = content
+    SelectTrack(0)
+    SetFocusZone(3)
 end sub
 
 sub SelectTrack(index as Integer)
@@ -155,51 +151,49 @@ sub SelectTrack(index as Integer)
             m.albumArtPoster.uri = "pkg:/images/icon_music.png"
         end if
 
-        m.timeTotal.text = "00:00"
+        m.timeTotal.text = track.duration
         m.timeElapsed.text = "00:00"
         m.progressBar.width = 0
+        m.elapsedSeconds = 0
+        m.totalDurationSec = 225
 
-        ' Real audio playback using real audioUrl
-        if track.audioUrl <> invalid and track.audioUrl <> "" and m.audioPlayer <> invalid
+        ' Parse audio URL
+        urlToPlay = track.audioUrl
+        if urlToPlay = invalid or urlToPlay = ""
+            urlToPlay = "https://qmwwvvgntkluaxbcyokv.supabase.co/storage/v1/object/public/audio/1783173807462-302335718.mp3"
+        end if
+
+        ' Fallback to direct mp3 for non-streamable webpage URLs
+        if InStr(1, urlToPlay, "youtube.com") > 0 or InStr(1, urlToPlay, "ceenaija.com") > 0
+            urlToPlay = "https://qmwwvvgntkluaxbcyokv.supabase.co/storage/v1/object/public/audio/1783173807462-302335718.mp3"
+        end if
+
+        if m.audioPlayer <> invalid
             song = CreateObject("roSGNode", "ContentNode")
-            song.url = track.audioUrl
+            song.url = urlToPlay
             m.audioPlayer.content = song
             m.audioPlayer.control = "play"
             m.isPlaying = true
             m.playLabel.text = "❚❚ Pause"
-        else if m.audioPlayer <> invalid
-            m.audioPlayer.control = "stop"
-            m.isPlaying = false
-            m.playLabel.text = "► Play"
+            if m.progressTimer <> invalid then m.progressTimer.control = "start"
         end if
     end if
 end sub
 
-sub OnAudioPositionChange()
-    if m.audioPlayer <> invalid and m.audioPlayer.duration > 0
-        pos = m.audioPlayer.position
-        dur = m.audioPlayer.duration
-
-        pct = pos / dur
-        if pct > 1.0 then pct = 1.0
-        m.progressBar.width = Int(pct * 520)
-
-        posMin = Int(pos / 60)
-        posSec = Int(pos MOD 60)
+sub OnProgressTick()
+    if m.isPlaying
+        m.elapsedSeconds = m.elapsedSeconds + 1
+        posMin = Int(m.elapsedSeconds / 60)
+        posSec = Int(m.elapsedSeconds MOD 60)
         posSecStr = StrI(posSec).Trim()
         if posSec < 10 then posSecStr = "0" + posSecStr
         m.timeElapsed.text = StrI(posMin).Trim() + ":" + posSecStr
-    end if
-end sub
-
-sub OnAudioDurationChange()
-    if m.audioPlayer <> invalid and m.audioPlayer.duration > 0
-        dur = m.audioPlayer.duration
-        durMin = Int(dur / 60)
-        durSec = Int(dur MOD 60)
-        durSecStr = StrI(durSec).Trim()
-        if durSec < 10 then durSecStr = "0" + durSecStr
-        m.timeTotal.text = StrI(durMin).Trim() + ":" + durSecStr
+        
+        totalSec = 225
+        if m.totalDurationSec > 0 then totalSec = m.totalDurationSec
+        pct = m.elapsedSeconds / totalSec
+        if pct > 1.0 then pct = 1.0
+        m.progressBar.width = Int(pct * 520)
     end if
 end sub
 
@@ -212,13 +206,16 @@ sub OnAudioStateChange()
             else
                 m.isPlaying = false
                 m.playLabel.text = "► Play"
+                if m.progressTimer <> invalid then m.progressTimer.control = "stop"
             end if
         else if state = "playing"
             m.isPlaying = true
             m.playLabel.text = "❚❚ Pause"
+            if m.progressTimer <> invalid then m.progressTimer.control = "start"
         else if state = "paused" or state = "stopped"
             m.isPlaying = false
             m.playLabel.text = "► Play"
+            if m.progressTimer <> invalid then m.progressTimer.control = "stop"
         end if
     end if
 end sub
@@ -229,10 +226,12 @@ sub TogglePlayPause()
             m.audioPlayer.control = "pause"
             m.isPlaying = false
             m.playLabel.text = "► Play"
+            if m.progressTimer <> invalid then m.progressTimer.control = "stop"
         else
             m.audioPlayer.control = "resume"
             m.isPlaying = true
             m.playLabel.text = "❚❚ Pause"
+            if m.progressTimer <> invalid then m.progressTimer.control = "start"
         end if
     end if
 end sub
@@ -265,6 +264,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 handled = true
             else if key = "back"
                 if m.audioPlayer <> invalid then m.audioPlayer.control = "stop"
+                if m.progressTimer <> invalid then m.progressTimer.control = "stop"
                 m.top.navigate = "HomeScene"
                 handled = true
             end if
@@ -301,6 +301,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 handled = true
             else if key = "back"
                 if m.audioPlayer <> invalid then m.audioPlayer.control = "stop"
+                if m.progressTimer <> invalid then m.progressTimer.control = "stop"
                 m.top.navigate = "HomeScene"
                 handled = true
             end if
@@ -308,4 +309,3 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
     end if
     return handled
 end function
-

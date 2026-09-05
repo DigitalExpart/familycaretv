@@ -113,6 +113,7 @@
 
         <!-- Services & Audio Player -->
         <Audio id="audioPlayer" />
+        <Timer id="progressTimer" repeat="true" duration="1" />
         <ApiTask id="musicTask" />
         <ErrorDialog id="errorDialog" />
 

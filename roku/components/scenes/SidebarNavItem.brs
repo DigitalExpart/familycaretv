@@ -16,13 +16,7 @@ sub OnContentChange()
 end sub
 
 sub OnFocusChange()
-    content = m.top.itemContent
-    isActiveNode = false
-    if content <> invalid and content.hasField("isActive")
-        isActiveNode = content.isActive
-    end if
-
-    if m.top.itemHasFocus or isActiveNode
+    if m.top.itemHasFocus
         m.highlightPoster.visible = true
         m.accentBar.visible = true
         m.titleLabel.color = "0x0F172AFF"

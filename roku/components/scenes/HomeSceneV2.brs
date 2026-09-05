@@ -248,7 +248,6 @@ sub SetupSidebar()
     content = CreateObject("roSGNode", "ContentNode")
     for each item in navItems
         node = CreateObject("roSGNode", "ContentNode")
-        node.addFields({ isActive: (item.title = "Home") })
         node.title = item.title
         node.HDPosterUrl = item.icon
         content.appendChild(node)

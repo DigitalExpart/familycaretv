@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PLAN_LIMITS } from '../common/config/plan-limits.config';
 import { CalendarAggregatorService } from '../calendar/calendar.service';
+import { MusicLibraryService } from '../music-library/music-library.service';
 
 @Injectable()
 export class RokuService {
@@ -14,6 +15,7 @@ export class RokuService {
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly calendarService: CalendarAggregatorService,
+    private readonly musicLibraryService: MusicLibraryService,
   ) {}
 
   async generateDeviceCode() {
@@ -612,7 +614,7 @@ export class RokuService {
   }
 
   async getMusic() {
-    const tracks = await this.prisma.musicTrack.findMany({
+    let tracks = await this.prisma.musicTrack.findMany({
       where: { enabled: true },
       include: { category: true },
       orderBy: [
@@ -620,6 +622,18 @@ export class RokuService {
         { displayOrder: 'asc' },
       ],
     });
+
+    if (tracks.length === 0) {
+      await this.musicLibraryService.seedDefaultTracksIfEmpty();
+      tracks = await this.prisma.musicTrack.findMany({
+        where: { enabled: true },
+        include: { category: true },
+        orderBy: [
+          { category: { displayOrder: 'asc' } },
+          { displayOrder: 'asc' },
+        ],
+      });
+    }
 
     return {
       tracks: tracks.map((t) => ({

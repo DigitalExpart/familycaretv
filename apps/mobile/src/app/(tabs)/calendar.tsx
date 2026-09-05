@@ -45,12 +45,13 @@ export default function CalendarScreen() {
   const tasks = useMemo(() => {
     return allEvents.filter((event: any) => {
       if (!event.startDateTime) return false;
+      const isoDatePrefix = typeof event.startDateTime === 'string' ? event.startDateTime.slice(0, 10) : '';
       const eventDate = new Date(event.startDateTime);
       const year = eventDate.getFullYear();
       const month = String(eventDate.getMonth() + 1).padStart(2, '0');
       const day = String(eventDate.getDate()).padStart(2, '0');
-      const dateStr = `${year}-${month}-${day}`;
-      return dateStr === selectedDate;
+      const localDateStr = `${year}-${month}-${day}`;
+      return localDateStr === selectedDate || isoDatePrefix === selectedDate;
     });
   }, [allEvents, selectedDate]);
 
@@ -73,14 +74,16 @@ export default function CalendarScreen() {
     // Mark all dates that have events
     allEvents.forEach((event: any) => {
       if (!event.startDateTime) return;
+      const isoDatePrefix = typeof event.startDateTime === 'string' ? event.startDateTime.slice(0, 10) : '';
       const eventDate = new Date(event.startDateTime);
       const year = eventDate.getFullYear();
       const month = String(eventDate.getMonth() + 1).padStart(2, '0');
       const day = String(eventDate.getDate()).padStart(2, '0');
-      const dateStr = `${year}-${month}-${day}`;
+      const localDateStr = `${year}-${month}-${day}`;
       
-      if (!marks[dateStr]) {
-        marks[dateStr] = { marked: true, dotColor: theme.primary };
+      const targetDate = localDateStr || isoDatePrefix;
+      if (targetDate && !marks[targetDate]) {
+        marks[targetDate] = { marked: true, dotColor: theme.primary };
       }
     });
 

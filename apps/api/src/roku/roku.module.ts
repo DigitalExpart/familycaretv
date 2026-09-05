@@ -5,9 +5,10 @@ import { DatabaseModule } from '../database/database.module';
 import { AuthModule } from '../auth/auth.module';
 
 import { CalendarModule } from '../calendar/calendar.module';
+import { MusicLibraryModule } from '../music-library/music-library.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, CalendarModule],
+  imports: [DatabaseModule, AuthModule, CalendarModule, MusicLibraryModule],
   controllers: [RokuController],
   providers: [RokuService],
 })

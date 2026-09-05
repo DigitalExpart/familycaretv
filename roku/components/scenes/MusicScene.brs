@@ -129,11 +129,11 @@ sub OnMusicResponse(event as Object)
     end for
 
     m.playlistGrid.content = content
-    SelectTrack(0)
+    SelectTrack(0, false)
     SetFocusZone(3)
 end sub
 
-sub SelectTrack(index as Integer)
+sub SelectTrack(index as Integer, autoPlay as Boolean)
     if m.tracksData <> invalid and index >= 0 and index < m.tracksData.count()
         m.activeTrackIdx = index
         track = m.tracksData[index]
@@ -168,14 +168,36 @@ sub SelectTrack(index as Integer)
             urlToPlay = "https://qmwwvvgntkluaxbcyokv.supabase.co/storage/v1/object/public/audio/1783173807462-302335718.mp3"
         end if
 
+        ' Ensure unique URL parameter per track to prevent simulator instance collision
+        separator = "?"
+        if InStr(1, urlToPlay, "?") > 0 then separator = "&"
+        urlToPlay = urlToPlay + separator + "track=" + StrI(index).Trim()
+
+        print "[MUSIC] SelectTrack: index="; index; " title="; track.title; " autoPlay="; autoPlay; " url="; urlToPlay
+
         if m.audioPlayer <> invalid
+            m.audioPlayer.control = "stop"
+
             song = CreateObject("roSGNode", "ContentNode")
             song.url = urlToPlay
+            song.streamFormat = "mp3"
+            song.ContentType = "audio"
+            song.title = track.title
+
             m.audioPlayer.content = song
-            m.audioPlayer.control = "play"
-            m.isPlaying = true
-            m.playLabel.text = "❚❚ Pause"
-            if m.progressTimer <> invalid then m.progressTimer.control = "start"
+
+            if autoPlay
+                m.audioPlayer.control = "play"
+                m.isPlaying = true
+                m.playLabel.text = "❚❚ Pause"
+                if m.progressTimer <> invalid then m.progressTimer.control = "start"
+                print "[MUSIC] Play initiated for track: "; track.title
+            else
+                m.isPlaying = false
+                m.playLabel.text = "► Play"
+                if m.progressTimer <> invalid then m.progressTimer.control = "stop"
+                print "[MUSIC] Track loaded in cue (autoPlay false)"
+            end if
         end if
     end if
 end sub
@@ -200,9 +222,10 @@ end sub
 sub OnAudioStateChange()
     if m.audioPlayer <> invalid
         state = m.audioPlayer.state
+        print "[MUSIC] OnAudioStateChange: state="; state; " errorCode="; m.audioPlayer.errorCode; " errorMsg="; m.audioPlayer.errorMsg
         if state = "finished"
             if m.tracksData <> invalid and m.activeTrackIdx < m.tracksData.count() - 1
-                SelectTrack(m.activeTrackIdx + 1)
+                SelectTrack(m.activeTrackIdx + 1, true)
             else
                 m.isPlaying = false
                 m.playLabel.text = "► Play"
@@ -216,22 +239,30 @@ sub OnAudioStateChange()
             m.isPlaying = false
             m.playLabel.text = "► Play"
             if m.progressTimer <> invalid then m.progressTimer.control = "stop"
+        else if state = "failed"
+            print "[MUSIC] Audio playback failed for URL. Error: "; m.audioPlayer.errorMsg
         end if
     end if
 end sub
 
 sub TogglePlayPause()
-    if m.audioPlayer <> invalid and m.audioPlayer.content <> invalid
+    if m.audioPlayer <> invalid
         if m.isPlaying
             m.audioPlayer.control = "pause"
             m.isPlaying = false
             m.playLabel.text = "► Play"
             if m.progressTimer <> invalid then m.progressTimer.control = "stop"
+            print "[MUSIC] Paused"
         else
-            m.audioPlayer.control = "resume"
-            m.isPlaying = true
-            m.playLabel.text = "❚❚ Pause"
-            if m.progressTimer <> invalid then m.progressTimer.control = "start"
+            if m.audioPlayer.content = invalid and m.tracksData <> invalid and m.tracksData.count() > 0
+                SelectTrack(m.activeTrackIdx, true)
+            else
+                m.audioPlayer.control = "play"
+                m.isPlaying = true
+                m.playLabel.text = "❚❚ Pause"
+                if m.progressTimer <> invalid then m.progressTimer.control = "start"
+                print "[MUSIC] Resumed/Playing"
+            end if
         end if
     end if
 end sub
@@ -251,7 +282,8 @@ end sub
 
 sub OnTrackSelected()
     selectedIndex = m.playlistGrid.itemSelected
-    SelectTrack(selectedIndex)
+    print "[MUSIC] OnTrackSelected: "; selectedIndex
+    SelectTrack(selectedIndex, true)
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
@@ -287,7 +319,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 if m.focusZone = 0
                     ' Prev track
                     if m.activeTrackIdx > 0
-                        SelectTrack(m.activeTrackIdx - 1)
+                        SelectTrack(m.activeTrackIdx - 1, true)
                     end if
                 else if m.focusZone = 1
                     ' Play / Pause
@@ -295,7 +327,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 else if m.focusZone = 2
                     ' Next track
                     if m.tracksData <> invalid and m.activeTrackIdx < m.tracksData.count() - 1
-                        SelectTrack(m.activeTrackIdx + 1)
+                        SelectTrack(m.activeTrackIdx + 1, true)
                     end if
                 end if
                 handled = true

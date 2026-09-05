@@ -3,32 +3,32 @@
     <interface>
         <field id="itemHasFocus" type="boolean" onChange="OnFocusChange" />
         <field id="selected" type="boolean" alwaysNotify="true" />
-        <field id="currentBook" type="assocarray" />
+        <field id="currentBook" type="assocarray" onChange="OnCurrentBookChange" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/FeaturedBookCard.brs" />
     <children>
-        <Group id="scaleContainer" scaleRotateCenter="[290, 120]">
+        <Group id="scaleContainer" scaleRotateCenter="[310, 125]">
             <!-- Card background: rounded white card with subtle border/elevation -->
-            <Poster id="bgPoster" width="580" height="240" uri="pkg:/images/card_book_bg.png" />
+            <Poster id="bgPoster" width="620" height="250" uri="pkg:/images/card_book_bg.png" />
 
             <!-- Content group (alpha animated during auto-rotation) -->
-            <Group id="contentGroup" translation="[22, 20]">
-                <!-- Left: Book Cover Poster (portrait aspect ratio: 90 x 135) -->
-                <Poster id="coverPoster" width="90" height="135" loadDisplayMode="scaleToFit" uri="pkg:/images/book_cover_mindfulness.png" />
+            <Group id="contentGroup" translation="[20, 18]">
+                <!-- Left: Book Cover Poster (portrait aspect ratio: 105 x 155) -->
+                <Poster id="coverPoster" width="105" height="155" loadDisplayMode="scaleToFit" uri="pkg:/images/book_cover_mindfulness.png" />
 
                 <!-- Right: Text LayoutGroup ensuring clean vertical stacking and zero button collision -->
-                <LayoutGroup id="textGroup" layoutDirection="vert" translation="[112, 4]" itemSpacings="[4, 4, 10]">
+                <LayoutGroup id="textGroup" layoutDirection="vert" translation="[126, 4]" itemSpacings="[4, 4, 8]">
                     <!-- Book Title (max 2 lines) -->
-                    <Label id="titleLabel" font="font:SmallestBoldSystemFont" color="0x0F172AFF" width="430" wrap="true" maxLines="2" />
+                    <Label id="titleLabel" font="font:SmallestBoldSystemFont" color="0x0F172AFF" width="455" wrap="true" maxLines="2" />
                     <!-- Author (single line) -->
-                    <Label id="authorLabel" font="font:SmallestSystemFont" color="0x00C9A7FF" width="430" wrap="false" maxLines="1" />
+                    <Label id="authorLabel" font="font:SmallestSystemFont" color="0x00C9A7FF" width="455" wrap="false" maxLines="1" />
                     <!-- Description (max 2 lines with safe wrap) -->
-                    <Label id="descLabel" font="font:SmallestSystemFont" color="0x475569FF" width="430" wrap="true" maxLines="2" />
+                    <Label id="descLabel" font="font:SmallestSystemFont" color="0x475569FF" width="455" wrap="true" maxLines="2" />
 
-                    <!-- Action Button — Red rounded pill button [ Featured Book ] -->
-                    <Group id="actionBadge">
-                        <Poster id="btnPoster" width="136" height="30" uri="pkg:/images/badge_featured_book.png" />
-                        <Label id="btnText" text="Featured Book" font="font:SmallestBoldSystemFont" color="0xFFFFFFFF" translation="[0, 5]" width="136" horizAlign="center" />
+                    <!-- Action Button — Red rounded pill button [ Featured Book ] (Part D: No truncation, full visibility) -->
+                    <Group id="actionBadge" translation="[0, 2]">
+                        <Rectangle id="btnBg" width="168" height="34" color="0xE11D48FF" cornerRoundingRadius="17" />
+                        <Label id="btnText" text="Featured Book" font="font:SmallestBoldSystemFont" color="0xFFFFFFFF" translation="[0, 8]" width="168" horizAlign="center" />
                     </Group>
                 </LayoutGroup>
             </Group>

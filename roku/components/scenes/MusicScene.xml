@@ -90,6 +90,8 @@
 
                 <Label text="Select Playlist Track" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[40, 25]" width="1000" />
 
+                <Label id="emptyState" text="No music tracks available in your library." font="font:MediumSystemFont" color="0x64748BFF" translation="[40, 200]" width="1000" horizAlign="center" visible="false" />
+
                 <MarkupGrid id="playlistGrid"
                     translation="[40, 70]"
                     itemComponentName="MusicTrackTile"
@@ -109,7 +111,8 @@
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 
-        <!-- Services -->
+        <!-- Services & Audio Player -->
+        <Audio id="audioPlayer" />
         <ApiTask id="musicTask" />
         <ErrorDialog id="errorDialog" />
 

@@ -43,11 +43,10 @@ export class ExpoPushService {
         select: { expoPushTokens: true }
       });
 
-      this.logger.log(`[PUSH_SEND] User lookup result: ${user ? 'found' : 'NOT FOUND'}`);
-      this.logger.log(`[PUSH_SEND] Stored tokens: ${JSON.stringify(user?.expoPushTokens || [])}`);
+      this.logger.log(`[PUSH_SEND] User lookup result: ${user ? 'found' : 'NOT FOUND'} (tokens registered: ${user?.expoPushTokens?.length || 0})`);
 
-      debug.storedToken = user?.expoPushTokens?.[0] || null;
-      debug.hasToken = !!debug.storedToken;
+      debug.storedToken = user?.expoPushTokens?.[0] ? `ExponentPushToken[...${user.expoPushTokens[0].slice(-4)}]` : null;
+      debug.hasToken = !!user?.expoPushTokens?.length;
 
       if (!user || !user.expoPushTokens || user.expoPushTokens.length === 0) {
         this.logger.warn(`[PUSH_SEND] ⚠️ No push tokens found for user ${userId} - push NOT sent`);
@@ -59,10 +58,10 @@ export class ExpoPushService {
       const invalidTokens: string[] = [];
       for (const pushToken of user.expoPushTokens) {
         const isValid = Expo.isExpoPushToken(pushToken);
-        this.logger.log(`[PUSH_SEND] Token: ${pushToken} | Valid: ${isValid}`);
+        this.logger.log(`[PUSH_SEND] Token format valid: ${isValid}`);
 
         if (!isValid) {
-          this.logger.error(`[PUSH_SEND] ❌ Invalid Expo push token: ${pushToken}`);
+          this.logger.error(`[PUSH_SEND] ❌ Invalid Expo push token format encountered`);
           invalidTokens.push(pushToken);
           continue;
         }
@@ -250,7 +249,7 @@ export class ExpoPushService {
       }
 
       result.storedTokens = user.expoPushTokens || [];
-      this.logger.log(`[TEST_PUSH] Stored tokens: ${JSON.stringify(result.storedTokens)}`);
+      this.logger.log(`[TEST_PUSH] Registered token count: ${result.storedTokens.length}`);
 
       if (result.storedTokens.length === 0) {
         const err = 'No Expo push tokens stored for this user';
@@ -274,7 +273,7 @@ export class ExpoPushService {
             data: { type: 'TEST_PUSH', timestamp: new Date().toISOString() },
           });
         } else {
-          const err = `Invalid token skipped: ${token}`;
+          const err = `Invalid token format skipped`;
           this.logger.error(`[TEST_PUSH] ❌ ${err}`);
           result.errors.push(err);
         }

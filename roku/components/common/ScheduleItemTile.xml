@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="ScheduleItemTile" extends="Group">
+    <interface>
+        <field id="itemContent" type="node" onChange="OnItemContentChange" />
+        <field id="focusPercent" type="float" onChange="OnFocusChange" />
+    </interface>
+    <script type="text/brightscript" uri="pkg:/components/common/ScheduleItemTile.brs" />
+    <children>
+        <Rectangle id="focusGlow" width="520" height="100" color="0x42A5F5FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
+        <Rectangle id="cardBorder" width="516" height="96" color="0xE2E8F0FF" cornerRoundingRadius="8" />
+        <Rectangle id="cardBg" width="512" height="92" color="0xFFFFFFFF" translation="[2, 2]" cornerRoundingRadius="8" />
+        <Rectangle id="accentBar" width="4" height="92" color="0x42A5F5FF" translation="[2, 2]" />
+
+        <Rectangle id="typeBg" width="110" height="24" color="0x42A5F520" translation="[16, 12]" cornerRoundingRadius="4" />
+        <Label id="typeLabel" font="font:SmallestBoldSystemFont" color="0x42A5F5FF" translation="[16, 16]" width="110" horizAlign="center" />
+        <Label id="timeLabel" font="font:SmallestSystemFont" color="0x64748BFF" translation="[136, 16]" width="360" />
+
+        <Label id="titleLabel" font="font:SmallBoldSystemFont" color="0x0F172AFF" translation="[16, 44]" width="480" wrap="true" maxLines="2" />
+    </children>
+</component>

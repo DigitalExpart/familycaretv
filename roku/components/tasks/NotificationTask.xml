@@ -3,5 +3,7 @@
     <interface>
         <field id="notification" type="assocarray" />
     </interface>
+    <script type="text/brightscript" uri="pkg:/source/Config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Auth.brs" />
     <script type="text/brightscript" uri="pkg:/components/tasks/NotificationTask.brs" />
 </component>

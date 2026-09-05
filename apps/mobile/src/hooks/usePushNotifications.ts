@@ -96,33 +96,32 @@ export function usePushNotifications(userId?: string) {
         }
         _diagnostics.permissionStatus = finalStatus;
 
+        diagLog(`Permission: ${finalStatus}`);
+
         if (finalStatus !== 'granted') {
-          diagLog(`ERROR: Permission NOT granted (status: ${finalStatus}) - aborting`);
+          diagLog(`Permission: ${finalStatus} (aborting)`);
           return;
         }
-        diagLog('✅ Permission GRANTED');
 
         // Step 2: Get Expo Push Token
         const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? process.env.EXPO_PUBLIC_PROJECT_ID;
-        diagLog(`Project ID for token request: ${projectId || 'UNDEFINED/MISSING'}`);
         
         if (!projectId) {
-          diagLog('⚠️ WARNING: projectId is undefined! Token request may fail.');
+          diagLog('WARNING: projectId is undefined! Token request may fail.');
         }
 
-        diagLog('Requesting Expo Push Token...');
         token = await Notifications.getExpoPushTokenAsync({
           projectId, 
         });
-        diagLog(`✅ Expo Push Token received: ${token?.data || 'EMPTY'}`);
-        _diagnostics.expoPushToken = token?.data || '';
+        const hasToken = !!token?.data;
+        diagLog(`Token obtained: ${hasToken}`);
+        _diagnostics.expoPushToken = hasToken ? 'TOKEN_OBTAINED' : '';
       } catch (e: any) {
-        diagLog(`❌ ERROR getting push token: ${e?.message || String(e)}`);
-        diagLog(`Error stack: ${e?.stack || 'no stack'}`);
+        diagLog(`Token obtained: false (error: ${e?.message || 'unknown'})`);
         _diagnostics.permissionStatus = 'error';
       }
     } else {
-      diagLog('⚠️ Not a physical device - push notifications not available');
+      diagLog('Not a physical device - push notifications not available');
     }
 
     return token?.data;
@@ -134,32 +133,23 @@ export function usePushNotifications(userId?: string) {
       return;
     }
 
-    diagLog(`Push registration triggered for userId: ${userId}`);
-
     registerForPushNotificationsAsync().then(async (token) => {
       if (token) {
         setExpoPushToken(token);
-        diagLog(`Uploading token to backend: ${token}`);
         
         // Step 3: Send to backend
         try {
           const response = await api.patch('/users/me/push-token', { pushToken: token });
-          const responseData = JSON.stringify(response.data);
-          diagLog(`✅ Backend upload SUCCESS. Response: ${responseData}`);
+          diagLog(`Backend registration: ${response.status}`);
           _diagnostics.tokenUploaded = true;
           _diagnostics.lastSyncTime = new Date().toISOString();
-          _diagnostics.lastUploadResponse = responseData;
         } catch (uploadError: any) {
-          const errMsg = uploadError?.response?.data 
-            ? JSON.stringify(uploadError.response.data) 
-            : uploadError?.message || String(uploadError);
-          diagLog(`❌ Backend upload FAILED: ${errMsg}`);
-          diagLog(`Upload error status: ${uploadError?.response?.status || 'no status'}`);
+          const status = uploadError?.response?.status || 'failed';
+          diagLog(`Backend registration: ${status}`);
           _diagnostics.tokenUploaded = false;
-          _diagnostics.lastUploadResponse = `ERROR: ${errMsg}`;
         }
       } else {
-        diagLog('⚠️ No token generated - nothing to upload to backend');
+        diagLog('Token obtained: false - nothing to upload to backend');
       }
     });
 

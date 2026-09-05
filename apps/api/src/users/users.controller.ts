@@ -390,7 +390,6 @@ export class UsersController {
   @ApiOperation({ summary: 'Register Expo Push Token' })
   async registerPushToken(@CurrentUser() user: any, @Body() body: { pushToken: string }) {
     this.logger.log(`[PUSH_TOKEN] Received push token registration request from user ${user.id}`);
-    this.logger.log(`[PUSH_TOKEN] Token value: ${body.pushToken}`);
 
     if (!body.pushToken) {
       this.logger.warn(`[PUSH_TOKEN] Missing pushToken in request body`);
@@ -403,7 +402,6 @@ export class UsersController {
     });
 
     const tokens = dbUser?.expoPushTokens || [];
-    this.logger.log(`[PUSH_TOKEN] Current stored tokens for user ${user.id}: ${JSON.stringify(tokens)}`);
 
     if (!tokens.includes(body.pushToken)) {
       tokens.push(body.pushToken);
@@ -411,15 +409,14 @@ export class UsersController {
         where: { id: user.id },
         data: { expoPushTokens: tokens }
       });
-      this.logger.log(`[PUSH_TOKEN] ✅ NEW token stored. Updated tokens: ${JSON.stringify(tokens)}`);
+      this.logger.log(`[PUSH_TOKEN] ✅ Token registered successfully for user ${user.id} (total tokens: ${tokens.length})`);
     } else {
-      this.logger.log(`[PUSH_TOKEN] Token already exists, no update needed.`);
+      this.logger.log(`[PUSH_TOKEN] Token already exists for user ${user.id}, no update needed.`);
     }
 
     return {
       success: true,
       message: 'Push token registered',
-      storedTokens: tokens,
     };
   }
 }

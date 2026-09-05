@@ -26,23 +26,45 @@ export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(getTodayString());
   const [currentMonth, setCurrentMonth] = useState(getTodayString().substring(0, 7));
 
-  // Fetch for the current month
-  const startDate = `${currentMonth}-01`;
-  const endDate = `${currentMonth}-31`;
+  // Fetch for the current month with accurate last-day-of-month calculation
+  const { startDate, endDate } = useMemo(() => {
+    const [yStr, mStr] = currentMonth.split('-');
+    const y = parseInt(yStr, 10);
+    const m = parseInt(mStr, 10);
+    const daysInMonth = new Date(y, m, 0).getDate();
+    return {
+      startDate: `${currentMonth}-01`,
+      endDate: `${currentMonth}-${String(daysInMonth).padStart(2, '0')}`,
+    };
+  }, [currentMonth]);
 
   const { data: upcomingData, isLoading: eventsLoading } = useCalendarEvents(startDate, endDate);
   const allEvents = Array.isArray(upcomingData) ? upcomingData : (upcomingData?.data || []);
   
-  // Filter events for selected date locally
-  const tasks = allEvents.filter((event: any) => {
-    if (!event.startDateTime) return false;
-    const eventDate = new Date(event.startDateTime);
-    const year = eventDate.getFullYear();
-    const month = String(eventDate.getMonth() + 1).padStart(2, '0');
-    const day = String(eventDate.getDate()).padStart(2, '0');
-    const dateStr = `${year}-${month}-${day}`;
-    return dateStr === selectedDate;
-  });
+  // Filter events and tasks for selected date locally
+  const tasks = useMemo(() => {
+    return allEvents.filter((event: any) => {
+      if (!event.startDateTime) return false;
+      const eventDate = new Date(event.startDateTime);
+      const year = eventDate.getFullYear();
+      const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+      const day = String(eventDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      return dateStr === selectedDate;
+    });
+  }, [allEvents, selectedDate]);
+
+  // Formatted date label, e.g. "Saturday, September 5"
+  const formattedSelectedDate = useMemo(() => {
+    if (!selectedDate) return '';
+    const [y, m, d] = selectedDate.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    return dateObj.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+  }, [selectedDate]);
 
   // Generate marked dates for the calendar
   const markedDates = useMemo(() => {
@@ -75,6 +97,24 @@ export default function CalendarScreen() {
 
     return marks;
   }, [selectedDate, theme.primary, allEvents]);
+
+  const getTypeStyle = (type: string) => {
+    switch (type) {
+      case 'APPOINTMENT':
+        return { label: t('calendar.appointment', 'Appointment'), color: '#8B5CF6', bg: '#8B5CF618' };
+      case 'MEDICATION':
+      case 'PET_MEDICATION':
+        return { label: t('calendar.medication', 'Medication'), color: '#F59E0B', bg: '#F59E0B18' };
+      case 'PET_VACCINATION':
+        return { label: t('calendar.petVaccination', 'Pet Vaccine'), color: '#EC4899', bg: '#EC489918' };
+      case 'KIDS_TASK':
+        return { label: t('calendar.kidsTask', "Kid's Task"), color: '#10B981', bg: '#10B98118' };
+      case 'EVENT':
+        return { label: t('calendar.event', 'Event'), color: '#6366F1', bg: '#6366F118' };
+      default:
+        return { label: t('calendar.task', 'Task'), color: '#00C9A7', bg: '#00C9A718' };
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -117,27 +157,50 @@ export default function CalendarScreen() {
           data={tasks}
           keyExtractor={(item: any) => item.id}
           contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <EmptyState message={selectedDate ? t('calendar.noEventsForDay', 'No events scheduled for this day.') : t('calendar.selectDay', 'Select a day to see events.')} />
+          ListHeaderComponent={
+            selectedDate ? (
+              <View style={styles.scheduleHeader}>
+                <Text style={[styles.selectedDateText, { color: theme.textSecondary }]}>
+                  {formattedSelectedDate}
+                </Text>
+                <Text style={[styles.scheduleTitle, { color: theme.text }]}>
+                  {t('calendar.todaysSchedule', "Today's Schedule")}
+                </Text>
+              </View>
+            ) : null
           }
-          renderItem={({ item }: { item: any }) => (
-            <View style={[styles.eventCard, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
-              <Text style={[styles.eventTitle, { color: theme.text }]}>{item.title}</Text>
-              <Text style={{ color: theme.textSecondary }}>
-                {(() => {
-                  switch (item.type) {
-                    case 'APPOINTMENT': return t('calendar.appointment', 'Appointment');
-                    case 'MEDICATION': return t('calendar.medication', 'Medication');
-                    case 'PET_MEDICATION': return t('calendar.petMedication', 'Pet Medication');
-                    case 'PET_VACCINATION': return t('calendar.petVaccination', 'Pet Vaccination');
-                    case 'KIDS_TASK': return t('calendar.kidsTask', 'Kid\'s Task');
-                    case 'EVENT': return t('calendar.event', 'Event');
-                    default: return t('calendar.task', 'Task');
-                  }
-                })()} • {new Date(item.startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </Text>
-            </View>
-          )}
+          ListEmptyComponent={
+            <EmptyState message={selectedDate ? t('calendar.noItemsForDay', 'No events or tasks scheduled for this day.') : t('calendar.selectDay', 'Select a day to see events.')} />
+          }
+          renderItem={({ item }: { item: any }) => {
+            const typeInfo = getTypeStyle(item.type);
+            const timeFormatted = item.startDateTime 
+              ? new Date(item.startDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              : '';
+
+            return (
+              <View style={[styles.eventCard, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+                <View style={styles.cardHeader}>
+                  <View style={[styles.typePill, { backgroundColor: typeInfo.bg }]}>
+                    <Text style={[styles.typeText, { color: typeInfo.color }]}>
+                      {typeInfo.label}
+                    </Text>
+                  </View>
+                  {timeFormatted ? (
+                    <Text style={[styles.timeText, { color: theme.textSecondary }]}>
+                      {timeFormatted}
+                    </Text>
+                  ) : null}
+                </View>
+                <Text style={[styles.eventTitle, { color: theme.text }]}>{item.title}</Text>
+                {item.status && (
+                  <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 4 }}>
+                    Status: {item.status}
+                  </Text>
+                )}
+              </View>
+            );
+          }}
         />
       )}
     </View>
@@ -147,16 +210,50 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  list: { padding: 16 },
+  list: { padding: 16, paddingBottom: 32 },
+  scheduleHeader: {
+    marginBottom: 14,
+    paddingTop: 8,
+  },
+  selectedDateText: {
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  scheduleTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+  },
   eventCard: {
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: 12,
   },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  typePill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  typeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  timeText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
   eventTitle: {
     fontSize: 16,
     fontWeight: '700',
-    marginBottom: 4,
-  }
+  },
 });

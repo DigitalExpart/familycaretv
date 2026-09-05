@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PLAN_LIMITS } from '../common/config/plan-limits.config';
+import { CalendarAggregatorService } from '../calendar/calendar.service';
 
 @Injectable()
 export class RokuService {
@@ -12,6 +13,7 @@ export class RokuService {
     private readonly prisma: PrismaService,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
+    private readonly calendarService: CalendarAggregatorService,
   ) {}
 
   async generateDeviceCode() {
@@ -223,7 +225,7 @@ export class RokuService {
     // Find the next upcoming appointment from now
     const now = new Date();
     const futureAppointments = events.filter(e => e.type === 'APPOINTMENT' && new Date(e.startDateTime) >= now);
-    const nextAppt = futureAppointments.length > 0 ? futureAppointments[0] : (events.length > 0 ? events[0] : null);
+    const nextAppt = futureAppointments.length > 0 ? futureAppointments[0] : null;
 
     let upcomingAppointment: any = null;
     if (nextAppt) {
@@ -607,6 +609,36 @@ export class RokuService {
       success: true,
       data: devices,
     };
+  }
+
+  async getMusic() {
+    const tracks = await this.prisma.musicTrack.findMany({
+      where: { enabled: true },
+      include: { category: true },
+      orderBy: [
+        { category: { displayOrder: 'asc' } },
+        { displayOrder: 'asc' },
+      ],
+    });
+
+    return {
+      tracks: tracks.map((t) => ({
+        id: t.id,
+        title: t.title,
+        artist: t.category?.name || 'FamilyCare Music',
+        duration: '04:00',
+        audioUrl: t.audioUrl || '',
+        artworkUrl: 'pkg:/images/icon_music.png',
+        category: t.category?.name || 'General',
+        description: t.description || '',
+      })),
+    };
+  }
+
+  async getCalendar(userId: string, startDate?: string, endDate?: string) {
+    const start = startDate ? new Date(startDate) : undefined;
+    const end = endDate ? new Date(endDate) : undefined;
+    return this.calendarService.getCalendarEvents(userId, start, end);
   }
 
   @Cron(CronExpression.EVERY_HOUR)

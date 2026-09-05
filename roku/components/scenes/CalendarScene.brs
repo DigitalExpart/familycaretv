@@ -8,6 +8,12 @@ sub init()
     m.nextBtnFocusBorder = m.top.findNode("nextBtnFocusBorder")
     m.monthLabel = m.top.findNode("monthLabel")
 
+    m.scheduleSection = m.top.findNode("scheduleSection")
+    m.scheduleDateLabel = m.top.findNode("scheduleDateLabel")
+    m.scheduleCountLabel = m.top.findNode("scheduleCountLabel")
+    m.emptyScheduleLabel = m.top.findNode("emptyScheduleLabel")
+    m.scheduleGrid = m.top.findNode("scheduleGrid")
+
     m.loadingOverlay = m.top.findNode("loadingOverlay")
     m.errorDialog = m.top.findNode("errorDialog")
 
@@ -21,8 +27,10 @@ sub init()
     m.deleteTask.observeField("response", "OnDeleteResponse")
 
     m.eventsGrid.observeField("itemSelected", "OnEventSelected")
+    m.eventsGrid.observeField("itemFocused", "OnGridItemFocused")
+    m.scheduleGrid.observeField("itemSelected", "OnScheduleItemSelected")
 
-    m.focusZone = 1 ' 0 = Header, 1 = Grid
+    m.focusZone = 1 ' 0 = Header, 1 = Calendar Grid, 2 = Daily Schedule Grid
     m.headerFocusIndex = 0 ' 0 = Prev, 1 = Next, 2 = Add Event
     
     ' Calculate current month details
@@ -30,6 +38,7 @@ sub init()
     now.ToLocalTime()
     m.currentYear = now.GetYear()
     m.currentMonth = now.GetMonth()
+    m.selectedDay = now.GetDayOfMonth()
     
     m.rawEventsData = []
     UpdateMonthHeader()
@@ -50,16 +59,27 @@ sub ChangeMonth(delta as Integer)
         m.currentMonth = 1
         m.currentYear = m.currentYear + 1
     end if
+    m.selectedDay = 1
     UpdateMonthHeader()
-    BuildCalendarGrid()
+    FetchEvents()
 end sub
 
 sub FetchEvents()
     m.loadingOverlay.visible = true
     m.eventsGrid.visible = false
+    if m.scheduleSection <> invalid then m.scheduleSection.visible = false
+
+    monthStr = StrI(m.currentMonth).Trim()
+    if m.currentMonth < 10 then monthStr = "0" + monthStr
+    daysInMonth = GetDaysInMonth(m.currentYear, m.currentMonth)
+    daysInMonthStr = StrI(daysInMonth).Trim()
+    if daysInMonth < 10 then daysInMonthStr = "0" + daysInMonthStr
+
+    startDate = StrI(m.currentYear).Trim() + "-" + monthStr + "-01T00:00:00.000Z"
+    endDate = StrI(m.currentYear).Trim() + "-" + monthStr + "-" + daysInMonthStr + "T23:59:59.999Z"
 
     m.eventsTask.request = {
-        endpoint: "/roku/dashboard",
+        endpoint: "/roku/calendar?startDate=" + startDate + "&endDate=" + endDate,
         method: "GET"
     }
     m.eventsTask.control = "RUN"
@@ -85,23 +105,21 @@ sub OnEventsResponse(event as Object)
 
     eventsList = []
     if response <> invalid and response.code = 200 and response.data <> invalid
-        if response.data.patients <> invalid and response.data.patients.count() > 0
-            m.defaultPatientId = response.data.patients[0].id
-        end if
-        if response.data.upcomingEvents <> invalid
-            eventsList = response.data.upcomingEvents
-        else if response.data.reminders <> invalid
-            eventsList = response.data.reminders
-        else if response.data.events <> invalid
-            eventsList = response.data.events
-        else if type(response.data) = "roArray"
+        if type(response.data) = "roArray"
             eventsList = response.data
+        else if response.data.events <> invalid and type(response.data.events) = "roArray"
+            eventsList = response.data.events
+        else if response.data.calendar <> invalid and type(response.data.calendar) = "roArray"
+            eventsList = response.data.calendar
+        else if response.data.upcomingEvents <> invalid
+            eventsList = response.data.upcomingEvents
         end if
     end if
 
     m.rawEventsData = eventsList
     BuildCalendarGrid()
     m.eventsGrid.visible = true
+    if m.scheduleSection <> invalid then m.scheduleSection.visible = true
     SetFocusZone(1, m.headerFocusIndex)
 end sub
 
@@ -112,7 +130,7 @@ sub BuildCalendarGrid()
     firstDayDate = CreateObject("roDateTime")
     monthStr = StrI(m.currentMonth).Trim()
     if m.currentMonth < 10 then monthStr = "0" + monthStr
-    firstDayDate.FromISO8601String(StrI(m.currentYear).Trim() + "-" + monthStr + "-01T00:00:00Z")
+    firstDayDate.FromISO8601String(StrI(m.currentYear).Trim() + "-" + monthStr + "-01T12:00:00Z")
     startDayOfWeek = firstDayDate.GetDayOfWeek() ' 0 = Sunday, 1 = Monday...
     
     ' Leading empty days
@@ -133,10 +151,19 @@ sub BuildCalendarGrid()
         hasEvents = false
         evtTitle = ""
         for each evt in m.rawEventsData
+            itemDateStr = ""
             if evt.startDateTime <> invalid
-                evtDay = Val(Mid(evt.startDateTime, 9, 2))
-                evtMonth = Val(Mid(evt.startDateTime, 6, 2))
-                evtYear = Val(Left(evt.startDateTime, 4))
+                itemDateStr = evt.startDateTime
+            else if evt.startAt <> invalid
+                itemDateStr = evt.startAt
+            else if evt.date <> invalid
+                itemDateStr = evt.date
+            end if
+
+            if itemDateStr <> ""
+                evtDay = Val(Mid(itemDateStr, 9, 2))
+                evtMonth = Val(Mid(itemDateStr, 6, 2))
+                evtYear = Val(Left(itemDateStr, 4))
                 
                 if evtDay = d and evtMonth = m.currentMonth and evtYear = m.currentYear
                     hasEvents = true
@@ -156,6 +183,119 @@ sub BuildCalendarGrid()
     end for
 
     m.eventsGrid.content = content
+
+    ' Select appropriate day (today if current month, else day 1)
+    now = CreateObject("roDateTime")
+    now.ToLocalTime()
+    targetDay = 1
+    if m.currentYear = now.GetYear() and m.currentMonth = now.GetMonth()
+        targetDay = now.GetDayOfMonth()
+    end if
+    if targetDay > daysInMonth then targetDay = 1
+
+    m.selectedDay = targetDay
+    targetGridIndex = startDayOfWeek + targetDay - 1
+    if targetGridIndex >= 0 and targetGridIndex < content.getChildCount()
+        m.eventsGrid.jumpToItem = targetGridIndex
+    end if
+
+    UpdateDailySchedule(m.selectedDay)
+end sub
+
+sub OnGridItemFocused()
+    idx = m.eventsGrid.itemFocused
+    if m.eventsGrid.content <> invalid and idx >= 0 and idx < m.eventsGrid.content.getChildCount()
+        item = m.eventsGrid.content.getChild(idx)
+        if item <> invalid and item.shortDescriptionLine1 = "active"
+            dayNum = Val(item.title)
+            if dayNum > 0 and dayNum <> m.selectedDay
+                UpdateDailySchedule(dayNum)
+            end if
+        end if
+    end if
+end sub
+
+sub UpdateDailySchedule(dayNum as Integer)
+    m.selectedDay = dayNum
+    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    monthName = months[m.currentMonth - 1]
+    
+    ' Calculate day of week
+    targetDate = CreateObject("roDateTime")
+    monthStr = StrI(m.currentMonth).Trim()
+    if m.currentMonth < 10 then monthStr = "0" + monthStr
+    dayStr = StrI(dayNum).Trim()
+    if dayNum < 10 then dayStr = "0" + dayStr
+    targetDate.FromISO8601String(StrI(m.currentYear).Trim() + "-" + monthStr + "-" + dayStr + "T12:00:00Z")
+    
+    dayOfWeekNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    dayName = dayOfWeekNames[targetDate.GetDayOfWeek()]
+    
+    m.scheduleDateLabel.text = dayName + ", " + monthName + " " + StrI(dayNum).Trim() + " — Today's Schedule"
+    
+    schedContent = CreateObject("roSGNode", "ContentNode")
+    count = 0
+    
+    for each evt in m.rawEventsData
+        itemDateStr = ""
+        if evt.startDateTime <> invalid
+            itemDateStr = evt.startDateTime
+        else if evt.startAt <> invalid
+            itemDateStr = evt.startAt
+        else if evt.date <> invalid
+            itemDateStr = evt.date
+        end if
+        
+        if itemDateStr <> ""
+            evtYear = Val(Left(itemDateStr, 4))
+            evtMonth = Val(Mid(itemDateStr, 6, 2))
+            evtDay = Val(Mid(itemDateStr, 9, 2))
+            
+            if evtYear = m.currentYear and evtMonth = m.currentMonth and evtDay = dayNum
+                count = count + 1
+                tileNode = CreateObject("roSGNode", "ContentNode")
+                tileNode.title = evt.title
+                
+                ' Parse time
+                timeFormatted = "All Day"
+                if Len(itemDateStr) >= 16
+                    hours = Val(Mid(itemDateStr, 12, 2))
+                    mins = Mid(itemDateStr, 15, 2)
+                    ampm = "AM"
+                    if hours >= 12
+                        ampm = "PM"
+                        if hours > 12 then hours = hours - 12
+                    else if hours = 0
+                        hours = 12
+                    end if
+                    timeFormatted = StrI(hours).Trim() + ":" + mins + " " + ampm
+                end if
+                
+                tileNode.shortDescriptionLine1 = timeFormatted
+                itemType = "EVENT"
+                if evt.type <> invalid and evt.type <> ""
+                    itemType = evt.type
+                else if evt.category <> invalid and evt.category <> ""
+                    itemType = evt.category
+                end if
+                tileNode.shortDescriptionLine2 = itemType
+                if evt.id <> invalid then tileNode.id = evt.id
+                
+                schedContent.appendChild(tileNode)
+            end if
+        end if
+    end for
+    
+    m.scheduleGrid.content = schedContent
+    if count > 0
+        m.emptyScheduleLabel.visible = false
+        m.scheduleGrid.visible = true
+        m.scheduleCountLabel.text = StrI(count).Trim() + " scheduled"
+    else
+        m.emptyScheduleLabel.visible = true
+        m.scheduleGrid.visible = false
+        m.scheduleCountLabel.text = "0 items"
+    end if
 end sub
 
 sub SetFocusZone(zone as Integer, headerIdx as Integer)
@@ -179,11 +319,17 @@ sub SetFocusZone(zone as Integer, headerIdx as Integer)
             m.addBtnBg.color = "0x1E88E5FF"
         end if
         m.top.setFocus(true)
-    else
+    else if zone = 1
         if m.eventsGrid.visible
             m.eventsGrid.setFocus(true)
         else
             m.top.setFocus(true)
+        end if
+    else if zone = 2
+        if m.scheduleGrid.visible and m.scheduleGrid.content <> invalid and m.scheduleGrid.content.getChildCount() > 0
+            m.scheduleGrid.setFocus(true)
+        else
+            m.eventsGrid.setFocus(true)
         end if
     end if
 end sub
@@ -195,6 +341,14 @@ sub OnEventSelected()
     if item <> invalid and item.shortDescriptionLine1 = "active"
         dayNum = Val(item.title)
         OpenAddEventFormForDay(dayNum)
+    end if
+end sub
+
+sub OnScheduleItemSelected()
+    idx = m.scheduleGrid.itemSelected
+    item = m.scheduleGrid.content.getChild(idx)
+    if item <> invalid
+        ' Event details or action
     end if
 end sub
 
@@ -323,8 +477,25 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                     SetFocusZone(0, headerIdx)
                     handled = true
                 end if
+            else if key = "down"
+                ' If schedule items exist, move focus to daily schedule
+                if m.scheduleGrid.visible and m.scheduleGrid.content <> invalid and m.scheduleGrid.content.getChildCount() > 0
+                    totalChildren = m.eventsGrid.content.getChildCount()
+                    if m.eventsGrid.itemFocused + 7 >= totalChildren
+                        SetFocusZone(2, 0)
+                        handled = true
+                    end if
+                end if
             else if key = "back"
                 m.top.navigate = "HomeScene"
+                handled = true
+            end if
+        else if m.focusZone = 2
+            if key = "up"
+                SetFocusZone(1, 0)
+                handled = true
+            else if key = "back"
+                SetFocusZone(1, 0)
                 handled = true
             end if
         end if

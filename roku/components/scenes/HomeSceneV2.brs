@@ -45,8 +45,15 @@ sub init()
     UpdateClock()
     
     m.idleTimer.control = "start"
+    m.top.observeField("visible", "OnVisibleChange")
     
     FetchDashboard()
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        FetchDashboard()
+    end if
 end sub
 
 function FormatCount(val as Dynamic) as String

@@ -7,13 +7,13 @@
     <script type="text/brightscript" uri="pkg:/components/scenes/SidebarNavItem.brs" />
     <children>
         <!-- Full-width transparent hit area -->
-        <Rectangle id="bgRect" width="260" height="48" color="0x00000000" />
-        <!-- Soft rounded mint highlight — inset 14px horizontally -->
-        <Poster id="highlightPoster" width="232" height="42" uri="pkg:/images/sidebar_active_bg.png" translation="[14, 3]" visible="false" />
+        <Rectangle id="bgRect" width="248" height="48" color="0x00000000" />
+        <!-- Soft rounded mint highlight — inset 8px horizontally -->
+        <Poster id="highlightPoster" width="232" height="42" uri="pkg:/images/sidebar_active_bg.png" translation="[8, 3]" visible="false" />
         <!-- Left accent bar — thin teal indicator on far-left edge -->
         <Rectangle id="accentBar" width="3" height="38" color="0x00C9A7FF" translation="[0, 5]" visible="false" />
 
-        <Poster id="iconPoster" width="20" height="20" translation="[30, 14]" blendColor="0x64748BFF" />
-        <Label id="titleLabel" font="font:SmallestSystemFont" color="0x64748BFF" translation="[62, 14]" width="170" />
+        <Poster id="iconPoster" width="20" height="20" translation="[24, 14]" blendColor="0x64748BFF" />
+        <Label id="titleLabel" font="font:SmallestSystemFont" color="0x64748BFF" translation="[56, 14]" width="186" />
     </children>
 </component>

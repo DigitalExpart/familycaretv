@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Param, Body, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Body, UseGuards, Request, BadRequestException, Query } from '@nestjs/common';
 import { RokuService } from './roku.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LinkDeviceDto } from './dto/link-device.dto';
@@ -117,6 +117,22 @@ export class RokuController {
   @Get('pets')
   async getPets(@Request() req: any) {
     return this.rokuService.getPets(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('music')
+  async getMusic() {
+    return this.rokuService.getMusic();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('calendar')
+  async getCalendar(
+    @Request() req: any,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    return this.rokuService.getCalendar(req.user.id, startDate, endDate);
   }
 
   @UseGuards(JwtAuthGuard)

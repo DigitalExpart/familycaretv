@@ -68,6 +68,20 @@ sub DisplayCurrentBook()
     end if
 end sub
 
+sub OnCurrentBookChange()
+    if m.top.currentBook <> invalid and type(m.top.currentBook) = "roAssociativeArray"
+        b = m.top.currentBook
+        if b.title <> invalid then m.titleLabel.text = b.title
+        if b.author <> invalid then m.authorLabel.text = "By " + b.author
+        if b.description <> invalid then m.descLabel.text = b.description
+        if b.coverUrl <> invalid and b.coverUrl <> ""
+            m.coverPoster.uri = b.coverUrl
+        else if b.imageUrl <> invalid and b.imageUrl <> ""
+            m.coverPoster.uri = b.imageUrl
+        end if
+    end if
+end sub
+
 sub OnRotationTimerFired()
     if m.fadeOutAnim <> invalid and m.fadeInAnim <> invalid
         if m.fadeOutAnim.state = "stopped" and m.fadeInAnim.state = "stopped"

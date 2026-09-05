@@ -57,18 +57,36 @@
         <MarkupGrid id="eventsGrid"
             translation="[160, 145]"
             itemComponentName="CalendarDayTile"
-            itemSize="[220, 136]"
-            itemSpacing="[10, 10]"
+            itemSize="[220, 84]"
+            itemSpacing="[10, 6]"
             numColumns="7"
             numRows="6"
             drawFocusFeedback="false"
             visible="false" />
 
+        <!-- Daily Schedule Section -->
+        <Group id="scheduleSection" translation="[160, 692]">
+            <Label id="scheduleDateLabel" text="Today's Schedule" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="1000" />
+            <Label id="scheduleCountLabel" text="" font="font:SmallSystemFont" color="0x64748BFF" width="500" horizAlign="right" translation="[1100, 4]" />
+
+            <Label id="emptyScheduleLabel" text="No events or tasks scheduled for this day." font="font:MediumSystemFont" color="0x64748BFF" translation="[0, 54]" width="1600" horizAlign="center" visible="false" />
+
+            <MarkupGrid id="scheduleGrid"
+                translation="[0, 40]"
+                itemComponentName="ScheduleItemTile"
+                itemSize="[516, 96]"
+                itemSpacing="[26, 12]"
+                numColumns="3"
+                numRows="2"
+                drawFocusFeedback="false"
+                visible="true" />
+        </Group>
+
         <!-- Safe-Area Footer Bar -->
         <Group id="footerGroup" translation="[0, 1008]">
             <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
-            <Label text="Back Return  |  OK View/Add Event  |  * Options Delete  |  ▲ Up to Add Button"
+            <Label text="Back Return  |  Left/Right Change Day  |  Up/Down Grid &amp; Schedule  |  OK Action  |  ▲ Up to Header"
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 

@@ -4,7 +4,7 @@ import { GradientHeader } from '../../components/ui/GradientHeader';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '../../constants/theme';
 import { useTheme } from '../../hooks/useTheme';
-import { useNotifications, useMarkNotificationRead, useMarkNotificationUnread, useDeleteNotification } from '../../features/notifications/notifications-api';
+import { useNotifications, useMarkNotificationRead, useMarkNotificationUnread, useDeleteNotification, useMarkAllNotificationsRead } from '../../features/notifications/notifications-api';
 import { useAcceptFamilyInvite, useDeclineFamilyInvite } from '../../features/family/family-api';
 import { Alert } from 'react-native';
 import { EmptyState } from '../../components/EmptyState';
@@ -17,14 +17,31 @@ export default function NotificationsScreen() {
   const { data: response, isLoading } = useNotifications();
   const markRead = useMarkNotificationRead();
   const markUnread = useMarkNotificationUnread();
+  const markAllRead = useMarkAllNotificationsRead();
   const deleteNotification = useDeleteNotification();
   const acceptInvite = useAcceptFamilyInvite();
   const declineInvite = useDeclineFamilyInvite();
   const notifications = response?.data || [];
+  const hasUnread = notifications.some((n: any) => !n.isRead);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <GradientHeader title={t('nav.notifications')} />
+      <GradientHeader 
+        title={t('nav.notifications')} 
+        rightComponent={
+          hasUnread ? (
+            <TouchableOpacity 
+              style={styles.markAllBtn} 
+              onPress={() => markAllRead.mutate()}
+              disabled={markAllRead.isPending}
+            >
+              <Text style={styles.markAllBtnText}>
+                {markAllRead.isPending ? t('common.loading', 'Loading...') : t('notifications.markAllRead', 'Mark All Read')}
+              </Text>
+            </TouchableOpacity>
+          ) : null
+        }
+      />
       
       {isLoading ? (
         <View style={styles.center}>
@@ -154,5 +171,18 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontWeight: '600',
     fontSize: 14,
+  },
+  markAllBtn: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
+  },
+  markAllBtnText: {
+    color: '#FFF',
+    fontSize: 13,
+    fontWeight: '700',
   }
 });

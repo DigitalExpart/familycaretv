@@ -9,7 +9,10 @@ export class NotificationsService {
   async getUserNotifications(userId: string) {
     return this.prisma.notification.findMany({
       where: { userId, isInternal: false },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [
+        { isRead: 'asc' },
+        { createdAt: 'desc' },
+      ],
     });
   }
 

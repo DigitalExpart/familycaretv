@@ -3,7 +3,7 @@ import shutil
 import zipfile
 import subprocess
 
-root_dir = r"c:\Users\Shilley Pc\FamilyCare TV Full Platform Build"
+root_dir = os.path.dirname(os.path.abspath(__file__))
 roku_dir = os.path.join(root_dir, "roku")
 
 zip_root_path = os.path.join(root_dir, "FamilyCareTV_Roku.zip")

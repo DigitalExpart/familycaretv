@@ -14,65 +14,65 @@
 
         <!-- ======================================================== -->
         <!-- DASHBOARD CONTAINER PANEL (Floating centered shell)      -->
-        <!-- Width: 1620, Height: 960, Centered at [150, 50]          -->
+        <!-- Width: 1780, Height: 980, Centered at [70, 50] (92.7% W, 90.7% H) -->
         <!-- ======================================================== -->
-        <Group id="dashboardShell" translation="[150, 50]">
+        <Group id="dashboardShell" translation="[70, 50]">
 
             <!-- Shell Card Background: Pure White with rounded corners -->
-            <Rectangle id="shellBg" width="1620" height="960" color="0xFFFFFFFF" cornerRoundingRadius="14" />
+            <Rectangle id="shellBg" width="1780" height="980" color="0xFFFFFFFF" cornerRoundingRadius="14" />
 
             <!-- ==================================================== -->
-            <!-- 1. SIDEBAR (Left column, 260px wide)                 -->
+            <!-- 1. SIDEBAR (Left column, 280px wide)                 -->
             <!-- ==================================================== -->
             <Group id="sidebarGroup" translation="[0, 0]">
                 <!-- Sidebar background panel -->
-                <Poster width="260" height="960" uri="pkg:/images/sidebar_bg.png" />
+                <Poster width="280" height="980" uri="pkg:/images/sidebar_bg.png" />
 
                 <!-- Sidebar right subtle border line -->
-                <Rectangle width="1" height="960" color="0xE2E8F0FF" translation="[259, 0]" />
+                <Rectangle width="1" height="980" color="0xE2E8F0FF" translation="[279, 0]" />
 
-                <!-- Brand / Logo Area bounded strictly inside sidebar (width 236) -->
-                <Group id="brandHeader" translation="[14, 24]">
+                <!-- Brand / Logo Area (Part C: Fully readable, no clipping, no ellipsis) -->
+                <Group id="brandHeader" translation="[16, 24]">
                     <Poster width="22" height="22" uri="pkg:/images/icon_settings.png" blendColor="0x00C9A7FF" translation="[0, 2]" />
-                    <Label text="FamilyCare TV" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[26, 0]" width="210" />
-                    <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 26]" width="232" />
+                    <Label text="FamilyCare TV" font="font:SmallBoldSystemFont" color="0x00C9A7FF" translation="[28, 0]" width="236" />
+                    <Label text="HEALTH · WELLNESS · FAMILY" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 28]" width="256" />
                 </Group>
 
                 <!-- Navigation Items -->
                 <MarkupGrid id="sidebarNav"
                     translation="[16, 88]"
                     itemComponentName="SidebarNavItem"
-                    itemSize="[228, 46]"
+                    itemSize="[248, 48]"
                     itemSpacing="[0, 4]"
                     numColumns="1"
                     numRows="9"
                     drawFocusFeedback="false" />
 
-                <!-- Sidebar Footer Status Pill -->
-                <Group id="sidebarFooter" translation="[16, 904]">
-                    <Rectangle width="228" height="36" color="0xE6F7F4FF" cornerRoundingRadius="6" />
+                <!-- Sidebar Footer Status Pill (Part Y: Account Connected fully visible) -->
+                <Group id="sidebarFooter" translation="[16, 924]">
+                    <Rectangle width="248" height="36" color="0xE6F7F4FF" cornerRoundingRadius="6" />
                     <Rectangle width="8" height="8" color="0x00C9A7FF" cornerRoundingRadius="4" translation="[12, 14]" />
-                    <Label id="navBadge" text="Account Connected" font="font:SmallestSystemFont" color="0x00A89DFF" translation="[24, 9]" width="200" />
+                    <Label id="navBadge" text="Account Connected" font="font:SmallestSystemFont" color="0x00A89DFF" translation="[24, 9]" width="216" />
                 </Group>
             </Group>
 
             <!-- ==================================================== -->
-            <!-- 2. MAIN CONTENT AREA (Right of sidebar, starts x=292) -->
-            <!-- Width: 1328, padded 32px from sidebar, ends at 1588   -->
+            <!-- 2. MAIN CONTENT AREA (Right of sidebar, starts x=312) -->
+            <!-- Width: 1436, ends at 1748                             -->
             <!-- ==================================================== -->
-            <Group id="mainContent" translation="[292, 0]">
+            <Group id="mainContent" translation="[312, 0]">
 
                 <!-- ====== TOP BAR ====== -->
                 <!-- Greeting left, Date/Time right, 70px height -->
                 <Group id="topBar" translation="[0, 20]">
                     <!-- Left: Personalized Greeting Stack -->
                     <LayoutGroup id="greetingStack" layoutDirection="vert" itemSpacings="[4]" translation="[0, 0]">
-                        <Label id="greetingLabel" text="Welcome Home" font="font:LargeBoldSystemFont" color="0x0F172AFF" width="620" />
-                        <Label id="greetingSub" text="Here is your family's daily wellness summary" font="font:SmallestSystemFont" color="0x64748BFF" width="620" />
+                        <Label id="greetingLabel" text="Welcome Home" font="font:LargeBoldSystemFont" color="0x0F172AFF" width="680" />
+                        <Label id="greetingSub" text="Here is your family's daily wellness summary" font="font:SmallestSystemFont" color="0x64748BFF" width="680" />
                     </LayoutGroup>
 
                     <!-- Right: Date and Live Clock Stack -->
-                    <LayoutGroup id="dateTimeStack" layoutDirection="vert" itemSpacings="[2]" translation="[828, 2]">
+                    <LayoutGroup id="dateTimeStack" layoutDirection="vert" itemSpacings="[2]" translation="[936, 2]">
                         <Label id="dateLabel" text="" font="font:SmallestSystemFont" color="0x64748BFF" width="500" horizAlign="right" />
                         <Label id="timeLabel" text="" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="500" horizAlign="right" />
                     </LayoutGroup>
@@ -81,59 +81,59 @@
                 <!-- ====== APPOINTMENT ALERT BAR ====== -->
                 <!-- Contained within main content, rounded, 56px height -->
                 <Group id="alertBar" translation="[0, 98]">
-                    <Poster width="1328" height="56" uri="pkg:/images/announcement_bg.png" />
+                    <Poster width="1436" height="56" uri="pkg:/images/announcement_bg.png" />
                     <Poster width="20" height="20" uri="pkg:/images/icon_calendar.png" blendColor="0xB45309FF" translation="[22, 18]" />
-                    <Label id="alertText" text="Loading your FamilyCare data..." font="font:SmallestBoldSystemFont" color="0x78350FFF" translation="[52, 17]" width="1020" wrap="false" maxLines="1" />
-                    <Label id="alertCountdown" text="" font="font:SmallestBoldSystemFont" color="0x78350FFF" translation="[1088, 17]" width="216" horizAlign="right" />
+                    <Label id="alertText" text="Loading your FamilyCare data..." font="font:SmallestBoldSystemFont" color="0x78350FFF" translation="[52, 17]" width="1120" wrap="false" maxLines="1" />
+                    <Label id="alertCountdown" text="" font="font:SmallestBoldSystemFont" color="0x78350FFF" translation="[1196, 17]" width="216" horizAlign="right" />
                 </Group>
 
                 <!-- ====== STATS ROW (Matching Mobile Quick Stats: Patients, Appointments, Meds, Notes) ====== -->
-                <LayoutGroup layoutDirection="horiz" translation="[0, 178]" itemSpacings="[18]">
+                <LayoutGroup layoutDirection="horiz" translation="[0, 178]" itemSpacings="[24]">
                     <!-- Stat 1: Patients -->
                     <Group>
-                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
-                        <Label id="statPatients" text="—" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[0, 10]" width="310" horizAlign="center" />
-                        <Label text="PATIENTS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                        <Poster width="340" height="84" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statPatients" text="—" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[0, 12]" width="340" horizAlign="center" />
+                        <Label text="PATIENTS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 50]" width="340" horizAlign="center" />
                     </Group>
 
                     <!-- Stat 2: Appointments -->
                     <Group>
-                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
-                        <Label id="statAppts" text="—" font="font:MediumBoldSystemFont" color="0x8B5CF6FF" translation="[0, 10]" width="310" horizAlign="center" />
-                        <Label text="APPOINTMENTS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                        <Poster width="340" height="84" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statAppts" text="—" font="font:MediumBoldSystemFont" color="0x8B5CF6FF" translation="[0, 12]" width="340" horizAlign="center" />
+                        <Label text="APPOINTMENTS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 50]" width="340" horizAlign="center" />
                     </Group>
 
                     <!-- Stat 3: Medications -->
                     <Group>
-                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
-                        <Label id="statMeds" text="—" font="font:MediumBoldSystemFont" color="0xF59E0BFF" translation="[0, 10]" width="310" horizAlign="center" />
-                        <Label text="MEDICATIONS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                        <Poster width="340" height="84" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statMeds" text="—" font="font:MediumBoldSystemFont" color="0xF59E0BFF" translation="[0, 12]" width="340" horizAlign="center" />
+                        <Label text="MEDICATIONS" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 50]" width="340" horizAlign="center" />
                     </Group>
 
                     <!-- Stat 4: Notes -->
                     <Group>
-                        <Poster width="310" height="80" uri="pkg:/images/card_stat_bg.png" />
-                        <Label id="statNotes" text="—" font="font:MediumBoldSystemFont" color="0x60A5FAFF" translation="[0, 10]" width="310" horizAlign="center" />
-                        <Label text="NOTES" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 48]" width="310" horizAlign="center" />
+                        <Poster width="340" height="84" uri="pkg:/images/card_stat_bg.png" />
+                        <Label id="statNotes" text="—" font="font:MediumBoldSystemFont" color="0x60A5FAFF" translation="[0, 12]" width="340" horizAlign="center" />
+                        <Label text="NOTES" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 50]" width="340" horizAlign="center" />
                     </Group>
                 </LayoutGroup>
 
                 <!-- ====== LOWER CONTENT REGION ====== -->
 
-                <!-- LEFT COLUMN: Verse + Featured Book (580px wide) -->
-                <Group id="leftColumn" translation="[0, 288]">
+                <!-- LEFT COLUMN: Verse + Featured Book (620px wide) -->
+                <Group id="leftColumn" translation="[0, 296]">
                     <!-- Section label: Verse of the Day -->
                     <Label text="VERSE OF THE DAY" font="font:SmallestSystemFont" color="0x94A3B8FF" />
 
-                    <!-- Verse Card (580 × 260) — rounded floating card -->
+                    <!-- Verse Card (620 × 260) — rounded floating card -->
                     <Group translation="[0, 28]">
-                        <Poster width="580" height="260" uri="pkg:/images/card_verse_bg.png" />
+                        <Poster width="620" height="260" uri="pkg:/images/card_verse_bg.png" />
                         <Group translation="[26, 24]">
                             <Label id="verseText"
                                 text="&quot;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&quot;"
                                 font="font:SmallestSystemFont"
                                 color="0x334155FF"
-                                width="528"
+                                width="568"
                                 wrap="true"
                                 maxLines="5" />
                             <Label id="verseRef"
@@ -147,21 +147,21 @@
                     <!-- Section label: Featured Book -->
                     <Label text="FEATURED BOOK" font="font:SmallestSystemFont" color="0x94A3B8FF" translation="[0, 314]" />
 
-                    <!-- Featured Book Promotional Card (580 × 240) -->
+                    <!-- Featured Book Promotional Card (620 × 250) -->
                     <FeaturedBookCard id="featuredBookCard" translation="[0, 342]" />
                 </Group>
 
-                <!-- RIGHT COLUMN: Quick Actions (starts at x=616, 712px wide) -->
-                <Group id="rightColumn" translation="[616, 288]">
+                <!-- RIGHT COLUMN: Quick Actions (starts at x=658, 778px wide) -->
+                <Group id="rightColumn" translation="[658, 296]">
                     <!-- Section label: Quick Actions -->
                     <Label text="QUICK ACTIONS" font="font:SmallestSystemFont" color="0x94A3B8FF" />
 
-                    <!-- Grid of Quick Action Cards (336×112, 2 cols × 4 rows) -->
+                    <!-- Grid of Quick Action Cards (368×112, 2 cols × 4 rows) -->
                     <MarkupGrid id="quickActionsGrid"
                         translation="[0, 28]"
                         itemComponentName="QuickActionCard"
-                        itemSize="[336, 112]"
-                        itemSpacing="[20, 16]"
+                        itemSize="[368, 112]"
+                        itemSpacing="[22, 16]"
                         numColumns="2"
                         numRows="4"
                         drawFocusFeedback="false" />

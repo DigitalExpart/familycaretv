@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="SidebarMenu" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/screens/SidebarMenu.brs" />
     <children>

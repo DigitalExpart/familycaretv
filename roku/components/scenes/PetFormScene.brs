@@ -1,5 +1,8 @@
 sub init()
     m.formTitle = m.top.findNode("formTitle")
+    m.formSubtitle = m.top.findNode("formSubtitle")
+    m.cancelLabel = m.top.findNode("cancelLabel")
+    m.saveLabel = m.top.findNode("saveLabel")
     m.nameField = m.top.findNode("nameField")
     m.speciesField = m.top.findNode("speciesField")
     m.breedField = m.top.findNode("breedField")
@@ -17,21 +20,51 @@ sub init()
 
     m.focusedItem = 0
     m.petId = ""
+
+    ApplyLocalization()
     UpdateFocus()
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.cancelLabel <> invalid then m.cancelLabel.text = GetStr("cancel")
+    if m.saveLabel <> invalid then m.saveLabel.text = GetStr("save_pet_btn")
+    if m.formSubtitle <> invalid then m.formSubtitle.text = GetStr("pet_form_sub")
+    if m.nameField <> invalid then m.nameField.label = GetStr("pet_name_label")
+    if m.speciesField <> invalid then m.speciesField.label = GetStr("pet_species_label")
+    if m.breedField <> invalid then m.breedField.label = GetStr("pet_breed_label")
+    if m.notesField <> invalid then m.notesField.label = GetStr("pet_notes_label")
+    UpdateTitle()
+end sub
+
+sub UpdateTitle()
+    if m.petId <> "" and m.currentPetName <> invalid and m.currentPetName <> ""
+        m.formTitle.text = GetStr("edit_pet_title") + ": " + m.currentPetName
+    else
+        m.formTitle.text = GetStr("add_pet_title")
+    end if
 end sub
 
 sub OnPetDataChange()
     data = m.top.petData
     if data <> invalid and data.id <> invalid
         m.petId = data.id
-        m.formTitle.text = "Edit Pet: " + data.name
+        m.currentPetName = data.name
+        UpdateTitle()
         if data.name <> invalid then m.nameField.value = data.name
         if data.species <> invalid then m.speciesField.value = data.species
         if data.breed <> invalid then m.breedField.value = data.breed
         if data.notes <> invalid then m.notesField.value = data.notes
     else
         m.petId = ""
-        m.formTitle.text = "Add Pet Profile"
+        m.currentPetName = ""
+        UpdateTitle()
     end if
 end sub
 

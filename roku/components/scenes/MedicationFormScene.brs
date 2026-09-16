@@ -1,5 +1,8 @@
 sub init()
     m.formTitle = m.top.findNode("formTitle")
+    m.formSubtitle = m.top.findNode("formSubtitle")
+    m.cancelLabel = m.top.findNode("cancelLabel")
+    m.saveLabel = m.top.findNode("saveLabel")
     m.nameField = m.top.findNode("nameField")
     m.dosageField = m.top.findNode("dosageField")
     m.frequencyField = m.top.findNode("frequencyField")
@@ -18,7 +21,35 @@ sub init()
     m.focusedItem = 0
     m.medicationId = ""
     m.patientId = ""
+
+    ApplyLocalization()
     UpdateFocus()
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.cancelLabel <> invalid then m.cancelLabel.text = GetStr("cancel")
+    if m.saveLabel <> invalid then m.saveLabel.text = GetStr("save_med_btn")
+    if m.formSubtitle <> invalid then m.formSubtitle.text = GetStr("med_form_sub")
+    if m.nameField <> invalid then m.nameField.label = GetStr("med_name_label")
+    if m.dosageField <> invalid then m.dosageField.label = GetStr("med_dosage_label")
+    if m.frequencyField <> invalid then m.frequencyField.label = GetStr("med_frequency_label")
+    if m.purposeField <> invalid then m.purposeField.label = GetStr("med_purpose_label")
+    UpdateTitle()
+end sub
+
+sub UpdateTitle()
+    if m.medicationId <> "" and m.currentMedName <> invalid and m.currentMedName <> ""
+        m.formTitle.text = GetStr("edit_med_title") + ": " + m.currentMedName
+    else
+        m.formTitle.text = GetStr("add_med_title")
+    end if
 end sub
 
 sub OnMedDataChange()
@@ -27,7 +58,8 @@ sub OnMedDataChange()
         if data.patientId <> invalid then m.patientId = data.patientId
         if data.id <> invalid
             m.medicationId = data.id
-            m.formTitle.text = "Edit Medication: " + data.name
+            m.currentMedName = data.name
+            UpdateTitle()
             if data.name <> invalid then m.nameField.value = data.name
             if data.dosage <> invalid then m.dosageField.value = data.dosage
             if data.frequency <> invalid then m.frequencyField.value = data.frequency
@@ -36,7 +68,8 @@ sub OnMedDataChange()
         end if
     end if
     m.medicationId = ""
-    m.formTitle.text = "Add Medication"
+    m.currentMedName = ""
+    UpdateTitle()
 end sub
 
 sub UpdateFocus()

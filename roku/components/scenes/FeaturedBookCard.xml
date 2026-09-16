@@ -6,6 +6,8 @@
         <field id="currentBook" type="assocarray" onChange="OnCurrentBookChange" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/FeaturedBookCard.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
     <children>
         <Group id="scaleContainer" scaleRotateCenter="[310, 125]">
             <!-- Card background: rounded white card with subtle border/elevation -->
@@ -25,10 +27,10 @@
                     <!-- Description (max 2 lines with safe wrap) -->
                     <Label id="descLabel" font="font:SmallestSystemFont" color="0x475569FF" width="455" wrap="true" maxLines="2" />
 
-                    <!-- Action Button — Red rounded pill button [ Featured Book ] (Part D: No truncation, full visibility) -->
+                    <!-- Action Button — Red rounded pill button [ Featured Book ] (No truncation, full visibility) -->
                     <Group id="actionBadge" translation="[0, 2]">
-                        <Rectangle id="btnBg" width="168" height="34" color="0xE11D48FF" cornerRoundingRadius="17" />
-                        <Label id="btnText" text="Featured Book" font="font:SmallestBoldSystemFont" color="0xFFFFFFFF" translation="[0, 8]" width="168" horizAlign="center" />
+                        <Rectangle id="btnBg" width="208" height="34" color="0xE11D48FF" cornerRoundingRadius="17" />
+                        <Label id="btnText" text="Featured Book" font="font:SmallestBoldSystemFont" color="0xFFFFFFFF" translation="[0, 7]" width="208" horizAlign="center" />
                     </Group>
                 </LayoutGroup>
             </Group>

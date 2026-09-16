@@ -5,14 +5,34 @@ sub init()
     m.langToggleText = m.top.findNode("langToggleText")
     m.langFocusBorder = m.top.findNode("langFocusBorder")
     m.loadingOverlay = m.top.findNode("loadingOverlay")
+    m.pageTitle = m.top.findNode("pageTitle")
+    m.cardHeader = m.top.findNode("cardHeader")
+    m.thoughtHeader = m.top.findNode("thoughtHeader")
+    m.footerLabel = m.top.findNode("footerLabel")
 
     m.verseTask = m.top.findNode("verseTask")
     m.verseTask.observeField("response", "OnVerseResponse")
 
-    m.currentLang = "EN"
+    m.currentLang = ReadLanguagePref()
     m.top.setFocus(true)
 
+    ApplyLocalization()
     FetchVerse()
+
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.pageTitle <> invalid then m.pageTitle.text = GetStr("verse_screen_title")
+    if m.cardHeader <> invalid then m.cardHeader.text = GetStr("verse_daily_reflection")
+    if m.thoughtHeader <> invalid then m.thoughtHeader.text = GetStr("verse_thought_today")
+    if m.footerLabel <> invalid then m.footerLabel.text = GetStr("verse_footer")
 end sub
 
 sub FetchVerse()

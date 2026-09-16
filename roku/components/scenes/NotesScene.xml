@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="NotesScene" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/NotesScene.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
 
     <children>
         <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
@@ -16,13 +18,13 @@
             <Rectangle width="1920" height="3" color="0x008F86FF" translation="[0, 87]" />
             
             <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
-            <Label text="Personal &amp; Care Notes" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1220" />
+            <Label id="pageTitle" text="Personal &amp; Care Notes" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1220" />
 
             <!-- [+] Add Note Button -->
             <Group id="addBtnGroup" translation="[1600, 18]">
                 <Rectangle id="addBtnFocusBorder" width="264" height="54" color="0x008F86FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
                 <Rectangle id="addBtnBg" width="260" height="50" color="0x008F86FF" cornerRoundingRadius="8" />
-                <Label text="✚ Add Note" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="260" translation="[0, 12]" />
+                <Label id="addBtnLabel" text="✚ Add Note" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="260" translation="[0, 12]" />
             </Group>
         </Group>
 
@@ -44,9 +46,9 @@
             <Rectangle width="800" height="4" color="0x008F86FF" />
 
             <LayoutGroup layoutDirection="vert" translation="[40, 36]" itemSpacings="[14, 12, 16]">
-                <Label text="No Personal Notes" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="720" />
-                <Label text="Store caregiver reminders, medical updates, and family memos here." font="font:SmallSystemFont" color="0x64748BFF" width="720" wrap="true" maxLines="3" />
-                <Label text="Press [+ Add Note] above to create your first note entry." font="font:SmallestSystemFont" color="0x94A3B8FF" width="720" wrap="true" maxLines="2" />
+                <Label id="emptyTitle" text="No Personal Notes" font="font:MediumBoldSystemFont" color="0x0F172AFF" width="720" />
+                <Label id="emptyDesc" text="Store caregiver reminders, medical updates, and family memos here." font="font:SmallSystemFont" color="0x64748BFF" width="720" wrap="true" maxLines="3" />
+                <Label id="emptyHint" text="Press [+ Add Note] above to create your first note entry." font="font:SmallestSystemFont" color="0x94A3B8FF" width="720" wrap="true" maxLines="2" />
             </LayoutGroup>
         </Group>
 
@@ -54,7 +56,7 @@
         <Group id="footerGroup" translation="[0, 1008]">
             <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
-            <Label text="Back Return  |  OK Edit Note  |  * Options Delete  |  ▲ Up to Add Button"
+            <Label id="footerLabel" text="Back Return  |  OK Edit Note  |  * Options Delete  |  ▲ Up to Add Button"
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 

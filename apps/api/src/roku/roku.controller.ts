@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Param, Body, UseGuards, Request, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Body, UseGuards, Request, BadRequestException, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { RokuService } from './roku.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LinkDeviceDto } from './dto/link-device.dto';
@@ -25,6 +25,7 @@ export class RokuController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
   @Post('token')
   async getToken(@Body() dto: TokenDto) {
     const id = dto.deviceId || dto.code;
@@ -35,6 +36,7 @@ export class RokuController {
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
+  @HttpCode(HttpStatus.OK)
   @Post('validate-token')
   async validateToken(@Body() body: { token: string }) {
     if (!body.token) {
@@ -54,14 +56,14 @@ export class RokuController {
 
   @UseGuards(JwtAuthGuard)
   @Get('home')
-  async getHome(@Request() req: any) {
-    return this.rokuService.getHome(req.user.id);
+  async getHome(@Request() req: any, @Query('date') dateStr?: string) {
+    return this.rokuService.getHome(req.user.id, dateStr);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('dashboard')
-  async getDashboard(@Request() req: any) {
-    return this.rokuService.getHome(req.user.id);
+  async getDashboard(@Request() req: any, @Query('date') dateStr?: string) {
+    return this.rokuService.getHome(req.user.id, dateStr);
   }
 
   @UseGuards(JwtAuthGuard)

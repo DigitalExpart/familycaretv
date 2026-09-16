@@ -1,6 +1,13 @@
 sub init()
     m.langStatusText = m.top.findNode("langStatusText")
     m.accountInfoLabel = m.top.findNode("accountInfoLabel")
+    m.pageTitle = m.top.findNode("pageTitle")
+    m.card2Title = m.top.findNode("card2Title")
+    m.card3Title = m.top.findNode("card3Title")
+    m.card3Desc = m.top.findNode("card3Desc")
+    m.card4Title = m.top.findNode("card4Title")
+    m.card4Desc = m.top.findNode("card4Desc")
+    m.footerLabel = m.top.findNode("footerLabel")
 
     m.langFocusBorder = m.top.findNode("langFocusBorder")
     m.deviceFocusBorder = m.top.findNode("deviceFocusBorder")
@@ -15,10 +22,49 @@ sub init()
 
     ' 0 = Language, 1 = Device, 2 = Screensaver, 3 = Unlink
     m.focusedOption = 0
-    m.currentLang = "EN"
 
+    ' Read persisted language preference from Registry
+    m.currentLang = ReadLanguagePref()
+
+    ApplyLocalization()
     UpdateFocus()
     FetchDeviceStatus()
+
+    m.top.setFocus(true)
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+        m.top.setFocus(true)
+    end if
+end sub
+
+sub ApplyLocalization()
+    m.currentLang = ReadLanguagePref()
+    if m.pageTitle <> invalid then m.pageTitle.text = GetStr("Settings_Title")
+    if m.card2Title <> invalid then m.card2Title.text = GetStr("Settings_DeviceTitle")
+    if m.card3Title <> invalid then m.card3Title.text = GetStr("Settings_ScreensaverTitle")
+    if m.card3Desc <> invalid then m.card3Desc.text = GetStr("Settings_ScreensaverDesc")
+    if m.card4Title <> invalid then m.card4Title.text = GetStr("Settings_UnlinkTitle")
+    if m.card4Desc <> invalid then m.card4Desc.text = GetStr("Settings_UnlinkDesc")
+    if m.footerLabel <> invalid then m.footerLabel.text = GetStr("Settings_Footer")
+
+    if m.confirmUnlinkDialog <> invalid
+        m.confirmUnlinkDialog.title = GetStr("Settings_UnlinkDialogTitle")
+        m.confirmUnlinkDialog.message = GetStr("Settings_UnlinkDialogMsg")
+        m.confirmUnlinkDialog.confirmText = GetStr("Settings_UnlinkYes")
+        m.confirmUnlinkDialog.cancelText = GetStr("cancel")
+    end if
+
+    if m.langStatusText <> invalid
+        if m.currentLang = "ES"
+            m.langStatusText.text = GetStr("Settings_LangES")
+        else
+            m.langStatusText.text = GetStr("Settings_LangEN")
+        end if
+    end if
 end sub
 
 sub FetchDeviceStatus()
@@ -51,11 +97,15 @@ end sub
 sub ToggleLanguage()
     if m.currentLang = "EN"
         m.currentLang = "ES"
-        m.langStatusText.text = "Current Language: Español (ES) • Press OK to switch to English"
     else
         m.currentLang = "EN"
-        m.langStatusText.text = "Current Language: English (EN) • Press OK to switch to Spanish"
     end if
+
+    ' Persist the new preference to the Roku Registry
+    SaveLanguagePref(m.currentLang)
+
+    ' Apply changes to all settings text immediately
+    ApplyLocalization()
 end sub
 
 sub OnConfirmUnlink()
@@ -66,6 +116,7 @@ sub OnConfirmUnlink()
 end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
+    print "[SETTINGS] onKeyEvent key="; key; " press="; press; " focusedOption="; m.focusedOption
     handled = false
     if press
         if key = "right"
@@ -92,7 +143,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 UpdateFocus()
                 handled = true
             end if
-        else if key = "OK"
+        else if key = "OK" or key = "select" or key = "Select"
             if m.focusedOption = 0
                 ToggleLanguage()
                 handled = true
@@ -100,8 +151,8 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 m.confirmUnlinkDialog.show = true
                 handled = true
             end if
-        else if key = "back"
-            m.top.navigate = "HomeScene"
+        else if key = "back" or key = "Back"
+            m.top.navigate = "HomeSceneV2"
             handled = true
         end if
     end if

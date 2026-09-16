@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="BibleVerseScene" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/BibleVerseScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
@@ -16,7 +18,7 @@
             <Rectangle width="1920" height="3" color="0x00C9A7FF" translation="[0, 87]" />
             
             <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
-            <Label text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
+            <Label id="pageTitle" text="Verse of the Day" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
 
             <!-- Language Toggle Button (EN / ES) -->
             <Group id="langToggleBtn" translation="[1680, 18]">
@@ -33,7 +35,7 @@
             <Rectangle width="1200" height="860" color="0xFFFFFFFF" cornerRoundingRadius="12" />
             <Rectangle width="1200" height="4" color="0x00C9A7FF" />
 
-            <Label text="Daily Scripture &amp; Reflection" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[60, 35]" width="1080" />
+            <Label id="cardHeader" text="Daily Scripture &amp; Reflection" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[60, 35]" width="1080" />
 
             <!-- Verse Box -->
             <Rectangle width="1082" height="302" color="0xE2E8F0FF" translation="[59, 79]" cornerRoundingRadius="8" />
@@ -54,7 +56,7 @@
 
             <!-- Daily Reflection Section -->
             <Group translation="[60, 410]">
-                <Label text="Thought for Today" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[0, 0]" width="1080" />
+                <Label id="thoughtHeader" text="Thought for Today" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[0, 0]" width="1080" />
                 <Rectangle width="1082" height="382" color="0xE2E8F0FF" translation="[-1, 34]" cornerRoundingRadius="8" />
                 <Rectangle width="1080" height="380" color="0xF8FAFCFF" translation="[0, 35]" cornerRoundingRadius="8" />
                 <Label id="reflectionText"
@@ -68,7 +70,7 @@
         <Group id="footerGroup" translation="[0, 1008]">
             <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
-            <Label text="Back Return to Dashboard  |  OK Toggle English / Spanish Language"
+            <Label id="footerLabel" text="Back Return to Dashboard  |  OK Toggle English / Spanish Language"
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 

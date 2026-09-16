@@ -4,7 +4,7 @@ end sub
 
 sub executeRequest()
     req = m.top.request
-    if req = invalid return
+    if req = invalid then return
 
     url = GetApiBaseUrl() + req.endpoint
     print "[CONFIG] API base URL = " + GetApiBaseUrl()
@@ -20,6 +20,9 @@ sub executeRequest()
     http.EnableEncodings(true)
     http.AddHeader("Content-Type", "application/json")
     http.AddHeader("Accept", "application/json")
+    http.AddHeader("Cache-Control", "no-cache, no-store, must-revalidate")
+    http.AddHeader("Pragma", "no-cache")
+    http.AddHeader("Expires", "0")
 
     token = ""
     if req.DoesExist("token") and req.token <> invalid and req.token <> ""
@@ -64,8 +67,12 @@ sub executeRequest()
         http.AsyncGetToString()
     end if
 
-    ' Wait up to 30 seconds for a response
-    event = wait(30000, http.GetMessagePort())
+    ' Wait for response with configurable timeout
+    timeoutMs = 30000
+    if req.DoesExist("timeoutMs") and req.timeoutMs <> invalid and req.timeoutMs > 0
+        timeoutMs = req.timeoutMs
+    end if
+    event = wait(timeoutMs, http.GetMessagePort())
     elapsedMs = timer.TotalMilliseconds()
     
     contentType = "application/json"

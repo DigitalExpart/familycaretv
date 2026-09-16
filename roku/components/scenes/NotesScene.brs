@@ -19,7 +19,27 @@ sub init()
     m.notesGrid.observeField("itemSelected", "OnNoteSelected")
 
     m.focusZone = 1
+    ApplyLocalization()
+    m.top.observeField("visible", "OnVisibleChange")
     FetchNotes()
+end sub
+
+sub ApplyLocalization()
+    pageTitle = m.top.findNode("pageTitle")
+    if pageTitle <> invalid then pageTitle.text = GetStr("notes_title")
+    addBtnLabel = m.top.findNode("addBtnLabel")
+    if addBtnLabel <> invalid then addBtnLabel.text = GetStr("add_note_btn")
+    emptyTitle = m.top.findNode("emptyTitle")
+    if emptyTitle <> invalid then emptyTitle.text = GetStr("no_notes_found")
+    footerLabel = m.top.findNode("footerLabel")
+    if footerLabel <> invalid then footerLabel.text = GetStr("notes_footer")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+        FetchNotes()
+    end if
 end sub
 
 sub FetchNotes()

@@ -1,4 +1,5 @@
 sub init()
+    print "[HOME] initialized"
     m.topNavBar = m.top.findNode("topNavBar")
     m.patientsLabel = m.top.findNode("patientsLabel")
     m.eventsLabel = m.top.findNode("eventsLabel")

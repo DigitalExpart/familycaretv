@@ -5,13 +5,33 @@ sub init()
     m.previewTitle = m.top.findNode("previewTitle")
     m.previewDesc = m.top.findNode("previewDesc")
     m.loadingOverlay = m.top.findNode("loadingOverlay")
+    m.pageTitle = m.top.findNode("pageTitle")
+    m.footerLabel = m.top.findNode("footerLabel")
+    m.scanPrintLabel = m.top.findNode("scanPrintLabel")
+    m.closeHintLabel = m.top.findNode("closeHintLabel")
 
     m.kidsTask = m.top.findNode("kidsTask")
     m.kidsTask.observeField("response", "OnKidsResponse")
 
     m.kidsGrid.observeField("itemSelected", "OnActivitySelected")
 
+    ApplyLocalization()
     FetchKidsActivities()
+
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.pageTitle <> invalid then m.pageTitle.text = GetStr("kids_title")
+    if m.footerLabel <> invalid then m.footerLabel.text = GetStr("kids_footer")
+    if m.scanPrintLabel <> invalid then m.scanPrintLabel.text = GetStr("scan_to_print")
+    if m.closeHintLabel <> invalid then m.closeHintLabel.text = GetStr("close_preview_hint")
 end sub
 
 sub FetchKidsActivities()

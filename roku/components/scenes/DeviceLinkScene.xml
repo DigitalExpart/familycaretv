@@ -6,6 +6,7 @@
     <script type="text/brightscript" uri="pkg:/components/scenes/DeviceLinkScene.brs" />
     <script type="text/brightscript" uri="pkg:/source/Config.brs" />
     <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
     <children>
         <!-- ═══ PALE NEUTRAL BACKGROUND ═══ -->
         <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
@@ -66,27 +67,31 @@
 
             <!-- Steps instructions in LayoutGroup -->
             <LayoutGroup layoutDirection="vert" translation="[0, 305]" itemSpacings="[10]">
-                <Label text="Step 1: Open FamilyCare Mobile or Web App"
+                <Label id="step1Label" text="Step 1: Open FamilyCare Mobile or Web App"
                     font="font:SmallSystemFont" color="0x334155FF"
                     horizAlign="center" width="1000" />
-                <Label text="Step 2: Go to Profile → Connect Roku TV"
+                <Label id="step2Label" text="Step 2: Go to Profile → Connect Roku TV"
                     font="font:SmallSystemFont" color="0x334155FF"
                     horizAlign="center" width="1000" />
-                <Label text="Step 3: Enter the 6-digit code shown above"
+                <Label id="step3Label" text="Step 3: Enter the code shown above"
                     font="font:SmallSystemFont" color="0x334155FF"
                     horizAlign="center" width="1000" />
             </LayoutGroup>
         </Group>
 
         <!-- ═══ FOOTER ═══ -->
-        <Label text="Waiting for device activation..."
+        <Label id="waitingLabel" text="Waiting for device activation..."
             font="font:SmallSystemFont" color="0x94A3B8FF"
             horizAlign="center" width="1920"
             translation="[0, 780]" />
 
-        <!-- ═══ API TASKS ═══ -->
-        <ApiTask id="deviceCodeTask" />
-        <ApiTask id="tokenPollTask" />
-        <Timer id="pollTimer" repeat="true" duration="5.0" />
+        <!-- Diagnostic Status Display (Test Build Only) -->
+        <Label id="diagStatusLabel" text=""
+            font="font:SmallSystemFont" color="0x00C9A7FF"
+            horizAlign="center" width="1920"
+            translation="[0, 815]" />
+
+        <!-- ═══ TIMERS ═══ -->
+        <Timer id="pollTimer" repeat="true" duration="4.0" />
     </children>
 </component>

@@ -2,6 +2,12 @@ sub init()
     m.petsGrid = m.top.findNode("petsGrid")
     m.addBtnBg = m.top.findNode("addBtnBg")
     m.addBtnFocusBorder = m.top.findNode("addBtnFocusBorder")
+    m.addBtnLabel = m.top.findNode("addBtnLabel")
+    m.pageTitle = m.top.findNode("pageTitle")
+    m.emptyTitle = m.top.findNode("emptyTitle")
+    m.emptyDesc = m.top.findNode("emptyDesc")
+    m.emptyHint = m.top.findNode("emptyHint")
+    m.footerLabel = m.top.findNode("footerLabel")
 
     m.loadingOverlay = m.top.findNode("loadingOverlay")
     m.emptyState = m.top.findNode("emptyState")
@@ -19,7 +25,31 @@ sub init()
     m.petsGrid.observeField("itemSelected", "OnPetSelected")
 
     m.focusZone = 1
+    ApplyLocalization()
     FetchPets()
+
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.pageTitle <> invalid then m.pageTitle.text = GetStr("pets_title")
+    if m.addBtnLabel <> invalid then m.addBtnLabel.text = GetStr("add_pet_btn")
+    if m.emptyTitle <> invalid then m.emptyTitle.text = GetStr("no_pets_found")
+    if m.emptyDesc <> invalid then m.emptyDesc.text = GetStr("pets_empty_desc")
+    if m.emptyHint <> invalid then m.emptyHint.text = GetStr("pets_empty_hint")
+    if m.footerLabel <> invalid then m.footerLabel.text = GetStr("pets_footer")
+    if m.confirmDeleteDialog <> invalid
+        m.confirmDeleteDialog.title = GetStr("confirm_delete_pet_title")
+        m.confirmDeleteDialog.message = GetStr("confirm_delete_pet_msg")
+        m.confirmDeleteDialog.confirmText = GetStr("confirm_delete_yes")
+        m.confirmDeleteDialog.cancelText = GetStr("cancel")
+    end if
 end sub
 
 sub FetchPets()

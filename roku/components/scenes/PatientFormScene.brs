@@ -1,5 +1,8 @@
 sub init()
     m.formTitle = m.top.findNode("formTitle")
+    m.formSubtitle = m.top.findNode("formSubtitle")
+    m.cancelLabel = m.top.findNode("cancelLabel")
+    m.saveLabel = m.top.findNode("saveLabel")
     m.nameField = m.top.findNode("nameField")
     m.dobField = m.top.findNode("dobField")
     m.genderField = m.top.findNode("genderField")
@@ -21,22 +24,50 @@ sub init()
     m.focusedItem = 0
     m.patientId = ""
 
+    ApplyLocalization()
     UpdateFocus()
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.cancelLabel <> invalid then m.cancelLabel.text = GetStr("cancel")
+    if m.saveLabel <> invalid then m.saveLabel.text = GetStr("save_patient_btn")
+    if m.formSubtitle <> invalid then m.formSubtitle.text = GetStr("patient_form_sub")
+    if m.nameField <> invalid then m.nameField.label = GetStr("name_label")
+    if m.dobField <> invalid then m.dobField.label = GetStr("dob_label")
+    if m.genderField <> invalid then m.genderField.label = GetStr("gender_label")
+    if m.notesField <> invalid then m.notesField.label = GetStr("notes_label")
+    UpdateTitle()
+end sub
+
+sub UpdateTitle()
+    if m.patientId <> "" and m.patientName <> invalid and m.patientName <> ""
+        m.formTitle.text = GetStr("edit_patient_title") + ": " + m.patientName
+    else
+        m.formTitle.text = GetStr("add_new_patient_title")
+    end if
 end sub
 
 sub OnPatientDataChange()
     data = m.top.patientData
     if data <> invalid and data.id <> invalid
         m.patientId = data.id
-        m.formTitle.text = "Edit Patient: " + data.fullName
+        m.patientName = data.fullName
         if data.fullName <> invalid then m.nameField.value = data.fullName
         if data.dateOfBirth <> invalid then m.dobField.value = Left(data.dateOfBirth, 10)
         if data.gender <> invalid then m.genderField.value = data.gender
         if data.notes <> invalid then m.notesField.value = data.notes
     else
         m.patientId = ""
-        m.formTitle.text = "Add New Patient"
+        m.patientName = ""
     end if
+    UpdateTitle()
 end sub
 
 sub UpdateFocus()

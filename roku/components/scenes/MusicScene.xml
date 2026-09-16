@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="MusicScene" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/MusicScene.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
 
     <children>
         <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
@@ -16,7 +18,7 @@
             <Rectangle width="1920" height="3" color="0xFF6B6BFF" translation="[0, 87]" />
             
             <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
-            <Label text="Music &amp; Relaxing Audio Library" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
+            <Label id="pageTitle" text="Music &amp; Relaxing Audio Library" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
         </Group>
 
         <!-- Main Player & Playlist Layout -->
@@ -79,7 +81,7 @@
                     </Group>
                 </Group>
 
-                <Label text="Press OK to Play / Pause active track" font="font:SmallSystemFont" color="0x94A3B8FF" translation="[40, 760]" width="560" horizAlign="center" />
+                <Label id="musicHintLabel" text="Press OK to Play / Pause active track" font="font:SmallSystemFont" color="0x94A3B8FF" translation="[40, 760]" width="560" horizAlign="center" />
             </Group>
 
             <!-- Right Panel: Playlist Tracks Grid -->
@@ -88,7 +90,7 @@
                 <Rectangle width="1080" height="850" color="0xFFFFFFFF" cornerRoundingRadius="12" />
                 <Rectangle width="1080" height="4" color="0x00C9A7FF" />
 
-                <Label text="Select Playlist Track" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[40, 25]" width="1000" />
+                <Label id="playlistHeaderLabel" text="Select Playlist Track" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[40, 25]" width="1000" />
 
                 <Label id="emptyState" text="No music tracks available in your library." font="font:MediumSystemFont" color="0x64748BFF" translation="[40, 200]" width="1000" horizAlign="center" visible="false" />
 
@@ -107,7 +109,7 @@
         <Group id="footerGroup" translation="[0, 1008]">
             <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
-            <Label text="Back Return to Dashboard  |  OK Play Selected Track  |  ◄ Left / ► Right Audio Controls"
+            <Label id="footerLabel" text="Back Return to Dashboard  |  OK Play Selected Track  |  ◄ Left / ► Right Audio Controls"
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 

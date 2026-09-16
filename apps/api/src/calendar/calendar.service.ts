@@ -5,6 +5,12 @@ import { PrismaService } from '../database/prisma.service';
 export class CalendarAggregatorService {
   constructor(private prisma: PrismaService) {}
 
+  async getScheduleForDate(userId: string, dateStr: string, timezone?: string) {
+    const start = new Date(`${dateStr}T00:00:00.000Z`);
+    const end = new Date(`${dateStr}T23:59:59.999Z`);
+    return this.getCalendarEvents(userId, start, end);
+  }
+
   async getCalendarEvents(userId: string, startDate?: Date, endDate?: Date) {
     const start = startDate ? new Date(startDate) : new Date();
     start.setUTCHours(0, 0, 0, 0);

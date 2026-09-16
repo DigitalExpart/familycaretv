@@ -3,12 +3,32 @@ sub init()
     m.thoughtText = m.top.findNode("thoughtText")
     m.qrPoster = m.top.findNode("qrPoster")
     m.loadingOverlay = m.top.findNode("loadingOverlay")
+    m.pageTitle = m.top.findNode("pageTitle")
+    m.scanBuyLabel = m.top.findNode("scanBuyLabel")
+    m.thoughtTitle = m.top.findNode("thoughtTitle")
+    m.footerLabel = m.top.findNode("footerLabel")
 
     m.drawingTask = m.top.findNode("drawingTask")
     m.drawingTask.observeField("response", "OnDrawingResponse")
 
     m.top.setFocus(true)
+    ApplyLocalization()
     FetchDrawing()
+
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.pageTitle <> invalid then m.pageTitle.text = GetStr("drawing_title")
+    if m.scanBuyLabel <> invalid then m.scanBuyLabel.text = GetStr("drawing_scan_buy")
+    if m.thoughtTitle <> invalid then m.thoughtTitle.text = GetStr("drawing_thought_title")
+    if m.footerLabel <> invalid then m.footerLabel.text = GetStr("drawing_footer")
 end sub
 
 sub FetchDrawing()

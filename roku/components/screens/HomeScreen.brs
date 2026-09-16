@@ -55,11 +55,11 @@ sub onDashboardDataReceived()
         
         if data.reminders <> invalid
             for each r in data.reminders
-                if r.type = "MEDICATION" then medCount++
-                if r.type = "APPOINTMENT" then apptCount++
-                if r.type = "TASK" then taskCount++
-                if r.type = "HOMEWORK" or r.type = "KIDS_TASK" then homeworkCount++
-                if r.type = "PET_REMINDER" or r.type = "PET_VACCINATION" or r.type = "PET_MEDICATION" then petCount++
+                if r.type = "MEDICATION" then medCount = medCount + 1
+                if r.type = "APPOINTMENT" then apptCount = apptCount + 1
+                if r.type = "TASK" then taskCount = taskCount + 1
+                if r.type = "HOMEWORK" or r.type = "KIDS_TASK" then homeworkCount = homeworkCount + 1
+                if r.type = "PET_REMINDER" or r.type = "PET_VACCINATION" or r.type = "PET_MEDICATION" then petCount = petCount + 1
             end for
         end if
         
@@ -77,7 +77,7 @@ sub onDashboardDataReceived()
         bookItems = []
         if data.books <> invalid and data.books.count() > 0
             b = data.books[0]
-            bookCover = "pkg:/images/fallback_artwork.png"
+            bookCover = "pkg:/images/book_cover_fallback.png"
             if b.coverUrl <> invalid and b.coverUrl <> "" then bookCover = b.coverUrl
             bookItems.push({ 
                 title: b.title, 

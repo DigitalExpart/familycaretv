@@ -1,5 +1,8 @@
 sub init()
     m.formTitle = m.top.findNode("formTitle")
+    m.formSubtitle = m.top.findNode("formSubtitle")
+    m.cancelLabel = m.top.findNode("cancelLabel")
+    m.saveLabel = m.top.findNode("saveLabel")
     m.titleField = m.top.findNode("titleField")
     m.dateField = m.top.findNode("dateField")
     m.typeField = m.top.findNode("typeField")
@@ -18,7 +21,35 @@ sub init()
     m.focusedItem = 0
     m.eventId = ""
     m.patientId = ""
+
+    ApplyLocalization()
     UpdateFocus()
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.cancelLabel <> invalid then m.cancelLabel.text = GetStr("cancel")
+    if m.saveLabel <> invalid then m.saveLabel.text = GetStr("save_event_btn")
+    if m.formSubtitle <> invalid then m.formSubtitle.text = GetStr("event_form_sub")
+    if m.titleField <> invalid then m.titleField.label = GetStr("event_title_label")
+    if m.dateField <> invalid then m.dateField.label = GetStr("event_date_label")
+    if m.typeField <> invalid then m.typeField.label = GetStr("event_type_label")
+    if m.descField <> invalid then m.descField.label = GetStr("event_desc_label")
+    UpdateTitle()
+end sub
+
+sub UpdateTitle()
+    if m.eventId <> "" and m.currentEventTitle <> invalid and m.currentEventTitle <> ""
+        m.formTitle.text = GetStr("edit_event_title") + ": " + m.currentEventTitle
+    else
+        m.formTitle.text = GetStr("add_event_title")
+    end if
 end sub
 
 sub OnEventDataChange()
@@ -27,7 +58,8 @@ sub OnEventDataChange()
         if data.patientId <> invalid then m.patientId = data.patientId
         if data.id <> invalid
             m.eventId = data.id
-            m.formTitle.text = "Edit Event: " + data.title
+            m.currentEventTitle = data.title
+            UpdateTitle()
             if data.title <> invalid then m.titleField.value = data.title
             if data.startDateTime <> invalid
                 dVal = data.startDateTime
@@ -40,7 +72,8 @@ sub OnEventDataChange()
         end if
     end if
     m.eventId = ""
-    m.formTitle.text = "Add Calendar Event"
+    m.currentEventTitle = ""
+    UpdateTitle()
     m.typeField.value = "APPOINTMENT"
     if data <> invalid and data.startDateTime <> invalid
         dVal = data.startDateTime

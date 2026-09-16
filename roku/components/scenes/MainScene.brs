@@ -20,9 +20,13 @@ sub NavigateTo(screenName as String)
         end if
     end if
     
-    ' Clear stack if navigating to HomeScene / HomeSceneV2 (it's the root)
+    ' Clear stack and clean container if navigating to HomeScene / HomeSceneV2 / DeviceLinkScene
     if screenName = "HomeScene" or screenName = "HomeSceneV2" or screenName = "DeviceLinkScene"
         m.screenStack.clear()
+        while m.screenContainer.getChildCount() > 0
+            m.screenContainer.removeChildIndex(0)
+        end while
+        m.currentScreen = invalid
     end if
     
     ' Map legacy HomeScene to HomeSceneV2
@@ -38,8 +42,8 @@ sub NavigateTo(screenName as String)
         m.currentScreen.setFocus(true)
         m.currentScreen.observeField("navigate", "OnNavigateRequest")
         
-        ' Clean up old SplashScene or DeviceLinkScene node from screen container
-        if oldScreen <> invalid and (oldScreen.subtype() = "SplashScene" or oldScreen.subtype() = "DeviceLinkScene")
+        ' Clean up transient scene nodes from screen container (they are never back-navigated to)
+        if oldScreen <> invalid and (oldScreen.subtype() = "SplashScene" or oldScreen.subtype() = "DeviceLinkScene" or oldScreen.subtype() = "ScreensaverScene")
             m.screenContainer.removeChild(oldScreen)
         end if
         
@@ -51,6 +55,7 @@ end sub
 
 sub OnNavigateRequest(event as Object)
     targetScreen = event.getData()
+    print "[MAIN] navigation-received=" + targetScreen
     if targetScreen <> ""
         NavigateTo(targetScreen)
     end if
@@ -59,7 +64,8 @@ end sub
 function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
-        if key = "back"
+        if key = "back" or key = "Back"
+            print "[MAIN] Back pressed, stack count = "; m.screenStack.count()
             if m.screenStack.count() > 0
                 m.screenContainer.removeChild(m.currentScreen)
                 m.currentScreen = invalid
@@ -67,8 +73,12 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 m.currentScreen.visible = true
                 m.currentScreen.setFocus(true)
                 handled = true
+            else if m.currentScreen <> invalid and m.currentScreen.subtype() <> "HomeSceneV2"
+                ' Fallback: return to HomeSceneV2 rather than exiting app
+                NavigateTo("HomeSceneV2")
+                handled = true
             end if
-            ' If screenStack is empty, handled remains false, allowing Roku OS to exit app
+            ' If on HomeSceneV2 and stack is empty, handled remains false, allowing Roku OS to exit app
         end if
     end if
     return handled

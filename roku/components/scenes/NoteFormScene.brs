@@ -1,5 +1,8 @@
 sub init()
     m.formTitle = m.top.findNode("formTitle")
+    m.formSubtitle = m.top.findNode("formSubtitle")
+    m.cancelLabel = m.top.findNode("cancelLabel")
+    m.saveLabel = m.top.findNode("saveLabel")
     m.titleField = m.top.findNode("titleField")
     m.categoryField = m.top.findNode("categoryField")
     m.contentField = m.top.findNode("contentField")
@@ -17,7 +20,34 @@ sub init()
     m.focusedItem = 0
     m.noteId = ""
     m.patientId = ""
+
+    ApplyLocalization()
     UpdateFocus()
+    m.top.observeField("visible", "OnVisibleChange")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
+end sub
+
+sub ApplyLocalization()
+    if m.cancelLabel <> invalid then m.cancelLabel.text = GetStr("cancel")
+    if m.saveLabel <> invalid then m.saveLabel.text = GetStr("save_note_btn")
+    if m.formSubtitle <> invalid then m.formSubtitle.text = GetStr("note_form_sub")
+    if m.titleField <> invalid then m.titleField.label = GetStr("note_title_label")
+    if m.categoryField <> invalid then m.categoryField.label = GetStr("note_category_label")
+    if m.contentField <> invalid then m.contentField.label = GetStr("note_content_label")
+    UpdateTitle()
+end sub
+
+sub UpdateTitle()
+    if m.noteId <> "" and m.currentNoteTitle <> invalid and m.currentNoteTitle <> ""
+        m.formTitle.text = GetStr("edit_note_title") + ": " + m.currentNoteTitle
+    else
+        m.formTitle.text = GetStr("add_note_title")
+    end if
 end sub
 
 sub OnNoteDataChange()
@@ -26,7 +56,8 @@ sub OnNoteDataChange()
         if data.patientId <> invalid then m.patientId = data.patientId
         if data.id <> invalid
             m.noteId = data.id
-            m.formTitle.text = "Edit Note: " + data.title
+            m.currentNoteTitle = data.title
+            UpdateTitle()
             if data.title <> invalid then m.titleField.value = data.title
             if data.category <> invalid and m.categoryField <> invalid then m.categoryField.value = data.category
             if data.content <> invalid then m.contentField.value = data.content
@@ -34,7 +65,8 @@ sub OnNoteDataChange()
         end if
     end if
     m.noteId = ""
-    m.formTitle.text = "Add Personal Note"
+    m.currentNoteTitle = ""
+    UpdateTitle()
 end sub
 
 sub UpdateFocus()

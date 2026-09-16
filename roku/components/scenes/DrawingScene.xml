@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="DrawingScene" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/DrawingScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
@@ -16,7 +18,7 @@
             <Rectangle width="1920" height="3" color="0xFF6B6BFF" translation="[0, 87]" />
             
             <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
-            <Label text="Drawing of the Day &amp; Activity Gallery" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
+            <Label id="pageTitle" text="Drawing of the Day &amp; Activity Gallery" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
         </Group>
 
         <!-- Main Display Container -->
@@ -35,14 +37,14 @@
                 <Rectangle width="210" height="170" color="0xF8FAFCFF" cornerRoundingRadius="8" />
                 <Poster id="qrPoster" width="120" height="120" translation="[45, 10]"
                     loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
-                <Label text="Scan to Buy Book" font="font:SmallBoldSystemFont" color="0x00C9A7FF"
+                <Label id="scanBuyLabel" text="Scan to Buy Book" font="font:SmallBoldSystemFont" color="0x00C9A7FF"
                     translation="[0, 138]" width="210" horizAlign="center" />
             </Group>
 
             <!-- Thought of the Day Text Box (Vertical LayoutGroup) -->
             <Group translation="[60, 610]">
                 <LayoutGroup layoutDirection="vert" itemSpacings="[8]">
-                    <Label text="Thought of the Day" font="font:MediumBoldSystemFont" color="0xFF6B6BFF" width="1050" />
+                    <Label id="thoughtTitle" text="Thought of the Day" font="font:MediumBoldSystemFont" color="0xFF6B6BFF" width="1050" />
                     <Label id="thoughtText"
                         font="font:MediumSystemFont" color="0x0F172AFF"
                         width="1050" wrap="true" maxLines="6"
@@ -55,7 +57,7 @@
         <Group id="footerGroup" translation="[0, 1008]">
             <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
-            <Label text="Back Return to Dashboard  |  Scan QR code with smartphone to order custom coloring books"
+            <Label id="footerLabel" text="Back Return to Dashboard  |  Scan QR code with smartphone to order custom coloring books"
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 

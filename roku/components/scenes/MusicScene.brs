@@ -45,7 +45,35 @@ sub init()
     m.elapsedSeconds = 0
     m.totalDurationSec = 225
 
+    ApplyLocalization()
+    m.top.observeField("visible", "OnVisibleChange")
+
     FetchMusic()
+end sub
+
+sub ApplyLocalization()
+    pageTitle = m.top.findNode("pageTitle")
+    if pageTitle <> invalid then pageTitle.text = GetStr("music_title")
+    footerLabel = m.top.findNode("footerLabel")
+    if footerLabel <> invalid then footerLabel.text = GetStr("music_footer")
+    musicHint = m.top.findNode("musicHintLabel")
+    if musicHint <> invalid then musicHint.text = GetStr("music_hint")
+    playlistHeader = m.top.findNode("playlistHeaderLabel")
+    if playlistHeader <> invalid then playlistHeader.text = GetStr("music_select_track")
+    if m.emptyState <> invalid then m.emptyState.text = GetStr("music_empty")
+    if m.playLabel <> invalid
+        if m.isPlaying
+            m.playLabel.text = "❚❚ " + GetStr("music_pause")
+        else
+            m.playLabel.text = "► " + GetStr("music_play")
+        end if
+    end if
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+    end if
 end sub
 
 sub FetchMusic()
@@ -273,11 +301,7 @@ sub SetFocusZone(zone as Integer)
     m.playFocusBorder.visible = (zone = 1)
     m.nextFocusBorder.visible = (zone = 2)
 
-    if zone = 3 and m.playlistGrid.visible
-        m.playlistGrid.setFocus(true)
-    else
-        m.top.setFocus(true)
-    end if
+    m.top.setFocus(true)
 end sub
 
 sub OnTrackSelected()
@@ -294,10 +318,35 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             if key = "left"
                 SetFocusZone(1) ' Focus Play/Pause button
                 handled = true
+            else if key = "right"
+                curr = m.playlistGrid.itemFocused
+                if curr < m.tracksData.count() - 1
+                    m.playlistGrid.jumpToItem = curr + 1
+                    handled = true
+                end if
+            else if key = "down"
+                curr = m.playlistGrid.itemFocused
+                if curr + 2 < m.tracksData.count()
+                    m.playlistGrid.jumpToItem = curr + 2
+                    handled = true
+                end if
+            else if key = "up"
+                curr = m.playlistGrid.itemFocused
+                if curr >= 2
+                    m.playlistGrid.jumpToItem = curr - 2
+                    handled = true
+                end if
+            else if key = "OK" or key = "select"
+                curr = m.playlistGrid.itemFocused
+                if curr >= 0 and curr < m.tracksData.count()
+                    m.playlistGrid.itemSelected = curr
+                    SelectTrack(curr, true)
+                    handled = true
+                end if
             else if key = "back"
                 if m.audioPlayer <> invalid then m.audioPlayer.control = "stop"
                 if m.progressTimer <> invalid then m.progressTimer.control = "stop"
-                m.top.navigate = "HomeScene"
+                m.top.navigate = "HomeSceneV2"
                 handled = true
             end if
         else

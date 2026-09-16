@@ -21,7 +21,30 @@ sub init()
     ' 0 = Add button, 1 = Grid
     m.focusZone = 1
 
+    ApplyLocalization()
+    m.top.observeField("visible", "OnVisibleChange")
+
     FetchMedications()
+end sub
+
+sub ApplyLocalization()
+    pageTitle = m.top.findNode("pageTitle")
+    if pageTitle <> invalid then pageTitle.text = GetStr("medications_title")
+    addBtnLabel = m.top.findNode("addBtnLabel")
+    if addBtnLabel <> invalid then addBtnLabel.text = GetStr("add_med_btn")
+    emptyTitle = m.top.findNode("emptyTitle")
+    if emptyTitle <> invalid then emptyTitle.text = GetStr("no_meds_found")
+    emptyDesc = m.top.findNode("emptyDesc")
+    if emptyDesc <> invalid then emptyDesc.text = GetStr("no_meds_desc")
+    footerLabel = m.top.findNode("footerLabel")
+    if footerLabel <> invalid then footerLabel.text = GetStr("medications_footer")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+        FetchMedications()
+    end if
 end sub
 
 sub FetchMedications()

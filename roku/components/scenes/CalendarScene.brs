@@ -41,13 +41,53 @@ sub init()
     m.selectedDay = now.GetDayOfMonth()
     
     m.rawEventsData = []
+    ApplyLocalization()
+    m.top.observeField("visible", "OnVisibleChange")
     UpdateMonthHeader()
     FetchEvents()
 end sub
 
+sub ApplyLocalization()
+    prevBtnLabel = m.top.findNode("prevBtnLabel")
+    if prevBtnLabel <> invalid then prevBtnLabel.text = GetStr("prev_month_btn")
+    nextBtnLabel = m.top.findNode("nextBtnLabel")
+    if nextBtnLabel <> invalid then nextBtnLabel.text = GetStr("next_month_btn")
+    addBtnLabel = m.top.findNode("addBtnLabel")
+    if addBtnLabel <> invalid then addBtnLabel.text = GetStr("add_event_btn")
+
+    lang = ReadLanguagePref()
+    if lang = "ES"
+        dayNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    else
+        dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    end if
+    for i = 0 to 6
+        lbl = m.top.findNode("dayLabel" + StrI(i).Trim())
+        if lbl <> invalid then lbl.text = dayNames[i]
+    end for
+
+    UpdateMonthHeader()
+    if m.selectedDay <> invalid and m.selectedDay > 0
+        UpdateDailySchedule(m.selectedDay)
+    end if
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+        FetchEvents()
+    end if
+end sub
+
 sub UpdateMonthHeader()
-    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    m.monthLabel.text = months[m.currentMonth - 1] + " " + StrI(m.currentYear).Trim() + " - Family Calendar"
+    lang = ReadLanguagePref()
+    if lang = "ES"
+        months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        m.monthLabel.text = months[m.currentMonth - 1] + " " + StrI(m.currentYear).Trim() + " - " + GetStr("calendar_title")
+    else
+        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        m.monthLabel.text = months[m.currentMonth - 1] + " " + StrI(m.currentYear).Trim() + " - Family Calendar"
+    end if
 end sub
 
 sub ChangeMonth(delta as Integer)
@@ -217,21 +257,27 @@ end sub
 
 sub UpdateDailySchedule(dayNum as Integer)
     m.selectedDay = dayNum
-    months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    monthName = months[m.currentMonth - 1]
-    
-    ' Calculate day of week
     targetDate = CreateObject("roDateTime")
     monthStr = StrI(m.currentMonth).Trim()
     if m.currentMonth < 10 then monthStr = "0" + monthStr
     dayStr = StrI(dayNum).Trim()
     if dayNum < 10 then dayStr = "0" + dayStr
     targetDate.FromISO8601String(StrI(m.currentYear).Trim() + "-" + monthStr + "-" + dayStr + "T12:00:00Z")
-    
-    dayOfWeekNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    dayName = dayOfWeekNames[targetDate.GetDayOfWeek()]
-    
-    m.scheduleDateLabel.text = dayName + ", " + monthName + " " + StrI(dayNum).Trim() + " — Today's Schedule"
+
+    lang = ReadLanguagePref()
+    if lang = "ES"
+        months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        dayOfWeekNames = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+        monthName = months[m.currentMonth - 1]
+        dayName = dayOfWeekNames[targetDate.GetDayOfWeek()]
+        m.scheduleDateLabel.text = dayName + ", " + StrI(dayNum).Trim() + " de " + monthName + " — " + GetStr("todays_schedule_title")
+    else
+        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        dayOfWeekNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        monthName = months[m.currentMonth - 1]
+        dayName = dayOfWeekNames[targetDate.GetDayOfWeek()]
+        m.scheduleDateLabel.text = dayName + ", " + monthName + " " + StrI(dayNum).Trim() + " — Today's Schedule"
+    end if
     
     schedContent = CreateObject("roSGNode", "ContentNode")
     count = 0
@@ -287,14 +333,25 @@ sub UpdateDailySchedule(dayNum as Integer)
     end for
     
     m.scheduleGrid.content = schedContent
+    lang = ReadLanguagePref()
     if count > 0
         m.emptyScheduleLabel.visible = false
         m.scheduleGrid.visible = true
-        m.scheduleCountLabel.text = StrI(count).Trim() + " scheduled"
+        if lang = "ES"
+            m.scheduleCountLabel.text = StrI(count).Trim() + " programados"
+        else
+            m.scheduleCountLabel.text = StrI(count).Trim() + " scheduled"
+        end if
     else
         m.emptyScheduleLabel.visible = true
         m.scheduleGrid.visible = false
-        m.scheduleCountLabel.text = "0 items"
+        if lang = "ES"
+            m.emptyScheduleLabel.text = GetStr("no_events_day")
+            m.scheduleCountLabel.text = "0 elementos"
+        else
+            m.emptyScheduleLabel.text = "No events or tasks scheduled for this day."
+            m.scheduleCountLabel.text = "0 items"
+        end if
     end if
 end sub
 
@@ -449,7 +506,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             else if key = "down"
                 SetFocusZone(1, m.headerFocusIndex)
                 handled = true
-            else if key = "OK"
+            else if key = "OK" or key = "select" or key = "Select"
                 if m.headerFocusIndex = 0
                     ChangeMonth(-1)
                     handled = true
@@ -460,8 +517,8 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                     OpenAddEventForm()
                     handled = true
                 end if
-            else if key = "back"
-                m.top.navigate = "HomeScene"
+            else if key = "back" or key = "Back"
+                m.top.navigate = "HomeSceneV2"
                 handled = true
             end if
         else if m.focusZone = 1
@@ -486,15 +543,15 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                         handled = true
                     end if
                 end if
-            else if key = "back"
-                m.top.navigate = "HomeScene"
+            else if key = "back" or key = "Back"
+                m.top.navigate = "HomeSceneV2"
                 handled = true
             end if
         else if m.focusZone = 2
             if key = "up"
                 SetFocusZone(1, 0)
                 handled = true
-            else if key = "back"
+            else if key = "back" or key = "Back"
                 SetFocusZone(1, 0)
                 handled = true
             end if

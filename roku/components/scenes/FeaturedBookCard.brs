@@ -9,6 +9,7 @@ sub init()
     m.coverPoster = m.top.findNode("coverPoster")
     m.btnPoster = m.top.findNode("btnPoster")
     m.btnText = m.top.findNode("btnText")
+    if m.btnText <> invalid then m.btnText.text = GetStr("Featured_Book_Btn")
     
     m.focusInAnim = m.top.findNode("focusInAnim")
     m.focusOutAnim = m.top.findNode("focusOutAnim")
@@ -29,21 +30,21 @@ sub init()
             title: "Healthy Living After 50",
             author: "Dr. Sarah Jenkins",
             description: "Practical wellness & nutrition guidance tailored for active senior living.",
-            coverUrl: "pkg:/images/fallback_artwork.png",
+            coverUrl: "pkg:/images/book_cover_healthy_living.png",
             target: "BooksScreen"
         },
         {
             title: "Senior Fitness Guide",
             author: "Maria Gonzalez, PT",
             description: "Low-impact exercises designed for joint mobility and balance.",
-            coverUrl: "pkg:/images/fallback_artwork.png",
+            coverUrl: "pkg:/images/book_cover_fitness.png",
             target: "BooksScreen"
         },
         {
             title: "Heart Care Companion",
             author: "Dr. James Aris",
             description: "Essential guide to cardiovascular health and daily stress management.",
-            coverUrl: "pkg:/images/fallback_artwork.png",
+            coverUrl: "pkg:/images/book_cover_heart_care.png",
             target: "BooksScreen"
         }
     ]
@@ -63,6 +64,8 @@ sub DisplayCurrentBook()
         m.descLabel.text = book.description
         if book.coverUrl <> invalid and book.coverUrl <> ""
             m.coverPoster.uri = book.coverUrl
+        else
+            m.coverPoster.uri = "pkg:/images/book_cover_fallback.png"
         end if
         m.top.currentBook = book
     end if
@@ -78,6 +81,8 @@ sub OnCurrentBookChange()
             m.coverPoster.uri = b.coverUrl
         else if b.imageUrl <> invalid and b.imageUrl <> ""
             m.coverPoster.uri = b.imageUrl
+        else
+            m.coverPoster.uri = "pkg:/images/book_cover_fallback.png"
         end if
     end if
 end sub

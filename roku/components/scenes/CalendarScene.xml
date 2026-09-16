@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="CalendarScene" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/CalendarScene.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
 
     <children>
         <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
@@ -20,7 +22,7 @@
                 <Rectangle id="prevBtnFocusBorder" width="144" height="54" color="0x42A5F5FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
                 <Rectangle id="prevBtnBorder" width="142" height="52" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
                 <Rectangle id="prevBtnBg" width="140" height="50" color="0xF1F5F9FF" cornerRoundingRadius="8" />
-                <Label text="◄ Prev" font="font:MediumBoldSystemFont" color="0x0F172AFF" horizAlign="center" width="140" translation="[0, 12]" />
+                <Label id="prevBtnLabel" text="◄ Prev" font="font:MediumBoldSystemFont" color="0x0F172AFF" horizAlign="center" width="140" translation="[0, 12]" />
             </Group>
 
             <!-- Month Label -->
@@ -31,26 +33,26 @@
                 <Rectangle id="nextBtnFocusBorder" width="144" height="54" color="0x42A5F5FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
                 <Rectangle id="nextBtnBorder" width="142" height="52" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
                 <Rectangle id="nextBtnBg" width="140" height="50" color="0xF1F5F9FF" cornerRoundingRadius="8" />
-                <Label text="Next ►" font="font:MediumBoldSystemFont" color="0x0F172AFF" horizAlign="center" width="140" translation="[0, 12]" />
+                <Label id="nextBtnLabel" text="Next ►" font="font:MediumBoldSystemFont" color="0x0F172AFF" horizAlign="center" width="140" translation="[0, 12]" />
             </Group>
 
             <!-- [+] Add Event Button -->
             <Group id="addBtnGroup" translation="[1580, 18]">
                 <Rectangle id="addBtnFocusBorder" width="284" height="54" color="0x42A5F5FF" translation="[-2, -2]" visible="false" cornerRoundingRadius="8" />
                 <Rectangle id="addBtnBg" width="280" height="50" color="0x42A5F5FF" cornerRoundingRadius="8" />
-                <Label text="✚ Add Event" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="280" translation="[0, 12]" />
+                <Label id="addBtnLabel" text="✚ Add Event" font="font:MediumBoldSystemFont" color="0xFFFFFFFF" horizAlign="center" width="280" translation="[0, 12]" />
             </Group>
         </Group>
 
         <!-- Days of Week Header -->
         <LayoutGroup translation="[160, 108]" layoutDirection="horiz" itemSpacings="[10,10,10,10,10,10,10]">
-            <Label text="Sunday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
-            <Label text="Monday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
-            <Label text="Tuesday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
-            <Label text="Wednesday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
-            <Label text="Thursday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
-            <Label text="Friday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
-            <Label text="Saturday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel0" text="Sunday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel1" text="Monday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel2" text="Tuesday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel3" text="Wednesday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel4" text="Thursday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel5" text="Friday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
+            <Label id="dayLabel6" text="Saturday" width="220" horizAlign="center" font="font:SmallBoldSystemFont" color="0x64748BFF" />
         </LayoutGroup>
 
         <!-- Calendar Grid -->

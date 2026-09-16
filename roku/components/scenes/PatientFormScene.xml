@@ -6,6 +6,8 @@
         <field id="saved" type="boolean" value="false" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/PatientFormScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>

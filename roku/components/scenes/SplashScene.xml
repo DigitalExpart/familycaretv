@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<component name="SplashScene" extends="Scene">
+<component name="SplashScene" extends="Group">
     <interface>
         <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
@@ -8,32 +8,35 @@
     <script type="text/brightscript" uri="pkg:/source/Config.brs" />
 
     <children>
-        <!-- Background -->
+        <!-- Clean light background -->
         <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
-        
-        <!-- Outer decorative ring -->
-        <Rectangle width="190" height="190" color="0xCCFBF1FF" cornerRoundingRadius="95" translation="[865, 350]" />
-        <Rectangle width="186" height="186" color="0xF0F2F5FF" cornerRoundingRadius="93" translation="[867, 352]" />
-        
-        <!-- Middle decorative ring -->
-        <Rectangle width="148" height="148" color="0xCCFBF1FF" cornerRoundingRadius="74" translation="[886, 371]" />
-        <Rectangle width="144" height="144" color="0xF0F2F5FF" cornerRoundingRadius="72" translation="[888, 373]" />
-        
-        <!-- Inner filled circle -->
-        <Rectangle width="104" height="104" color="0xE6F7F4FF" cornerRoundingRadius="52" translation="[908, 393]" />
-        
-        <!-- Icon -->
-        <Label text="~" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[932, 420]" />
-        
-        <!-- Logo text -->
-        <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00C9A7FF" translation="[660, 510]" width="600" horizAlign="center" />
-        
-        <!-- Thin accent line -->
-        <Rectangle width="80" height="3" color="0x00C9A78C" cornerRoundingRadius="1" translation="[920, 582]" />
-        
+
+        <!-- Subtle soft radial glow behind logo (layered mint circles) -->
+        <Rectangle width="640" height="640" color="0xD1FAF0FF" cornerRoundingRadius="320" translation="[640, 140]" opacity="0.6" />
+        <Rectangle width="440" height="440" color="0xCCFBF1FF" cornerRoundingRadius="220" translation="[740, 240]" opacity="0.8" />
+
+        <!-- Official Logo (centered, scales to fit) -->
+        <Poster id="splashLogo"
+            width="560"
+            height="560"
+            uri="pkg:/images/logo.png"
+            loadDisplayMode="scaleToFit"
+            translation="[680, 120]" />
+
+        <!-- Thin teal accent line below logo -->
+        <Rectangle width="120" height="3" color="0x00C9A7CC" cornerRoundingRadius="1" translation="[900, 700]" />
+
         <!-- Tagline -->
-        <Label text="HEALTH · WELLNESS · FAMILY" font="font:MediumSystemFont" color="0x64748BFF" translation="[560, 600]" width="800" horizAlign="center" />
-        
+        <Label text="HEALTH · WELLNESS · FAMILY"
+            font="font:MediumSystemFont"
+            color="0x64748BFF"
+            translation="[560, 724]"
+            width="800"
+            horizAlign="center" />
+
+        <!-- Loading indicator -->
+        <LoadingSpinner id="loadingSpinner" translation="[940, 810]" />
+
         <Timer id="timer" />
         <ApiTask id="validateTask" />
     </children>

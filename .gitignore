@@ -13,4 +13,6 @@ hs_err_*.log
 replay_pid*.log
 *.exe
 *.zip
+/*.png
+/*.jpg
 

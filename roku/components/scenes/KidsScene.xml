@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="KidsScene" extends="Group">
     <interface>
-        <field id="navigate" type="string" />
+        <field id="navigate" type="string" alwaysNotify="true" />
     </interface>
     <script type="text/brightscript" uri="pkg:/components/scenes/KidsScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
     <script type="text/brightscript" uri="pkg:/source/Theme.brs" />
 
     <children>
@@ -15,7 +17,7 @@
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 89]" />
             <Rectangle width="1920" height="3" color="0x7E57C2FF" translation="[0, 87]" />
             <Label text="FamilyCare TV" font="font:MediumBoldSystemFont" color="0x00C9A7FF" translation="[80, 28]" />
-            <Label text="Kids Activities &amp; Coloring Gallery" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
+            <Label id="pageTitle" text="Kids Activities &amp; Coloring Gallery" font="font:MediumBoldSystemFont" color="0x0F172AFF" translation="[340, 28]" width="1200" />
         </Group>
 
         <!-- Gallery Grid (Substantial 270px cards with vertical flow) -->
@@ -48,10 +50,10 @@
                     <Rectangle width="202" height="162" color="0xE2E8F0FF" translation="[-1, -1]" cornerRoundingRadius="8" />
                     <Rectangle width="200" height="160" color="0xF8FAFCFF" cornerRoundingRadius="8" />
                     <Poster width="110" height="110" translation="[45, 10]" loadDisplayMode="scaleToFit" uri="pkg:/images/fallback_qr.png" />
-                    <Label text="Scan to Print" font="font:SmallBoldSystemFont" color="0x7E57C2FF" translation="[0, 125]" width="200" horizAlign="center" />
+                    <Label id="scanPrintLabel" text="Scan to Print" font="font:SmallBoldSystemFont" color="0x7E57C2FF" translation="[0, 125]" width="200" horizAlign="center" />
                 </Group>
 
-                <Label text="Press BACK or OK to close preview" font="font:SmallSystemFont" color="0x94A3B8FF" translation="[60, 810]" width="1000" />
+                <Label id="closeHintLabel" text="Press BACK or OK to close preview" font="font:SmallSystemFont" color="0x94A3B8FF" translation="[60, 810]" width="1000" />
             </Group>
         </Group>
 
@@ -59,7 +61,7 @@
         <Group id="footerGroup" translation="[0, 1008]">
             <Rectangle width="1920" height="52" color="0xFFFFFFFF" />
             <Rectangle width="1920" height="1" color="0xE2E8F0FF" translation="[0, 0]" />
-            <Label text="Back Return to Dashboard  |  OK View Full Screen Activity Card"
+            <Label id="footerLabel" text="Back Return to Dashboard  |  OK View Full Screen Activity Card"
                 font="font:SmallSystemFont" color="0x64748BFF" translation="[80, 14]" width="1760" />
         </Group>
 

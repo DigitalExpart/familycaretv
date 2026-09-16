@@ -1,36 +1,255 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<component name="ScreensaverScene" extends="Scene">
+<component name="ScreensaverScene" extends="Group">
+    <interface>
+        <field id="navigate" type="string" alwaysNotify="true" />
+    </interface>
     <script type="text/brightscript" uri="pkg:/components/screensaver/ScreensaverScene.brs" />
+    <script type="text/brightscript" uri="pkg:/source/RegistryService.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Config.brs" />
+    <script type="text/brightscript" uri="pkg:/source/Localization.brs" />
 
     <children>
-        <!-- Pale neutral background -->
-        <Rectangle width="1920" height="1080" color="0xF0F2F5FF" />
-        
-        <!-- Soft Mint Pulse Background -->
-        <Rectangle id="pulseBg" width="1920" height="1080" color="0xE6F7F4FF" opacity="0.0" />
-        <Animation id="pulseAnim" duration="8" repeat="true">
-            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.0, 0.7, 0.0]" fieldToInterp="pulseBg.opacity" />
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- DEEP NAVY BACKGROUND                                       -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <Rectangle width="1920" height="1080" color="0x0A1628FF" />
+
+        <!-- Subtle pulsing background glow for depth -->
+        <Rectangle id="bgGlow" width="1920" height="1080" color="0x00796B1A" opacity="0.0" />
+        <Animation id="bgPulseAnim" duration="12" repeat="true">
+            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.0, 1.0, 0.0]" fieldToInterp="bgGlow.opacity" />
         </Animation>
 
-        <!-- Center Logo -->
-        <Group id="logoGroup" translation="[760, 440]">
-            <Label text="FamilyCare TV" font="font:LargeBoldSystemFont" color="0x00C9A7FF" />
-            <Label text="HEALTH · WELLNESS · FAMILY" font="font:MediumSystemFont" color="0x64748BFF" translation="[0, 50]" />
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- DRIFT GROUP — everything inside drifts slowly for burn-in  -->
+        <!-- protection. Keeps movement within ±20px so nothing clips.  -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <Group id="driftGroup" translation="[0, 0]">
+
+            <!-- ─────────────────────────────────────────────────────── -->
+            <!-- PANEL 0 · LOGO + LIVE CLOCK                           -->
+            <!-- ─────────────────────────────────────────────────────── -->
+            <Group id="panelLogo" visible="true" opacity="1.0">
+
+                <!-- White card backdrop -->
+                <Rectangle width="900" height="640" color="0xFFFFFFFF" cornerRoundingRadius="24" translation="[510, 160]" />
+
+                <!-- Official logo centered on card -->
+                <Poster width="700" height="500"
+                    uri="pkg:/images/logo.png"
+                    loadDisplayMode="scaleToFit"
+                    translation="[610, 190]" />
+
+                <!-- Live date below card -->
+                <Label id="ssDateLabel"
+                    text=""
+                    font="font:SmallSystemFont"
+                    color="0x64748BFF"
+                    translation="[510, 820]"
+                    width="900"
+                    horizAlign="center" />
+
+                <!-- Live time large -->
+                <Label id="ssTimeLabel"
+                    text=""
+                    font="font:LargeBoldSystemFont"
+                    color="0x00C9A7FF"
+                    translation="[510, 860]"
+                    width="900"
+                    horizAlign="center" />
+            </Group>
+
+            <!-- ─────────────────────────────────────────────────────── -->
+            <!-- PANEL 1 · VERSE OF THE DAY                            -->
+            <!-- ─────────────────────────────────────────────────────── -->
+            <Group id="panelVerse" visible="false" opacity="0.0">
+
+                <!-- Card -->
+                <Rectangle width="1280" height="540" color="0x0D2137FF" cornerRoundingRadius="24" translation="[320, 220]" />
+                <!-- Left teal accent bar -->
+                <Rectangle width="6" height="540" color="0x00C9A7FF" cornerRoundingRadius="3" translation="[320, 220]" />
+
+                <!-- Section label -->
+                <Label id="ssVerseSectionLabel"
+                    text="VERSE OF THE DAY"
+                    font="font:SmallestBoldSystemFont"
+                    color="0x00C9A7FF"
+                    translation="[368, 256]"
+                    width="1180" />
+
+                <!-- Decorative open-quote -->
+                <Label text="&quot;"
+                    font="font:LargeBoldSystemFont"
+                    color="0x1E3A5FFF"
+                    translation="[348, 270]" />
+
+                <!-- Verse text -->
+                <Label id="ssVerseText"
+                    text=""
+                    font="font:SmallSystemFont"
+                    color="0xCBD5E1FF"
+                    translation="[368, 316]"
+                    width="1180"
+                    wrap="true"
+                    maxLines="6" />
+
+                <!-- Reference -->
+                <Label id="ssVerseRef"
+                    text=""
+                    font="font:SmallestBoldSystemFont"
+                    color="0x00C9A7FF"
+                    translation="[368, 690]"
+                    width="1180" />
+            </Group>
+
+            <!-- ─────────────────────────────────────────────────────── -->
+            <!-- PANEL 2 · TODAY'S SCHEDULE                            -->
+            <!-- ─────────────────────────────────────────────────────── -->
+            <Group id="panelSchedule" visible="false" opacity="0.0">
+
+                <!-- Card -->
+                <Rectangle width="1280" height="580" color="0x0D2137FF" cornerRoundingRadius="24" translation="[320, 200]" />
+                <Rectangle width="6" height="580" color="0x8B5CF6FF" cornerRoundingRadius="3" translation="[320, 200]" />
+
+                <!-- Section label -->
+                <Label id="ssScheduleSectionLabel"
+                    text="TODAY'S SCHEDULE"
+                    font="font:SmallestBoldSystemFont"
+                    color="0x8B5CF6FF"
+                    translation="[368, 234]"
+                    width="1180" />
+
+                <!-- Calendar icon accent -->
+                <Poster width="28" height="28" uri="pkg:/images/icon_calendar.png"
+                    blendColor="0x8B5CF6FF"
+                    translation="[1530, 230]" />
+
+                <!-- Up to 5 schedule rows — populated at runtime -->
+                <Label id="ssScheduleRow0" text="" font="font:SmallestSystemFont" color="0xCBD5E1FF" translation="[368, 276]" width="1180" />
+                <Label id="ssScheduleRow1" text="" font="font:SmallestSystemFont" color="0xCBD5E1FF" translation="[368, 316]" width="1180" />
+                <Label id="ssScheduleRow2" text="" font="font:SmallestSystemFont" color="0xCBD5E1FF" translation="[368, 356]" width="1180" />
+                <Label id="ssScheduleRow3" text="" font="font:SmallestSystemFont" color="0xCBD5E1FF" translation="[368, 396]" width="1180" />
+                <Label id="ssScheduleRow4" text="" font="font:SmallestSystemFont" color="0xCBD5E1FF" translation="[368, 436]" width="1180" />
+
+                <!-- Empty state message (hidden if items present) -->
+                <Label id="ssScheduleEmpty"
+                    text="No items scheduled today. Enjoy your day!"
+                    font="font:SmallSystemFont"
+                    color="0x64748BFF"
+                    translation="[368, 340]"
+                    width="1180"
+                    horizAlign="center"
+                    visible="false" />
+            </Group>
+
+            <!-- ─────────────────────────────────────────────────────── -->
+            <!-- PANEL 3 · FEATURED BOOK                               -->
+            <!-- ─────────────────────────────────────────────────────── -->
+            <Group id="panelBook" visible="false" opacity="0.0">
+
+                <!-- Card -->
+                <Rectangle width="1280" height="540" color="0x0D2137FF" cornerRoundingRadius="24" translation="[320, 220]" />
+                <Rectangle width="6" height="540" color="0xF59E0BFF" cornerRoundingRadius="3" translation="[320, 220]" />
+
+                <!-- Section label -->
+                <Label id="ssBookSectionLabel"
+                    text="FEATURED BOOK"
+                    font="font:SmallestBoldSystemFont"
+                    color="0xF59E0BFF"
+                    translation="[820, 256]"
+                    width="720" />
+
+                <!-- Book cover -->
+                <Poster id="ssBookCover"
+                    width="220" height="320"
+                    uri="pkg:/images/book_cover_fallback.png"
+                    loadDisplayMode="scaleToFit"
+                    translation="[368, 270]" />
+
+                <!-- Book details -->
+                <Label id="ssBookTitle"
+                    text=""
+                    font="font:MediumBoldSystemFont"
+                    color="0xF1F5F9FF"
+                    translation="[620, 280]"
+                    width="900"
+                    wrap="true"
+                    maxLines="3" />
+
+                <Label id="ssBookAuthor"
+                    text=""
+                    font="font:SmallestSystemFont"
+                    color="0xF59E0BFF"
+                    translation="[620, 420]"
+                    width="900" />
+
+                <Label id="ssBookDesc"
+                    text=""
+                    font="font:SmallestSystemFont"
+                    color="0x94A3B8FF"
+                    translation="[620, 460]"
+                    width="900"
+                    wrap="true"
+                    maxLines="3" />
+            </Group>
+
+        </Group>
+        <!-- end driftGroup -->
+
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <!-- PERSISTENT CORNER CLOCK (not inside drift group)           -->
+        <!-- ─────────────────────────────────────────────────────────── -->
+        <Label id="cornerTimeLabel"
+            text=""
+            font="font:SmallSystemFont"
+            color="0x334155FF"
+            translation="[1720, 36]"
+            width="160"
+            horizAlign="right" />
+
+        <!-- Panel dot indicators at bottom (4 dots) -->
+        <Group id="panelDots" translation="[920, 1020]">
+            <Rectangle id="dot0" width="28" height="6" color="0x00C9A7FF" cornerRoundingRadius="3" translation="[0, 0]" />
+            <Rectangle id="dot1" width="8"  height="6" color="0x1E3A5FFF" cornerRoundingRadius="3" translation="[36, 0]" />
+            <Rectangle id="dot2" width="8"  height="6" color="0x1E3A5FFF" cornerRoundingRadius="3" translation="[52, 0]" />
+            <Rectangle id="dot3" width="8"  height="6" color="0x1E3A5FFF" cornerRoundingRadius="3" translation="[68, 0]" />
         </Group>
 
-        <!-- Logo Fade Animation -->
-        <Animation id="logoFadeAnim" duration="10" repeat="true">
-            <FloatFieldInterpolator key="[0.0, 0.5, 1.0]" keyValue="[0.4, 1.0, 0.4]" fieldToInterp="logoGroup.opacity" />
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- ANIMATIONS                                                 -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+
+        <!-- Fade-out animation (applied to current panel group) -->
+        <Animation id="fadeOutAnim" duration="1.2" repeat="false" easeFunction="outQuad">
+            <FloatFieldInterpolator id="fadeOutInterp" key="[0.0, 1.0]" keyValue="[1.0, 0.0]" fieldToInterp="" />
         </Animation>
 
-        <!-- Rotating text at bottom -->
-        <Label id="tipLabel" text="" font="font:MediumSystemFont" color="0x0F172AFF" translation="[0, 900]" width="1920" horizAlign="center" />
-        
-        <!-- Timer to rotate tips every 15 seconds -->
-        <Timer id="tipTimer" duration="15" repeat="true" />
-
-        <Animation id="tipFadeAnim" duration="1" repeat="false">
-            <FloatFieldInterpolator id="tipFader" key="[0.0, 1.0]" keyValue="[0.0, 1.0]" fieldToInterp="tipLabel.opacity" />
+        <!-- Fade-in animation (applied to next panel group) -->
+        <Animation id="fadeInAnim" duration="1.2" repeat="false" easeFunction="inQuad">
+            <FloatFieldInterpolator id="fadeInInterp" key="[0.0, 1.0]" keyValue="[0.0, 1.0]" fieldToInterp="" />
         </Animation>
+
+        <!-- Burn-in protection drift (slow continuous movement ±18px) -->
+        <Animation id="driftAnim" duration="60" repeat="true" easeFunction="linear">
+            <Vector2DFieldInterpolator
+                key="[0.0, 0.25, 0.5, 0.75, 1.0]"
+                keyValue="[[0,0],[18,10],[-6,20],[-18,5],[0,0]]"
+                fieldToInterp="driftGroup.translation" />
+        </Animation>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- TIMERS                                                     -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- 20 seconds per panel -->
+        <Timer id="panelTimer" duration="20" repeat="true" />
+        <!-- 30 seconds clock tick -->
+        <Timer id="ssClockTimer" duration="30" repeat="true" />
+        <!-- Short delay before first fade-in (lets data fetch settle) -->
+        <Timer id="startDelay" duration="2" repeat="false" />
+
+        <!-- Data fetch task -->
+        <ApiTask id="ssDataTask" />
+
     </children>
 </component>

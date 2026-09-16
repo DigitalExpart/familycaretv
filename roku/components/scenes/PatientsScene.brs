@@ -15,7 +15,32 @@ sub init()
     ' 0 = Add Button in Header, 1 = Grid
     m.focusZone = 1
 
+    ApplyLocalization()
+    m.top.observeField("visible", "OnVisibleChange")
+
     FetchPatients()
+end sub
+
+sub ApplyLocalization()
+    pageTitle = m.top.findNode("pageTitle")
+    if pageTitle <> invalid then pageTitle.text = GetStr("patients_directory_title")
+    addBtnLabel = m.top.findNode("addBtnLabel")
+    if addBtnLabel <> invalid then addBtnLabel.text = GetStr("add_patient_btn")
+    emptyTitle = m.top.findNode("emptyTitle")
+    if emptyTitle <> invalid then emptyTitle.text = GetStr("no_patients_found")
+    emptyDesc = m.top.findNode("emptyDesc")
+    if emptyDesc <> invalid then emptyDesc.text = GetStr("no_patients_desc")
+    emptyHint = m.top.findNode("emptyHint")
+    if emptyHint <> invalid then emptyHint.text = GetStr("add_patient_hint")
+    footerLabel = m.top.findNode("footerLabel")
+    if footerLabel <> invalid then footerLabel.text = GetStr("patients_footer")
+end sub
+
+sub OnVisibleChange()
+    if m.top.visible = true
+        ApplyLocalization()
+        FetchPatients()
+    end if
 end sub
 
 sub FetchPatients()
@@ -86,11 +111,7 @@ sub SetFocusZone(zone as Integer)
         m.top.setFocus(true)
     else
         m.addBtnBg.color = "0x00A89DFF"
-        if m.patientsGrid.visible
-            m.patientsGrid.setFocus(true)
-        else
-            m.top.setFocus(true)
-        end if
+        m.top.setFocus(true)
     end if
 end sub
 
@@ -153,8 +174,27 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                     SetFocusZone(0)
                     handled = true
                 end if
+            else if key = "right"
+                curr = m.patientsGrid.itemFocused
+                if curr < m.rawPatientsData.count() - 1
+                    m.patientsGrid.jumpToItem = curr + 1
+                    handled = true
+                end if
+            else if key = "left"
+                curr = m.patientsGrid.itemFocused
+                if curr > 0
+                    m.patientsGrid.jumpToItem = curr - 1
+                    handled = true
+                end if
+            else if key = "OK" or key = "select"
+                curr = m.patientsGrid.itemFocused
+                if curr >= 0 and curr < m.rawPatientsData.count()
+                    m.patientsGrid.itemSelected = curr
+                    OnPatientSelected()
+                    handled = true
+                end if
             else if key = "back"
-                m.top.navigate = "HomeScene"
+                m.top.navigate = "HomeSceneV2"
                 handled = true
             end if
         else if m.focusZone = 0
@@ -166,7 +206,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
                 OpenAddPatientForm()
                 handled = true
             else if key = "back"
-                m.top.navigate = "HomeScene"
+                m.top.navigate = "HomeSceneV2"
                 handled = true
             end if
         end if

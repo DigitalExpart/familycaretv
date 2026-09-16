@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 async function download() {
-  const url = "https://github.com/lvcabral/brs-desktop/releases/download/v2.3.0/brs-desktop-2.3.0-windows.exe";
-  const dest = path.join(__dirname, "brs-desktop-2.3.0-windows.exe");
+  const url = "https://github.com/lvcabral/brs-desktop/releases/download/v2.6.1/brs-desktop-2.6.1-windows.exe";
+  const dest = path.join(__dirname, "brs-desktop-2.6.1-windows.exe");
   console.log("Downloading from", url);
   console.log("Saving to", dest);
 

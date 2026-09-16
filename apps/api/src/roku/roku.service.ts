@@ -152,13 +152,15 @@ export class RokuService {
 
     return {
       pending: false,
+      status: 'linked',
+      linked: true,
       token: tokens.accessToken, // Added for backward compatibility with Roku app
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
     };
   }
 
-  async getHome(userId: string) {
+  async getHome(userId: string, dateStr?: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { firstName: true, lastName: true, subscriptionStatus: true, trialEndsAt: true, currentPeriodEnd: true }
@@ -260,6 +262,25 @@ export class RokuService {
       };
     }
 
+    // Today's full schedule for the Home screen rotator
+    // Uses the same CalendarAggregatorService as CalendarScene so the data is always consistent
+    const resolvedDate = dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)
+      ? dateStr
+      : new Date().toISOString().slice(0, 10);
+
+    const todayCalendarItems = await this.calendarService.getScheduleForDate(userId, resolvedDate);
+    const todaySchedule = todayCalendarItems.map(item => {
+      const dt = new Date(item.startDateTime);
+      const timeStr = dt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      return {
+        title: item.title,
+        time: timeStr,
+        type: item.type,
+        category: item.category || item.type,
+      };
+    });
+    console.log(`[DASHBOARD] date=${resolvedDate} todayScheduleCount=${todaySchedule.length}`);
+
     const userName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Family Member';
 
     return {
@@ -295,6 +316,7 @@ export class RokuService {
       verseOfTheDay,
       books,
       upcomingAppointment,
+      todaySchedule,
       timestamp: new Date().toISOString()
     };
   }
@@ -679,7 +701,9 @@ export class RokuService {
   async getCalendar(userId: string, startDate?: string, endDate?: string) {
     const start = startDate ? new Date(startDate) : undefined;
     const end = endDate ? new Date(endDate) : undefined;
-    return this.calendarService.getCalendarEvents(userId, start, end);
+    const items = await this.calendarService.getCalendarEvents(userId, start, end);
+    console.log(`[CALENDAR] startDate=${startDate} endDate=${endDate} scheduleCount=${items.length}`);
+    return items;
   }
 
   @Cron(CronExpression.EVERY_HOUR)

@@ -1,5 +1,7 @@
 sub init()
     m.heroSection = m.top.findNode("heroSection")
+    m.heroBadge = m.top.findNode("heroBadge")
+    m.scanViewLabel = m.top.findNode("scanViewLabel")
     m.heroCover = m.top.findNode("heroCover")
     m.heroTitle = m.top.findNode("heroTitle")
     m.heroAuthor = m.top.findNode("heroAuthor")
@@ -11,11 +13,18 @@ sub init()
     m.fetchTask = m.top.findNode("fetchTask")
     m.fetchTask.observeField("response", "onDataReceived")
     
+    ApplyLocalization()
     m.top.observeField("visible", "onVisibleChange")
+end sub
+
+sub ApplyLocalization()
+    if m.heroBadge <> invalid then m.heroBadge.text = GetStr("book_of_the_day")
+    if m.scanViewLabel <> invalid then m.scanViewLabel.text = GetStr("scan_to_view")
 end sub
 
 sub onVisibleChange()
     if m.top.visible = true
+        ApplyLocalization()
         m.fetchTask.request = { endpoint: "/books", method: "GET" }
         m.fetchTask.control = "RUN"
         m.bookList.setFocus(true)
@@ -33,7 +42,7 @@ sub onDataReceived()
             if heroBook.author <> invalid then m.heroAuthor.text = "By " + heroBook.author
             if heroBook.description <> invalid then m.heroDesc.text = heroBook.description
             
-            coverUri = "pkg:/images/fallback_artwork.png"
+            coverUri = "pkg:/images/book_cover_fallback.png"
             if heroBook.coverUrl <> invalid and heroBook.coverUrl <> "" then coverUri = heroBook.coverUrl
             m.heroCover.uri = coverUri
             
@@ -54,7 +63,7 @@ sub onDataReceived()
             
             for i = 1 to books.count() - 1
                 b = books[i]
-                cUri = "pkg:/images/fallback_artwork.png"
+                cUri = "pkg:/images/book_cover_fallback.png"
                 if b.coverUrl <> invalid and b.coverUrl <> "" then cUri = b.coverUrl
                 
                 itemData = {
@@ -72,8 +81,8 @@ sub onDataReceived()
             end for
             
             content.appendChild(createRow("Featured Books", featuredEvents))
-            content.appendChild(createRow("Recently Added", recentEvents))
-            content.appendChild(createRow("Browse All Books", allEvents))
+            content.appendChild(createRow(GetStr("books_recently_added"), recentEvents))
+            content.appendChild(createRow(GetStr("books_browse_all"), allEvents))
             
             m.bookList.content = content
         end if

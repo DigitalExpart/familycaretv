@@ -4,6 +4,7 @@ sub init()
     m.loadingLabel = m.top.findNode("loadingLabel")
 
     m.sidebarNav = m.top.findNode("sidebarNav")
+    m.homeActiveCard = m.top.findNode("homeActiveCard")
     m.navBadge = m.top.findNode("navBadge")
 
     m.dateLabel = m.top.findNode("dateLabel")
@@ -63,8 +64,7 @@ sub init()
     SetupSidebar()
     SetupQuickActions()
     UpdateClock()
-    m.focusSection = "sidebar"
-    m.top.setFocus(true)
+    UpdateSidebarFocus("sidebar")
 
     m.idleTimer.control = "start"
     m.top.observeField("visible", "OnVisibleChange")
@@ -115,8 +115,7 @@ sub OnVisibleChange()
         SetupSidebar()
         SetupQuickActions()
         UpdateClock()
-        m.focusSection = "sidebar"
-        m.top.setFocus(true)
+        UpdateSidebarFocus("sidebar")
         FetchDashboard()
     end if
 end sub
@@ -168,7 +167,7 @@ end sub
 sub OnDashboardResponse(event as Object)
     print "[HOME] dashboard result observer fired = true"
     m.loadingOverlay.visible = false
-    m.top.setFocus(true)
+    UpdateSidebarFocus(m.focusSection)
 
     response = event.getData()
     if response = invalid
@@ -589,6 +588,20 @@ sub OnIdleTimeout()
     m.top.navigate = "ScreensaverScene"
 end sub
 
+sub UpdateSidebarFocus(section as String)
+    m.focusSection = section
+    if section = "sidebar"
+        if m.homeActiveCard <> invalid then m.homeActiveCard.visible = false
+        m.sidebarNav.setFocus(true)
+    else if section = "quickActions"
+        if m.homeActiveCard <> invalid then m.homeActiveCard.visible = true
+        m.quickActionsGrid.setFocus(true)
+    else if section = "featuredBook"
+        if m.homeActiveCard <> invalid then m.homeActiveCard.visible = true
+        if m.featuredBookCard <> invalid then m.featuredBookCard.setFocus(true)
+    end if
+end sub
+
 function onKeyEvent(key as String, press as Boolean) as Boolean
     handled = false
     if press
@@ -603,16 +616,13 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             if key = "left"
                 itemFocused = m.quickActionsGrid.itemFocused
                 if itemFocused MOD 4 = 0 and itemFocused >= 4 and m.featuredBookCard <> invalid
-                    m.focusSection = "featuredBook"
-                    m.featuredBookCard.setFocus(true)
+                    UpdateSidebarFocus("featuredBook")
                 else
-                    m.focusSection = "sidebar"
-                    m.top.setFocus(true)
+                    UpdateSidebarFocus("sidebar")
                 end if
                 handled = true
             else if key = "back"
-                m.focusSection = "sidebar"
-                m.top.setFocus(true)
+                UpdateSidebarFocus("sidebar")
                 handled = true
             else if key = "OK" or key = "select"
                 itemFocused = m.quickActionsGrid.itemFocused
@@ -623,12 +633,10 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             end if
         else if m.focusSection = "featuredBook"
             if key = "right"
-                m.focusSection = "quickActions"
-                m.quickActionsGrid.setFocus(true)
+                UpdateSidebarFocus("quickActions")
                 handled = true
             else if key = "left" or key = "back" or key = "up"
-                m.focusSection = "sidebar"
-                m.top.setFocus(true)
+                UpdateSidebarFocus("sidebar")
                 handled = true
             else if key = "OK" or key = "select"
                 m.top.navigate = "BooksScreen"
@@ -636,8 +644,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             end if
         else ' Default: sidebar focus
             if key = "right"
-                m.focusSection = "quickActions"
-                m.quickActionsGrid.setFocus(true)
+                UpdateSidebarFocus("quickActions")
                 handled = true
             else if key = "down"
                 curr = m.sidebarNav.itemFocused

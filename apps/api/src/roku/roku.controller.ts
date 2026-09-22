@@ -5,15 +5,24 @@ import { LinkDeviceDto } from './dto/link-device.dto';
 import { TokenDto } from './dto/token.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ResourceLimitGuard, ResourceType } from '../common/guards/resource-limit.guard';
+import * as crypto from 'crypto';
 
 @Controller('roku')
 export class RokuController {
   constructor(private readonly rokuService: RokuService) {}
 
+  private extractMeta(req: any) {
+    const userAgent = (req?.headers?.['user-agent'] as string) || 'unknown';
+    const requestId = (req?.headers?.['x-request-id'] ||
+      req?.headers?.['x-correlation-id'] ||
+      crypto.randomUUID().slice(0, 8)) as string;
+    return { userAgent, requestId };
+  }
+
   @Throttle({ default: { limit: 10, ttl: 3600000 } })
   @Post('device-code')
-  async getDeviceCode() {
-    return this.rokuService.generateDeviceCode();
+  async getDeviceCode(@Request() req: any) {
+    return this.rokuService.generateDeviceCode(this.extractMeta(req));
   }
 
   @UseGuards(JwtAuthGuard, ResourceLimitGuard)
@@ -21,18 +30,18 @@ export class RokuController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('link-device')
   async linkDevice(@Request() req: any, @Body() dto: LinkDeviceDto) {
-    return this.rokuService.linkDevice(req.user.id, dto);
+    return this.rokuService.linkDevice(req.user.id, dto, this.extractMeta(req));
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @Post('token')
-  async getToken(@Body() dto: TokenDto) {
+  async getToken(@Body() dto: TokenDto, @Request() req: any) {
     const id = dto.deviceId || dto.code;
     if (!id) {
       throw new BadRequestException('Either deviceId or code must be provided');
     }
-    return this.rokuService.getToken(id);
+    return this.rokuService.getToken(id, this.extractMeta(req));
   }
 
   @Throttle({ default: { limit: 30, ttl: 60000 } })

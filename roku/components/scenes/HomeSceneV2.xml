@@ -40,6 +40,13 @@
                         loadDisplayMode="scaleToFit" />
                 </Group>
 
+                <!-- Active Section Indicator behind Home item (visible when remote focus is in main content) -->
+                <Poster id="homeActiveCard"
+                    width="232" height="42"
+                    uri="pkg:/images/sidebar_active_bg.png"
+                    translation="[24, 189]"
+                    visible="false" />
+
                 <!-- Navigation Items -->
                 <MarkupGrid id="sidebarNav"
                     translation="[16, 186]"

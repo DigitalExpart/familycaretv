@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, Logger } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
@@ -8,8 +8,15 @@ import { PLAN_LIMITS } from '../common/config/plan-limits.config';
 import { CalendarAggregatorService } from '../calendar/calendar.service';
 import { MusicLibraryService } from '../music-library/music-library.service';
 
+export interface RokuTelemetryMeta {
+  userAgent?: string;
+  requestId?: string;
+}
+
 @Injectable()
 export class RokuService {
+  private readonly logger = new Logger(RokuService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly authService: AuthService,
@@ -18,7 +25,7 @@ export class RokuService {
     private readonly musicLibraryService: MusicLibraryService,
   ) {}
 
-  async generateDeviceCode() {
+  async generateDeviceCode(meta?: RokuTelemetryMeta) {
     const deviceId = crypto.randomUUID();
     const code = crypto.randomBytes(4).toString('hex').toUpperCase();
     
@@ -34,6 +41,18 @@ export class RokuService {
       },
     });
 
+    this.logger.log(
+      `[ROKU_TELEMETRY] ` +
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          endpoint: '/roku/device-code',
+          codeLast4: code.slice(-4),
+          result: 'created',
+          userAgent: meta?.userAgent || 'unknown',
+          requestId: meta?.requestId || 'none',
+        })
+    );
+
     return {
       deviceId,
       code,
@@ -41,19 +60,46 @@ export class RokuService {
     };
   }
 
-  async linkDevice(userId: string, dto: any) {
+  async linkDevice(userId: string, dto: any, meta?: RokuTelemetryMeta) {
     const rawCode = (typeof dto === 'string' ? dto : dto.code) || '';
     const codeStr = rawCode.trim().toUpperCase().replace(/O/g, '0').replace(/[IL]/g, '1');
+    const codeLast4 = codeStr.length >= 4 ? codeStr.slice(-4) : codeStr;
+    const sanitizedUserId = userId ? `${userId.slice(0, 8)}...` : 'unknown';
+
     const link = await this.prisma.deviceLink.findUnique({
       where: { code: codeStr },
     });
 
     if (!link) {
+      this.logger.warn(
+        `[ROKU_TELEMETRY] ` +
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            endpoint: '/roku/link-device',
+            codeLast4,
+            result: 'not-found',
+            sanitizedUserId,
+            userAgent: meta?.userAgent || 'unknown',
+            requestId: meta?.requestId || 'none',
+          })
+      );
       throw new NotFoundException('Invalid or expired linking code');
     }
 
     if (!link.linkedAt && new Date() > link.expiresAt) {
       await this.prisma.deviceLink.delete({ where: { id: link.id } });
+      this.logger.warn(
+        `[ROKU_TELEMETRY] ` +
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            endpoint: '/roku/link-device',
+            codeLast4,
+            result: 'expired',
+            sanitizedUserId,
+            userAgent: meta?.userAgent || 'unknown',
+            requestId: meta?.requestId || 'none',
+          })
+      );
       throw new BadRequestException('Code has expired');
     }
 
@@ -107,10 +153,23 @@ export class RokuService {
       },
     });
 
+    this.logger.log(
+      `[ROKU_TELEMETRY] ` +
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          endpoint: '/roku/link-device',
+          codeLast4,
+          result: 'linked',
+          sanitizedUserId,
+          userAgent: meta?.userAgent || 'unknown',
+          requestId: meta?.requestId || 'none',
+        })
+    );
+
     return { success: true };
   }
 
-  async getToken(identifier: string) {
+  async getToken(identifier: string, meta?: RokuTelemetryMeta) {
     if (!identifier) {
       throw new UnauthorizedException('Missing identifier');
     }
@@ -126,17 +185,56 @@ export class RokuService {
     });
 
     if (!link) {
+      const codeLast4 = identifier.length >= 4 ? identifier.slice(-4) : identifier;
+      this.logger.warn(
+        `[ROKU_TELEMETRY] ` +
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            endpoint: '/roku/token',
+            codeLast4,
+            result: 'not-found',
+            pending: false,
+            userAgent: meta?.userAgent || 'unknown',
+            requestId: meta?.requestId || 'none',
+          })
+      );
       throw new UnauthorizedException('Invalid deviceId');
     }
+
+    const codeLast4 = link.code ? link.code.slice(-4) : 'unknown';
 
     if (!link.linkedAt && new Date() > link.expiresAt) {
       // Only expire codes that haven't been linked yet
       await this.prisma.deviceLink.delete({ where: { id: link.id } });
+      this.logger.warn(
+        `[ROKU_TELEMETRY] ` +
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            endpoint: '/roku/token',
+            codeLast4,
+            result: 'expired',
+            pending: false,
+            userAgent: meta?.userAgent || 'unknown',
+            requestId: meta?.requestId || 'none',
+          })
+      );
       throw new UnauthorizedException('Code has expired');
     }
 
     if (!link.userId || !link.user) {
       // Not linked yet, client must keep polling
+      this.logger.log(
+        `[ROKU_TELEMETRY] ` +
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            endpoint: '/roku/token',
+            codeLast4,
+            result: 'pending',
+            pending: true,
+            userAgent: meta?.userAgent || 'unknown',
+            requestId: meta?.requestId || 'none',
+          })
+      );
       return { pending: true };
     }
 
@@ -149,6 +247,19 @@ export class RokuService {
       where: { id: link.id },
       data: { tokenIssuedAt: new Date() },
     });
+
+    this.logger.log(
+      `[ROKU_TELEMETRY] ` +
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          endpoint: '/roku/token',
+          codeLast4,
+          result: 'linked',
+          pending: false,
+          userAgent: meta?.userAgent || 'unknown',
+          requestId: meta?.requestId || 'none',
+        })
+    );
 
     return {
       pending: false,
